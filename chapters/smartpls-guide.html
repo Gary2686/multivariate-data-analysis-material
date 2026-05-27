@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartPLS 操作指南 | SmartPLS Step-by-Step Guide</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="lang-zh">
+<div class="progress-bar"><div class="fill"></div></div>
+
+<nav class="top-nav">
+  <div class="container">
+    <a href="../index.html" class="brand" data-zh="多變量資料分析" data-en="Multivariate Data Analysis">多變量資料分析</a>
+    <div class="nav-links">
+      <a href="../index.html" data-zh="首頁" data-en="Home">首頁</a>
+      <a href="ch3-reliability-validity.html" data-zh="信效度基礎" data-en="R&V Basics">信效度基礎</a>
+      <a href="ch10-cfa-validity.html" data-zh="CFA效度" data-en="CFA Validity">CFA效度</a>
+      <a href="smartpls-guide.html" class="active" data-zh="SmartPLS指南" data-en="SmartPLS Guide">SmartPLS指南</a>
+      <button class="lang-toggle">EN</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1 data-zh="SmartPLS 操作指南：從建構變數到模型衡量" data-en="SmartPLS Guide: From Construct Building to Model Assessment">SmartPLS 操作指南：從建構變數到模型衡量</h1>
+    <p data-zh="PLS-SEM 完整操作流程，含反映型與形成型測量模型" data-en="Complete PLS-SEM workflow including reflective and formative measurement models">PLS-SEM 完整操作流程，含反映型與形成型測量模型</p>
+  </div>
+</header>
+
+<!-- ========== Section 1: PLS-SEM Introduction ========== -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title" data-zh="1. PLS-SEM 簡介與 CB-SEM 的比較" data-en="1. Introduction to PLS-SEM vs. CB-SEM">1. PLS-SEM 簡介與 CB-SEM 的比較</h2>
+
+    <div class="concept-block">
+      <h4 data-zh="什麼是 PLS-SEM？" data-en="What is PLS-SEM?">什麼是 PLS-SEM？</h4>
+      <p data-zh="偏最小平方法結構方程模型 (Partial Least Squares SEM) 是一種基於變異數 (variance-based) 的 SEM 方法，旨在最大化依變數的解釋變異量 (R²)。相對於 CB-SEM（如 AMOS、LISREL）以共變異數為基礎，PLS-SEM 更適合預測導向的研究。" data-en="Partial Least Squares SEM is a variance-based SEM approach that aims to maximize the explained variance (R²) of dependent variables. Compared to covariance-based SEM (e.g., AMOS, LISREL), PLS-SEM is more suitable for prediction-oriented research.">偏最小平方法結構方程模型 (Partial Least Squares SEM) 是一種基於變異數 (variance-based) 的 SEM 方法，旨在最大化依變數的解釋變異量 (R²)。相對於 CB-SEM（如 AMOS、LISREL）以共變異數為基礎，PLS-SEM 更適合預測導向的研究。</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th data-zh="比較面向" data-en="Comparison">比較面向</th>
+            <th>CB-SEM (AMOS / LISREL)</th>
+            <th>PLS-SEM (SmartPLS)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-zh="估計方法" data-en="Estimation">估計方法</td>
+            <td data-zh="共變異數為基礎 (Covariance-based)" data-en="Covariance-based">共變異數為基礎 (Covariance-based)</td>
+            <td data-zh="變異數為基礎 (Variance-based)" data-en="Variance-based">變異數為基礎 (Variance-based)</td>
+          </tr>
+          <tr>
+            <td data-zh="研究目標" data-en="Research Goal">研究目標</td>
+            <td data-zh="理論驗證 (Theory confirmation)" data-en="Theory confirmation">理論驗證 (Theory confirmation)</td>
+            <td data-zh="預測與理論發展 (Prediction & theory development)" data-en="Prediction & theory development">預測與理論發展 (Prediction & theory development)</td>
+          </tr>
+          <tr>
+            <td data-zh="樣本需求" data-en="Sample Size">樣本需求</td>
+            <td data-zh="通常需要較大樣本 (n ≥ 200)" data-en="Usually requires large samples (n ≥ 200)">通常需要較大樣本 (n ≥ 200)</td>
+            <td data-zh="可處理較小樣本" data-en="Can handle smaller samples">可處理較小樣本</td>
+          </tr>
+          <tr>
+            <td data-zh="常態性假設" data-en="Normality Assumption">常態性假設</td>
+            <td data-zh="要求多元常態分配" data-en="Requires multivariate normality">要求多元常態分配</td>
+            <td data-zh="無分配假設 (Non-parametric)" data-en="No distributional assumptions (Non-parametric)">無分配假設 (Non-parametric)</td>
+          </tr>
+          <tr>
+            <td data-zh="模型複雜度" data-en="Model Complexity">模型複雜度</td>
+            <td data-zh="適合中等複雜模型" data-en="Suitable for moderate complexity">適合中等複雜模型</td>
+            <td data-zh="可處理高度複雜模型" data-en="Can handle highly complex models">可處理高度複雜模型</td>
+          </tr>
+          <tr>
+            <td data-zh="測量模型" data-en="Measurement Model">測量模型</td>
+            <td data-zh="僅支援反映型" data-en="Reflective only">僅支援反映型</td>
+            <td class="highlight-cell" data-zh="同時支援反映型與形成型" data-en="Supports both reflective and formative">同時支援反映型與形成型</td>
+          </tr>
+          <tr>
+            <td data-zh="模型適配度" data-en="Model Fit">模型適配度</td>
+            <td data-zh="提供完整適配度指標 (χ², CFI, RMSEA)" data-en="Full fit indices (χ², CFI, RMSEA)">提供完整適配度指標 (χ², CFI, RMSEA)</td>
+            <td data-zh="有限適配指標 (SRMR, NFI); 以 R² 為主" data-en="Limited fit measures (SRMR, NFI); focuses on R²">有限適配指標 (SRMR, NFI); 以 R² 為主</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="concept-block success">
+      <h4 data-zh="何時選擇 PLS-SEM？" data-en="When to Choose PLS-SEM?">何時選擇 PLS-SEM？</h4>
+      <ul>
+        <li data-zh="研究目標偏向預測而非僅驗證理論" data-en="Research goal is prediction rather than theory confirmation alone">研究目標偏向預測而非僅驗證理論</li>
+        <li data-zh="模型包含形成型建構 (formative constructs)" data-en="Model includes formative constructs">模型包含形成型建構 (formative constructs)</li>
+        <li data-zh="樣本量較小或資料不符常態分配" data-en="Small sample size or non-normal data">樣本量較小或資料不符常態分配</li>
+        <li data-zh="模型結構複雜（多建構、多路徑）" data-en="Complex model structure (many constructs and paths)">模型結構複雜（多建構、多路徑）</li>
+        <li data-zh="探索性研究或理論尚在發展階段" data-en="Exploratory research or theory still under development">探索性研究或理論尚在發展階段</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Section 2: Reflective vs Formative ========== -->
+<section class="section" style="background:#fff">
+  <div class="container">
+    <h2 class="section-title" data-zh="2. 反映型 vs. 形成型測量模型" data-en="2. Reflective vs. Formative Measurement Models">2. 反映型 vs. 形成型測量模型</h2>
+
+    <p data-zh="這是 PLS-SEM 中最關鍵的概念區分。選擇錯誤的測量模型類型會導致嚴重的統計結論偏誤。" data-en="This is the most critical conceptual distinction in PLS-SEM. Choosing the wrong measurement model type can lead to serious statistical conclusion errors.">這是 PLS-SEM 中最關鍵的概念區分。選擇錯誤的測量模型類型會導致嚴重的統計結論偏誤。</p>
+
+    <div class="card-grid" style="margin-top:1.5rem">
+      <!-- Reflective Card -->
+      <div class="card" style="border-top:4px solid var(--accent)">
+        <h3 data-zh="反映型指標 (Reflective Indicators)" data-en="Reflective Indicators">反映型指標 (Reflective Indicators)</h3>
+        <div class="diagram">
+          <svg viewBox="0 0 300 220" width="280">
+            <defs><marker id="arrowR" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#3498db"/></marker></defs>
+            <ellipse cx="150" cy="50" rx="60" ry="30" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+            <text x="150" y="55" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Construct</text>
+            <rect x="30" y="130" width="70" height="35" rx="4" fill="#eaf4fc" stroke="#3498db" stroke-width="1.5"/>
+            <text x="65" y="152" text-anchor="middle" font-size="11" fill="#2c3e50">X₁</text>
+            <rect x="115" y="130" width="70" height="35" rx="4" fill="#eaf4fc" stroke="#3498db" stroke-width="1.5"/>
+            <text x="150" y="152" text-anchor="middle" font-size="11" fill="#2c3e50">X₂</text>
+            <rect x="200" y="130" width="70" height="35" rx="4" fill="#eaf4fc" stroke="#3498db" stroke-width="1.5"/>
+            <text x="235" y="152" text-anchor="middle" font-size="11" fill="#2c3e50">X₃</text>
+            <line x1="120" y1="75" x2="70" y2="130" stroke="#3498db" stroke-width="2" marker-end="url(#arrowR)"/>
+            <line x1="150" y1="80" x2="150" y2="130" stroke="#3498db" stroke-width="2" marker-end="url(#arrowR)"/>
+            <line x1="180" y1="75" x2="230" y2="130" stroke="#3498db" stroke-width="2" marker-end="url(#arrowR)"/>
+            <text x="55" y="105" font-size="10" fill="#e74c3c">λ₁</text>
+            <text x="155" y="113" font-size="10" fill="#e74c3c">λ₂</text>
+            <text x="230" y="105" font-size="10" fill="#e74c3c">λ₃</text>
+            <text x="150" y="200" text-anchor="middle" font-size="11" fill="#6c757d">Construct → Indicators</text>
+            <text x="150" y="215" text-anchor="middle" font-size="10" fill="#6c757d">(arrows point outward)</text>
+          </svg>
+        </div>
+        <ul style="font-size:.9rem;line-height:1.8">
+          <li data-zh="因果方向：建構 → 指標" data-en="Causality: Construct → Indicators">因果方向：建構 → 指標</li>
+          <li data-zh="指標是建構的「反映/表現」" data-en="Indicators are 'reflections' of the construct">指標是建構的「反映/表現」</li>
+          <li data-zh="指標之間高度相關（可互換）" data-en="Indicators are highly correlated (interchangeable)">指標之間高度相關（可互換）</li>
+          <li data-zh="移除一個指標不改變建構意義" data-en="Removing one indicator doesn't change construct meaning">移除一個指標不改變建構意義</li>
+          <li data-zh="例：滿意度 → 「我很滿意」「我會推薦」「我會再購買」" data-en='e.g., Satisfaction → "I am satisfied", "I would recommend", "I would repurchase"'>例：滿意度 → 「我很滿意」「我會推薦」「我會再購買」</li>
+        </ul>
+      </div>
+
+      <!-- Formative Card -->
+      <div class="card" style="border-top:4px solid var(--warning)">
+        <h3 data-zh="形成型指標 (Formative Indicators)" data-en="Formative Indicators">形成型指標 (Formative Indicators)</h3>
+        <div class="diagram">
+          <svg viewBox="0 0 300 220" width="280">
+            <defs><marker id="arrowF" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#f39c12"/></marker></defs>
+            <ellipse cx="150" cy="170" rx="60" ry="30" fill="#fff8e1" stroke="#f39c12" stroke-width="2"/>
+            <text x="150" y="175" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Construct</text>
+            <rect x="30" y="40" width="70" height="35" rx="4" fill="#fffde7" stroke="#f39c12" stroke-width="1.5"/>
+            <text x="65" y="62" text-anchor="middle" font-size="11" fill="#2c3e50">X₁</text>
+            <rect x="115" y="40" width="70" height="35" rx="4" fill="#fffde7" stroke="#f39c12" stroke-width="1.5"/>
+            <text x="150" y="62" text-anchor="middle" font-size="11" fill="#2c3e50">X₂</text>
+            <rect x="200" y="40" width="70" height="35" rx="4" fill="#fffde7" stroke="#f39c12" stroke-width="1.5"/>
+            <text x="235" y="62" text-anchor="middle" font-size="11" fill="#2c3e50">X₃</text>
+            <line x1="70" y1="75" x2="125" y2="145" stroke="#f39c12" stroke-width="2" marker-end="url(#arrowF)"/>
+            <line x1="150" y1="75" x2="150" y2="140" stroke="#f39c12" stroke-width="2" marker-end="url(#arrowF)"/>
+            <line x1="230" y1="75" x2="175" y2="145" stroke="#f39c12" stroke-width="2" marker-end="url(#arrowF)"/>
+            <text x="80" y="115" font-size="10" fill="#e74c3c">w₁</text>
+            <text x="155" y="115" font-size="10" fill="#e74c3c">w₂</text>
+            <text x="210" y="115" font-size="10" fill="#e74c3c">w₃</text>
+            <text x="150" y="17" text-anchor="middle" font-size="11" fill="#6c757d">Indicators → Construct</text>
+            <text x="150" y="32" text-anchor="middle" font-size="10" fill="#6c757d">(arrows point inward)</text>
+          </svg>
+        </div>
+        <ul style="font-size:.9rem;line-height:1.8">
+          <li data-zh="因果方向：指標 → 建構" data-en="Causality: Indicators → Construct">因果方向：指標 → 建構</li>
+          <li data-zh="指標共同「形成/組成」建構" data-en="Indicators collectively 'form/compose' the construct">指標共同「形成/組成」建構</li>
+          <li data-zh="指標之間不一定相關（各代表不同面向）" data-en="Indicators are not necessarily correlated (each represents a different facet)">指標之間不一定相關（各代表不同面向）</li>
+          <li data-zh="移除一個指標會改變建構定義" data-en="Removing one indicator changes the construct definition">移除一個指標會改變建構定義</li>
+          <li data-zh="例：社經地位 ← 教育程度 + 收入 + 職業聲望" data-en="e.g., SES ← Education + Income + Occupational prestige">例：社經地位 ← 教育程度 + 收入 + 職業聲望</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Detailed Comparison Table -->
+    <div class="card" style="margin-top:1.5rem">
+      <h3 data-zh="關鍵判別準則" data-en="Key Distinguishing Criteria">關鍵判別準則</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-zh="判別準則" data-en="Criterion">判別準則</th>
+              <th data-zh="反映型 (Reflective)" data-en="Reflective">反映型 (Reflective)</th>
+              <th data-zh="形成型 (Formative)" data-en="Formative">形成型 (Formative)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-zh="因果方向" data-en="Causal direction">因果方向</td>
+              <td data-zh="建構 → 指標 (outward)" data-en="Construct → Indicators (outward)">建構 → 指標 (outward)</td>
+              <td data-zh="指標 → 建構 (inward)" data-en="Indicators → Construct (inward)">指標 → 建構 (inward)</td>
+            </tr>
+            <tr>
+              <td data-zh="指標間相關" data-en="Inter-indicator correlation">指標間相關</td>
+              <td data-zh="高（期望高相關）" data-en="High (expected to be highly correlated)">高（期望高相關）</td>
+              <td data-zh="不一定（可高可低）" data-en="Not necessarily (can be high or low)">不一定（可高可低）</td>
+            </tr>
+            <tr>
+              <td data-zh="指標可互換性" data-en="Indicator interchangeability">指標可互換性</td>
+              <td data-zh="可互換（刪除不影響建構定義）" data-en="Interchangeable (removal doesn't affect construct definition)">可互換（刪除不影響建構定義）</td>
+              <td data-zh="不可互換（每個指標捕捉獨特面向）" data-en="Not interchangeable (each captures a unique facet)">不可互換（每個指標捕捉獨特面向）</td>
+            </tr>
+            <tr>
+              <td data-zh="參數名稱" data-en="Parameters">參數名稱</td>
+              <td data-zh="外部負荷量 (Outer Loadings, λ)" data-en="Outer Loadings (λ)">外部負荷量 (Outer Loadings, λ)</td>
+              <td data-zh="外部權重 (Outer Weights, w)" data-en="Outer Weights (w)">外部權重 (Outer Weights, w)</td>
+            </tr>
+            <tr>
+              <td data-zh="評估重點" data-en="Assessment focus">評估重點</td>
+              <td data-zh="內部一致性、聚合效度、區辨效度" data-en="Internal consistency, convergent validity, discriminant validity">內部一致性、聚合效度、區辨效度</td>
+              <td data-zh="共線性 (VIF)、外部權重顯著性、聚合效度（冗餘分析）" data-en="Collinearity (VIF), outer weight significance, convergent validity (redundancy analysis)">共線性 (VIF)、外部權重顯著性、聚合效度（冗餘分析）</td>
+            </tr>
+            <tr>
+              <td data-zh="SmartPLS 設定" data-en="SmartPLS Setting">SmartPLS 設定</td>
+              <td data-zh="Mode A（預設）" data-en="Mode A (default)">Mode A（預設）</td>
+              <td data-zh="Mode B" data-en="Mode B">Mode B</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Decision Flowchart -->
+    <div class="card" style="margin-top:1.5rem">
+      <h3 data-zh="判斷決策流程" data-en="Decision Flowchart">判斷決策流程</h3>
+      <div class="diagram">
+        <svg viewBox="0 0 600 380" width="100%">
+          <defs>
+            <marker id="arrowD" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2c3e50"/></marker>
+          </defs>
+          <!-- Q1 -->
+          <rect x="160" y="10" width="280" height="50" rx="8" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+          <text x="300" y="32" text-anchor="middle" font-size="12" font-weight="bold" fill="#2c3e50">是建構「導致」指標出現？</text>
+          <text x="300" y="48" text-anchor="middle" font-size="11" fill="#6c757d">Does the construct cause the indicators?</text>
+          <!-- Arrows from Q1 -->
+          <line x1="220" y1="60" x2="130" y2="100" stroke="#2c3e50" stroke-width="1.5" marker-end="url(#arrowD)"/>
+          <text x="160" y="78" font-size="11" fill="#27ae60" font-weight="bold">Yes</text>
+          <line x1="380" y1="60" x2="470" y2="100" stroke="#2c3e50" stroke-width="1.5" marker-end="url(#arrowD)"/>
+          <text x="415" y="78" font-size="11" fill="#e74c3c" font-weight="bold">No</text>
+          <!-- Q2 Left -->
+          <rect x="30" y="100" width="200" height="50" rx="8" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+          <text x="130" y="122" text-anchor="middle" font-size="11" font-weight="bold" fill="#2c3e50">刪除一個指標是否改變</text>
+          <text x="130" y="138" text-anchor="middle" font-size="11" fill="#2c3e50">建構的概念意義？</text>
+          <!-- Arrows from Q2 Left -->
+          <line x1="80" y1="150" x2="80" y2="200" stroke="#2c3e50" stroke-width="1.5" marker-end="url(#arrowD)"/>
+          <text x="55" y="178" font-size="11" fill="#e74c3c" font-weight="bold">No</text>
+          <line x1="180" y1="150" x2="180" y2="200" stroke="#2c3e50" stroke-width="1.5" marker-end="url(#arrowD)"/>
+          <text x="190" y="178" font-size="11" fill="#27ae60" font-weight="bold">Yes</text>
+          <!-- Reflective Answer -->
+          <rect x="20" y="200" width="120" height="45" rx="8" fill="#d4edda" stroke="#27ae60" stroke-width="2"/>
+          <text x="80" y="220" text-anchor="middle" font-size="12" font-weight="bold" fill="#155724">反映型</text>
+          <text x="80" y="236" text-anchor="middle" font-size="10" fill="#155724">Reflective</text>
+          <!-- Reconsider -->
+          <rect x="150" y="200" width="120" height="45" rx="8" fill="#fdecea" stroke="#e74c3c" stroke-width="2"/>
+          <text x="210" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#721c24">需重新考慮</text>
+          <text x="210" y="236" text-anchor="middle" font-size="10" fill="#721c24">Reconsider</text>
+          <!-- Q2 Right -->
+          <rect x="370" y="100" width="200" height="50" rx="8" fill="#fff8e1" stroke="#f39c12" stroke-width="2"/>
+          <text x="470" y="122" text-anchor="middle" font-size="11" font-weight="bold" fill="#2c3e50">指標是否各代表</text>
+          <text x="470" y="138" text-anchor="middle" font-size="11" fill="#2c3e50">建構的不同面向？</text>
+          <!-- Arrows from Q2 Right -->
+          <line x1="420" y1="150" x2="420" y2="200" stroke="#2c3e50" stroke-width="1.5" marker-end="url(#arrowD)"/>
+          <text x="395" y="178" font-size="11" fill="#27ae60" font-weight="bold">Yes</text>
+          <line x1="520" y1="150" x2="520" y2="200" stroke="#2c3e50" stroke-width="1.5" marker-end="url(#arrowD)"/>
+          <text x="530" y="178" font-size="11" fill="#e74c3c" font-weight="bold">No</text>
+          <!-- Formative Answer -->
+          <rect x="360" y="200" width="120" height="45" rx="8" fill="#fff3cd" stroke="#f39c12" stroke-width="2"/>
+          <text x="420" y="220" text-anchor="middle" font-size="12" font-weight="bold" fill="#856404">形成型</text>
+          <text x="420" y="236" text-anchor="middle" font-size="10" fill="#856404">Formative</text>
+          <!-- Reconsider 2 -->
+          <rect x="490" y="200" width="120" height="45" rx="8" fill="#fdecea" stroke="#e74c3c" stroke-width="2"/>
+          <text x="550" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#721c24">需重新考慮</text>
+          <text x="550" y="236" text-anchor="middle" font-size="10" fill="#721c24">Reconsider</text>
+          <!-- Examples -->
+          <rect x="10" y="270" width="270" height="100" rx="8" fill="#eaf4fc" stroke="#3498db" stroke-width="1"/>
+          <text x="145" y="292" text-anchor="middle" font-size="11" font-weight="bold" fill="#2c3e50">反映型常見範例 Reflective Examples</text>
+          <text x="145" y="310" text-anchor="middle" font-size="10" fill="#6c757d">態度 (Attitude)、滿意度 (Satisfaction)</text>
+          <text x="145" y="326" text-anchor="middle" font-size="10" fill="#6c757d">品牌忠誠 (Brand Loyalty)</text>
+          <text x="145" y="342" text-anchor="middle" font-size="10" fill="#6c757d">知覺品質 (Perceived Quality)</text>
+          <text x="145" y="358" text-anchor="middle" font-size="10" fill="#6c757d">組織承諾 (Organizational Commitment)</text>
+          <rect x="320" y="270" width="270" height="100" rx="8" fill="#fff8e1" stroke="#f39c12" stroke-width="1"/>
+          <text x="455" y="292" text-anchor="middle" font-size="11" font-weight="bold" fill="#2c3e50">形成型常見範例 Formative Examples</text>
+          <text x="455" y="310" text-anchor="middle" font-size="10" fill="#6c757d">社經地位 (SES)</text>
+          <text x="455" y="326" text-anchor="middle" font-size="10" fill="#6c757d">行銷組合 (Marketing Mix)</text>
+          <text x="455" y="342" text-anchor="middle" font-size="10" fill="#6c757d">工作壓力來源 (Job Stressors)</text>
+          <text x="455" y="358" text-anchor="middle" font-size="10" fill="#6c757d">人力資本 (Human Capital)</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="concept-block danger">
+      <h4 data-zh="常見錯誤" data-en="Common Mistake">常見錯誤</h4>
+      <p data-zh="許多研究者將所有建構都設為反映型 (Mode A)。如果你的指標是「組合」出建構的不同面向（如行銷組合的 4P），應該使用形成型 (Mode B)。在 SmartPLS 中，需要手動更改指標模式。" data-en="Many researchers set all constructs as reflective (Mode A) by default. If your indicators 'compose' different facets of a construct (e.g., the 4Ps of marketing mix), you should use formative (Mode B). In SmartPLS, you need to manually change the indicator mode.">許多研究者將所有建構都設為反映型 (Mode A)。如果你的指標是「組合」出建構的不同面向（如行銷組合的 4P），應該使用形成型 (Mode B)。在 SmartPLS 中，需要手動更改指標模式。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Section 3: SmartPLS Step-by-Step ========== -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title" data-zh="3. SmartPLS 操作步驟" data-en="3. SmartPLS Step-by-Step Operations">3. SmartPLS 操作步驟</h2>
+
+    <div class="tab-container">
+      <div class="tab-header">
+        <button class="tab-btn active" data-tab="step-project" data-zh="Step 1: 建立專案" data-en="Step 1: Create Project">Step 1: 建立專案</button>
+        <button class="tab-btn" data-tab="step-data" data-zh="Step 2: 匯入資料" data-en="Step 2: Import Data">Step 2: 匯入資料</button>
+        <button class="tab-btn" data-tab="step-model" data-zh="Step 3: 繪製模型" data-en="Step 3: Draw Model">Step 3: 繪製模型</button>
+        <button class="tab-btn" data-tab="step-run" data-zh="Step 4: 執行分析" data-en="Step 4: Run Analysis">Step 4: 執行分析</button>
+      </div>
+
+      <div class="tab-panel active" id="step-project">
+        <div class="card">
+          <h3 data-zh="建立新專案" data-en="Create New Project">建立新專案</h3>
+          <ol style="line-height:2;font-size:.95rem">
+            <li data-zh="開啟 SmartPLS → File → New Project" data-en="Open SmartPLS → File → New Project">開啟 SmartPLS → File → New Project</li>
+            <li data-zh="輸入專案名稱（建議使用英文，避免特殊字元）" data-en="Enter project name (use English, avoid special characters)">輸入專案名稱（建議使用英文，避免特殊字元）</li>
+            <li data-zh="選擇儲存路徑" data-en="Choose save location">選擇儲存路徑</li>
+            <li data-zh="點擊 OK 建立專案" data-en="Click OK to create project">點擊 OK 建立專案</li>
+          </ol>
+          <div class="concept-block">
+            <p data-zh="SmartPLS 4 支援直接建立或從範本匯入。每個專案可包含多個模型。" data-en="SmartPLS 4 supports direct creation or importing from templates. Each project can contain multiple models.">SmartPLS 4 支援直接建立或從範本匯入。每個專案可包含多個模型。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="step-data">
+        <div class="card">
+          <h3 data-zh="匯入資料" data-en="Import Data">匯入資料</h3>
+          <ol style="line-height:2;font-size:.95rem">
+            <li data-zh="準備 CSV 檔案（推薦）或 Excel 檔案" data-en="Prepare CSV file (recommended) or Excel file">準備 CSV 檔案（推薦）或 Excel 檔案</li>
+            <li data-zh="第一行必須為變數名稱（欄位標題）" data-en="First row must be variable names (column headers)">第一行必須為變數名稱（欄位標題）</li>
+            <li data-zh="在專案上右鍵 → Import Data → 選擇檔案" data-en="Right-click on project → Import Data → Select file">在專案上右鍵 → Import Data → 選擇檔案</li>
+            <li data-zh="檢查資料預覽，確認變數類型（數值/類別）" data-en="Check data preview, confirm variable types (numeric/categorical)">檢查資料預覽，確認變數類型（數值/類別）</li>
+            <li data-zh="點擊 Import 完成匯入" data-en="Click Import to complete">點擊 Import 完成匯入</li>
+          </ol>
+          <div class="concept-block warn">
+            <h4 data-zh="資料準備注意事項" data-en="Data Preparation Notes">資料準備注意事項</h4>
+            <ul style="font-size:.9rem">
+              <li data-zh="確保無空白欄位名稱" data-en="Ensure no blank column names">確保無空白欄位名稱</li>
+              <li data-zh="遺漏值可選擇 Mean Replacement 或 Case-wise Deletion" data-en="Missing values: choose Mean Replacement or Case-wise Deletion">遺漏值可選擇 Mean Replacement 或 Case-wise Deletion</li>
+              <li data-zh="反向題需事先進行反向計分" data-en="Reverse-coded items must be recoded beforehand">反向題需事先進行反向計分</li>
+              <li data-zh="建議使用統一的變數命名規則（如 SAT1, SAT2, LOY1）" data-en="Use consistent variable naming conventions (e.g., SAT1, SAT2, LOY1)">建議使用統一的變數命名規則（如 SAT1, SAT2, LOY1）</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="step-model">
+        <div class="card">
+          <h3 data-zh="繪製路徑模型" data-en="Draw Path Model">繪製路徑模型</h3>
+          <ol style="line-height:2;font-size:.95rem">
+            <li data-zh="雙擊專案中的空白模型 → 開啟建模畫布" data-en="Double-click blank model in project → Open modeling canvas">雙擊專案中的空白模型 → 開啟建模畫布</li>
+            <li data-zh="從左側面板拖曳「Latent Variable」到畫布中（代表建構）" data-en="Drag 'Latent Variable' from left panel to canvas (represents constructs)">從左側面板拖曳「Latent Variable」到畫布中（代表建構）</li>
+            <li data-zh="雙擊建構命名（如 Satisfaction, Loyalty）" data-en="Double-click to name constructs (e.g., Satisfaction, Loyalty)">雙擊建構命名（如 Satisfaction, Loyalty）</li>
+            <li data-zh="從資料集拖曳指標（觀察變數）到對應的建構上" data-en="Drag indicators (observed variables) from dataset onto corresponding constructs">從資料集拖曳指標（觀察變數）到對應的建構上</li>
+            <li data-zh="使用箭頭工具繪製建構之間的路徑關係" data-en="Use arrow tool to draw path relationships between constructs">使用箭頭工具繪製建構之間的路徑關係</li>
+            <li data-zh="箭頭從自變數指向依變數" data-en="Arrows point from independent to dependent variable">箭頭從自變數指向依變數</li>
+          </ol>
+          <div class="concept-block danger">
+            <h4 data-zh="設定形成型建構（重要！）" data-en="Setting Formative Constructs (Important!)">設定形成型建構（重要！）</h4>
+            <p data-zh="預設所有建構為反映型 (Mode A)。若需要形成型：右鍵點擊建構 → Properties → 將 Indicator Treatment 改為 Mode B。" data-en="All constructs default to reflective (Mode A). For formative: right-click construct → Properties → Change Indicator Treatment to Mode B.">預設所有建構為反映型 (Mode A)。若需要形成型：右鍵點擊建構 → Properties → 將 Indicator Treatment 改為 Mode B。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="step-run">
+        <div class="card">
+          <h3 data-zh="執行 PLS 演算法與 Bootstrapping" data-en="Run PLS Algorithm & Bootstrapping">執行 PLS 演算法與 Bootstrapping</h3>
+          <ol style="line-height:2;font-size:.95rem">
+            <li>
+              <strong data-zh="PLS Algorithm（基本估計）：" data-en="PLS Algorithm (basic estimation):">PLS Algorithm（基本估計）：</strong>
+              <span data-zh="Calculate → PLS Algorithm → 使用預設設定 → Start Calculation" data-en="Calculate → PLS Algorithm → Use default settings → Start Calculation">Calculate → PLS Algorithm → 使用預設設定 → Start Calculation</span>
+            </li>
+            <li>
+              <strong data-zh="Bootstrapping（檢定顯著性）：" data-en="Bootstrapping (significance testing):">Bootstrapping（檢定顯著性）：</strong>
+              <span data-zh="Calculate → Bootstrapping → Subsamples ≥ 5000 → Start Calculation" data-en="Calculate → Bootstrapping → Subsamples ≥ 5000 → Start Calculation">Calculate → Bootstrapping → Subsamples ≥ 5000 → Start Calculation</span>
+            </li>
+            <li>
+              <strong data-zh="Blindfolding（預測相關性 Q²）：" data-en="Blindfolding (predictive relevance Q²):">Blindfolding（預測相關性 Q²）：</strong>
+              <span data-zh="Calculate → Blindfolding → Omission distance = 7（預設）" data-en="Calculate → Blindfolding → Omission distance = 7 (default)">Calculate → Blindfolding → Omission distance = 7（預設）</span>
+            </li>
+          </ol>
+          <div class="concept-block success">
+            <h4 data-zh="Bootstrapping 設定建議" data-en="Bootstrapping Settings Recommendation">Bootstrapping 設定建議</h4>
+            <ul style="font-size:.9rem">
+              <li data-zh="Subsamples: 5,000 次（Hair et al. 建議最少）" data-en="Subsamples: 5,000 (minimum recommended by Hair et al.)">Subsamples: 5,000 次（Hair et al. 建議最少）</li>
+              <li data-zh="Significance Level: 0.05（雙尾）" data-en="Significance Level: 0.05 (two-tailed)">Significance Level: 0.05（雙尾）</li>
+              <li data-zh="Complete Bootstrapping: 選擇此選項可獲得所有參數之信賴區間" data-en="Complete Bootstrapping: Select for confidence intervals of all parameters">Complete Bootstrapping: 選擇此選項可獲得所有參數之信賴區間</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Section 4: Reflective Model Assessment ========== -->
+<section class="section" style="background:#fff">
+  <div class="container">
+    <h2 class="section-title" data-zh="4. 反映型測量模型評估" data-en="4. Reflective Measurement Model Assessment">4. 反映型測量模型評估</h2>
+
+    <p data-zh="反映型測量模型的評估包含四個面向，必須依序檢視：" data-en="Reflective measurement model assessment includes four aspects, examined in order:">反映型測量模型的評估包含四個面向，必須依序檢視：</p>
+
+    <div class="tab-container">
+      <div class="tab-header">
+        <button class="tab-btn active" data-tab="ref-loading" data-zh="指標信度" data-en="Indicator Reliability">指標信度</button>
+        <button class="tab-btn" data-tab="ref-consistency" data-zh="內部一致性" data-en="Internal Consistency">內部一致性</button>
+        <button class="tab-btn" data-tab="ref-convergent" data-zh="聚合效度" data-en="Convergent Validity">聚合效度</button>
+        <button class="tab-btn" data-tab="ref-discriminant" data-zh="區辨效度" data-en="Discriminant Validity">區辨效度</button>
+      </div>
+
+      <div class="tab-panel active" id="ref-loading">
+        <div class="card">
+          <h3 data-zh="指標信度 (Indicator Reliability)" data-en="Indicator Reliability">指標信度 (Indicator Reliability)</h3>
+          <div class="formula-box">
+            <span data-zh="外部負荷量 (Outer Loading) ≥ 0.708（理想）" data-en="Outer Loading ≥ 0.708 (ideal)">外部負荷量 (Outer Loading) ≥ 0.708（理想）</span>
+            <span class="label" data-zh="因為 0.708² ≈ 0.50，表示指標解釋了建構 50% 以上的變異" data-en="Because 0.708² ≈ 0.50, meaning the indicator explains ≥ 50% of construct variance">因為 0.708² ≈ 0.50，表示指標解釋了建構 50% 以上的變異</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th data-zh="負荷量範圍" data-en="Loading Range">負荷量範圍</th><th data-zh="判斷" data-en="Decision">判斷</th><th data-zh="行動" data-en="Action">行動</th></tr></thead>
+              <tbody>
+                <tr><td>≥ 0.708</td><td class="highlight-cell" data-zh="保留" data-en="Retain">保留</td><td data-zh="符合標準" data-en="Meets criterion">符合標準</td></tr>
+                <tr><td>0.40 – 0.70</td><td data-zh="考慮刪除" data-en="Consider removing">考慮刪除</td><td data-zh="若刪除後能提高 CR 或 AVE 則刪除" data-en="Remove if it improves CR or AVE">若刪除後能提高 CR 或 AVE 則刪除</td></tr>
+                <tr><td>< 0.40</td><td style="color:var(--danger);font-weight:600" data-zh="應刪除" data-en="Should remove">應刪除</td><td data-zh="該指標解釋力不足" data-en="Indicator lacks explanatory power">該指標解釋力不足</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin-top:1rem;font-size:.9rem" data-zh="SmartPLS 查看位置：PLS Algorithm → Outer Loadings" data-en="SmartPLS location: PLS Algorithm → Outer Loadings"><strong>SmartPLS 查看位置：</strong>PLS Algorithm → Outer Loadings</p>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="ref-consistency">
+        <div class="card">
+          <h3 data-zh="內部一致性信度 (Internal Consistency Reliability)" data-en="Internal Consistency Reliability">內部一致性信度 (Internal Consistency Reliability)</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th data-zh="指標" data-en="Metric">指標</th><th data-zh="門檻值" data-en="Threshold">門檻值</th><th data-zh="說明" data-en="Notes">說明</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>Cronbach's α</td>
+                  <td>≥ 0.70</td>
+                  <td data-zh="下界估計，較保守" data-en="Lower bound, conservative">下界估計，較保守</td>
+                </tr>
+                <tr>
+                  <td data-zh="組合信度 CR (Composite Reliability)" data-en="Composite Reliability (CR)">組合信度 CR (Composite Reliability)</td>
+                  <td>≥ 0.70</td>
+                  <td data-zh="考慮不同負荷量，比 α 更適合 PLS-SEM" data-en="Accounts for different loadings, more suitable for PLS-SEM than α">考慮不同負荷量，比 α 更適合 PLS-SEM</td>
+                </tr>
+                <tr>
+                  <td>rho_A (ρ_A)</td>
+                  <td>≥ 0.70</td>
+                  <td data-zh="介於 α 和 CR 之間，最精確的信度估計" data-en="Between α and CR, most accurate reliability estimate">介於 α 和 CR 之間，最精確的信度估計</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="concept-block warn">
+            <p data-zh="注意：CR 不應超過 0.95，否則暗示指標之間過度重複（redundancy），可能測量同一件事。" data-en="Note: CR should not exceed 0.95, as this implies redundancy — indicators may be measuring the same thing.">注意：CR 不應超過 0.95，否則暗示指標之間過度重複（redundancy），可能測量同一件事。</p>
+          </div>
+          <p style="margin-top:1rem;font-size:.9rem" data-zh="SmartPLS 查看位置：PLS Algorithm → Construct Reliability and Validity" data-en="SmartPLS location: PLS Algorithm → Construct Reliability and Validity"><strong>SmartPLS 查看位置：</strong>PLS Algorithm → Construct Reliability and Validity</p>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="ref-convergent">
+        <div class="card">
+          <h3 data-zh="聚合效度 (Convergent Validity)" data-en="Convergent Validity">聚合效度 (Convergent Validity)</h3>
+          <div class="formula-box">
+            AVE = (&#8721; &#955;<sub>i</sub>&#178;) / n &#8805; 0.50
+            <span class="label" data-zh="平均變異萃取量：建構平均能解釋其指標 50% 以上的變異" data-en="Average Variance Extracted: the construct explains ≥ 50% of indicator variance on average">平均變異萃取量：建構平均能解釋其指標 50% 以上的變異</span>
+          </div>
+          <p data-zh="AVE ≥ 0.50 表示該建構對其指標有足夠的解釋力。若 AVE < 0.50，表示誤差變異大於建構解釋的變異。" data-en="AVE ≥ 0.50 means the construct explains enough of its indicators' variance. If AVE < 0.50, error variance exceeds the construct's explained variance.">AVE ≥ 0.50 表示該建構對其指標有足夠的解釋力。若 AVE < 0.50，表示誤差變異大於建構解釋的變異。</p>
+          <p style="margin-top:1rem;font-size:.9rem" data-zh="SmartPLS 查看位置：PLS Algorithm → Construct Reliability and Validity → AVE 欄位" data-en="SmartPLS location: PLS Algorithm → Construct Reliability and Validity → AVE column"><strong>SmartPLS 查看位置：</strong>PLS Algorithm → Construct Reliability and Validity → AVE 欄位</p>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="ref-discriminant">
+        <div class="card">
+          <h3 data-zh="區辨效度 (Discriminant Validity)" data-en="Discriminant Validity">區辨效度 (Discriminant Validity)</h3>
+          <p data-zh="區辨效度確認每個建構在統計上確實不同於其他建構。PLS-SEM 提供三種檢驗方法：" data-en="Discriminant validity confirms each construct is statistically distinct from others. PLS-SEM provides three assessment methods:">區辨效度確認每個建構在統計上確實不同於其他建構。PLS-SEM 提供三種檢驗方法：</p>
+          <div class="table-wrap" style="margin-top:1rem">
+            <table>
+              <thead><tr><th data-zh="方法" data-en="Method">方法</th><th data-zh="準則" data-en="Criterion">準則</th><th data-zh="SmartPLS 位置" data-en="SmartPLS Location">SmartPLS 位置</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td data-zh="交叉負荷量 (Cross-Loadings)" data-en="Cross-Loadings">交叉負荷量 (Cross-Loadings)</td>
+                  <td data-zh="每個指標在其所屬建構上的負荷量應高於在其他建構上的負荷量" data-en="Each indicator's loading on its own construct should exceed loadings on other constructs">每個指標在其所屬建構上的負荷量應高於在其他建構上的負荷量</td>
+                  <td>Discriminant Validity → Cross Loadings</td>
+                </tr>
+                <tr>
+                  <td>Fornell-Larcker</td>
+                  <td data-zh="每個建構的 √AVE 應大於該建構與其他建構之間的相關係數" data-en="Each construct's √AVE should exceed its correlations with other constructs">每個建構的 √AVE 應大於該建構與其他建構之間的相關係數</td>
+                  <td>Discriminant Validity → Fornell-Larcker Criterion</td>
+                </tr>
+                <tr>
+                  <td class="highlight-cell">HTMT</td>
+                  <td class="highlight-cell" data-zh="HTMT < 0.90（保守標準 < 0.85）" data-en="HTMT < 0.90 (conservative: < 0.85)">HTMT < 0.90（保守標準 < 0.85）</td>
+                  <td>Discriminant Validity → HTMT</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="concept-block success">
+            <h4 data-zh="HTMT 為首選方法" data-en="HTMT is the Preferred Method">HTMT 為首選方法</h4>
+            <p data-zh="Henseler et al. (2015) 指出 HTMT (Heterotrait-Monotrait Ratio) 比 Fornell-Larcker 和交叉負荷量更能有效偵測區辨效度問題。Hair et al. (2019) 建議以 HTMT 作為主要判斷標準。" data-en="Henseler et al. (2015) showed that HTMT is more effective at detecting discriminant validity issues than Fornell-Larcker and cross-loadings. Hair et al. (2019) recommend HTMT as the primary criterion.">Henseler et al. (2015) 指出 HTMT (Heterotrait-Monotrait Ratio) 比 Fornell-Larcker 和交叉負荷量更能有效偵測區辨效度問題。Hair et al. (2019) 建議以 HTMT 作為主要判斷標準。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reflective Summary Table -->
+    <div class="card" style="margin-top:1rem">
+      <h3 data-zh="反映型測量模型：門檻值總覽" data-en="Reflective Model: Threshold Summary">反映型測量模型：門檻值總覽</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th data-zh="評估面向" data-en="Assessment">評估面向</th>
+            <th data-zh="指標" data-en="Metric">指標</th>
+            <th data-zh="門檻值" data-en="Threshold">門檻值</th>
+          </tr></thead>
+          <tbody>
+            <tr><td data-zh="指標信度" data-en="Indicator Reliability">指標信度</td><td>Outer Loadings</td><td>≥ 0.708</td></tr>
+            <tr><td rowspan="3" data-zh="內部一致性信度" data-en="Internal Consistency">內部一致性信度</td><td>Cronbach's α</td><td>≥ 0.70</td></tr>
+            <tr><td>Composite Reliability (CR)</td><td>0.70 – 0.95</td></tr>
+            <tr><td>rho_A (ρ<sub>A</sub>)</td><td>≥ 0.70</td></tr>
+            <tr><td data-zh="聚合效度" data-en="Convergent Validity">聚合效度</td><td>AVE</td><td>≥ 0.50</td></tr>
+            <tr><td rowspan="2" data-zh="區辨效度" data-en="Discriminant Validity">區辨效度</td><td>HTMT</td><td>< 0.90 (conservative < 0.85)</td></tr>
+            <tr><td>Fornell-Larcker</td><td>√AVE > inter-construct correlations</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Section 5: Formative Model Assessment ========== -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title" data-zh="5. 形成型測量模型評估" data-en="5. Formative Measurement Model Assessment">5. 形成型測量模型評估</h2>
+
+    <div class="concept-block warn">
+      <h4 data-zh="重要差異" data-en="Important Difference">重要差異</h4>
+      <p data-zh="形成型建構不能使用反映型的評估標準（如 Cronbach's α、CR、AVE）！因為形成型指標不一定相關，使用內部一致性指標沒有意義。" data-en="Formative constructs CANNOT use reflective assessment criteria (Cronbach's α, CR, AVE)! Since formative indicators are not necessarily correlated, internal consistency metrics are meaningless.">形成型建構不能使用反映型的評估標準（如 Cronbach's α、CR、AVE）！因為形成型指標不一定相關，使用內部一致性指標沒有意義。</p>
+    </div>
+
+    <div class="tab-container">
+      <div class="tab-header">
+        <button class="tab-btn active" data-tab="form-convergent" data-zh="聚合效度" data-en="Convergent Validity">聚合效度</button>
+        <button class="tab-btn" data-tab="form-collinearity" data-zh="共線性" data-en="Collinearity">共線性</button>
+        <button class="tab-btn" data-tab="form-weights" data-zh="外部權重" data-en="Outer Weights">外部權重</button>
+      </div>
+
+      <div class="tab-panel active" id="form-convergent">
+        <div class="card">
+          <h3 data-zh="聚合效度：冗餘分析 (Redundancy Analysis)" data-en="Convergent Validity: Redundancy Analysis">聚合效度：冗餘分析 (Redundancy Analysis)</h3>
+          <ol style="line-height:2;font-size:.95rem">
+            <li data-zh="建立一個與形成型建構測量相同概念的全域性單一指標 (global single item)" data-en="Create a global single item measuring the same concept as the formative construct">建立一個與形成型建構測量相同概念的全域性單一指標 (global single item)</li>
+            <li data-zh="將形成型建構與該全域指標之間建立路徑" data-en="Create a path between the formative construct and the global item">將形成型建構與該全域指標之間建立路徑</li>
+            <li data-zh="路徑係數 ≥ 0.70（表示兩者的相關 ≥ 0.70）" data-en="Path coefficient ≥ 0.70 (indicating correlation ≥ 0.70 between them)">路徑係數 ≥ 0.70（表示兩者的相關 ≥ 0.70）</li>
+          </ol>
+          <div class="concept-block">
+            <p data-zh="例如：若建構為「工作壓力」（由5個壓力來源指標形成），需加入一題「整體而言，我感受到的工作壓力程度」作為全域指標進行冗餘分析。" data-en="Example: If the construct is 'Job Stress' (formed by 5 stressor indicators), add a global item 'Overall, my level of work stress is...' for redundancy analysis.">例如：若建構為「工作壓力」（由5個壓力來源指標形成），需加入一題「整體而言，我感受到的工作壓力程度」作為全域指標進行冗餘分析。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="form-collinearity">
+        <div class="card">
+          <h3 data-zh="共線性診斷 (Collinearity Assessment)" data-en="Collinearity Assessment">共線性診斷 (Collinearity Assessment)</h3>
+          <div class="formula-box">
+            VIF (Variance Inflation Factor) < 5
+            <span class="label" data-zh="理想值 < 3；VIF ≥ 5 表示有嚴重的共線性問題" data-en="Ideal < 3; VIF ≥ 5 indicates serious collinearity issues">理想值 < 3；VIF ≥ 5 表示有嚴重的共線性問題</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>VIF</th><th data-zh="判斷" data-en="Assessment">判斷</th></tr></thead>
+              <tbody>
+                <tr><td>< 3</td><td class="highlight-cell" data-zh="理想，無共線性問題" data-en="Ideal, no collinearity issues">理想，無共線性問題</td></tr>
+                <tr><td>3 – 5</td><td data-zh="可接受，但需注意" data-en="Acceptable, but monitor">可接受，但需注意</td></tr>
+                <tr><td>≥ 5</td><td style="color:var(--danger);font-weight:600" data-zh="嚴重共線性，需處理" data-en="Serious collinearity, needs action">嚴重共線性，需處理</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="concept-block danger">
+            <h4 data-zh="共線性過高時的處理方式" data-en="Actions When Collinearity is Too High">共線性過高時的處理方式</h4>
+            <ul style="font-size:.9rem">
+              <li data-zh="合併高度相關的指標為單一指標" data-en="Merge highly correlated indicators into one">合併高度相關的指標為單一指標</li>
+              <li data-zh="將高共線性指標建立為高階建構 (Higher-Order Construct)" data-en="Create higher-order construct from collinear indicators">將高共線性指標建立為高階建構 (Higher-Order Construct)</li>
+              <li data-zh="最後手段：刪除導致共線性的指標（但需謹慎，因為會改變建構定義）" data-en="Last resort: remove collinear indicator (use caution — changes construct definition)">最後手段：刪除導致共線性的指標（但需謹慎，因為會改變建構定義）</li>
+            </ul>
+          </div>
+          <p style="margin-top:1rem;font-size:.9rem"><strong>SmartPLS 查看位置：</strong>PLS Algorithm → Outer VIF Values</p>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="form-weights">
+        <div class="card">
+          <h3 data-zh="外部權重顯著性與相關性" data-en="Outer Weight Significance & Relevance">外部權重顯著性與相關性</h3>
+          <p data-zh="使用 Bootstrapping 結果檢驗每個指標的外部權重 (Outer Weight) 是否顯著：" data-en="Use Bootstrapping results to test whether each indicator's outer weight is significant:">使用 Bootstrapping 結果檢驗每個指標的外部權重 (Outer Weight) 是否顯著：</p>
+          <div class="diagram" style="margin-top:1rem">
+            <svg viewBox="0 0 500 320" width="100%">
+              <defs><marker id="arrowW" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2c3e50"/></marker></defs>
+              <!-- Start -->
+              <rect x="140" y="10" width="220" height="40" rx="8" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+              <text x="250" y="35" text-anchor="middle" font-size="12" font-weight="bold" fill="#2c3e50">Outer Weight significant?</text>
+              <!-- Arrows -->
+              <line x1="200" y1="50" x2="100" y2="90" stroke="#2c3e50" stroke-width="1.5" marker-end="url(#arrowW)"/>
+              <text x="135" y="68" font-size="11" fill="#27ae60" font-weight="bold">Yes</text>
+              <line x1="300" y1="50" x2="400" y2="90" stroke="#2c3e50" stroke-width="1.5" marker-end="url(#arrowW)"/>
+              <text x="340" y="68" font-size="11" fill="#e74c3c" font-weight="bold">No</text>
+              <!-- Yes: Keep -->
+              <rect x="20" y="90" width="160" height="40" rx="8" fill="#d4edda" stroke="#27ae60" stroke-width="2"/>
+              <text x="100" y="115" text-anchor="middle" font-size="12" font-weight="bold" fill="#155724">Keep indicator</text>
+              <!-- No: Check loading -->
+              <rect x="320" y="90" width="160" height="40" rx="8" fill="#fff8e1" stroke="#f39c12" stroke-width="2"/>
+              <text x="400" y="115" text-anchor="middle" font-size="12" font-weight="bold" fill="#856404">Check Outer Loading</text>
+              <!-- Arrow from Check loading -->
+              <line x1="350" y1="130" x2="250" y2="175" stroke="#2c3e50" stroke-width="1.5" marker-end="url(#arrowW)"/>
+              <text x="280" y="155" font-size="11" fill="#27ae60">≥ 0.50</text>
+              <line x1="450" y1="130" x2="450" y2="175" stroke="#2c3e50" stroke-width="1.5" marker-end="url(#arrowW)"/>
+              <text x="460" y="155" font-size="11" fill="#e74c3c">< 0.50</text>
+              <!-- Loading >= 0.50: Keep -->
+              <rect x="170" y="175" width="160" height="50" rx="8" fill="#d4edda" stroke="#27ae60" stroke-width="2"/>
+              <text x="250" y="197" text-anchor="middle" font-size="11" font-weight="bold" fill="#155724">Keep indicator</text>
+              <text x="250" y="214" text-anchor="middle" font-size="10" fill="#155724">(absolute contribution)</text>
+              <!-- Loading < 0.50 -->
+              <rect x="370" y="175" width="120" height="50" rx="8" fill="#fff8e1" stroke="#f39c12" stroke-width="2"/>
+              <text x="430" y="197" text-anchor="middle" font-size="11" font-weight="bold" fill="#856404">Assess theory</text>
+              <text x="430" y="214" text-anchor="middle" font-size="10" fill="#856404">& content</text>
+              <!-- Arrows from theory -->
+              <line x1="400" y1="225" x2="310" y2="265" stroke="#2c3e50" stroke-width="1.5" marker-end="url(#arrowW)"/>
+              <text x="335" y="248" font-size="10" fill="#6c757d">Important</text>
+              <line x1="460" y1="225" x2="460" y2="265" stroke="#2c3e50" stroke-width="1.5" marker-end="url(#arrowW)"/>
+              <text x="470" y="248" font-size="10" fill="#6c757d">Not critical</text>
+              <!-- Keep with caution -->
+              <rect x="230" y="265" width="160" height="40" rx="8" fill="#fff3cd" stroke="#f39c12" stroke-width="2"/>
+              <text x="310" y="290" text-anchor="middle" font-size="11" font-weight="bold" fill="#856404">Keep (with caution)</text>
+              <!-- Remove -->
+              <rect x="400" y="265" width="120" height="40" rx="8" fill="#fdecea" stroke="#e74c3c" stroke-width="2"/>
+              <text x="460" y="290" text-anchor="middle" font-size="11" font-weight="bold" fill="#721c24">Consider remove</text>
+            </svg>
+          </div>
+          <p style="margin-top:1rem;font-size:.9rem"><strong>SmartPLS 查看位置：</strong>Bootstrapping → Outer Weights（查看 t-value 與 p-value）</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formative Summary Table -->
+    <div class="card" style="margin-top:1rem">
+      <h3 data-zh="形成型測量模型：門檻值總覽" data-en="Formative Model: Threshold Summary">形成型測量模型：門檻值總覽</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th data-zh="評估面向" data-en="Assessment">評估面向</th>
+            <th data-zh="指標" data-en="Metric">指標</th>
+            <th data-zh="門檻值" data-en="Threshold">門檻值</th>
+          </tr></thead>
+          <tbody>
+            <tr><td data-zh="聚合效度" data-en="Convergent Validity">聚合效度</td><td data-zh="冗餘分析路徑係數" data-en="Redundancy analysis path coefficient">冗餘分析路徑係數</td><td>≥ 0.70</td></tr>
+            <tr><td data-zh="共線性" data-en="Collinearity">共線性</td><td>VIF</td><td>< 5 (ideal < 3)</td></tr>
+            <tr><td data-zh="指標貢獻" data-en="Indicator Contribution">指標貢獻</td><td>Outer Weights (p-value)</td><td>< 0.05</td></tr>
+            <tr><td data-zh="絕對貢獻" data-en="Absolute Contribution">絕對貢獻</td><td data-zh="Outer Loading（若權重不顯著）" data-en="Outer Loading (if weight not significant)">Outer Loading（若權重不顯著）</td><td>≥ 0.50</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Section 6: Structural Model ========== -->
+<section class="section" style="background:#fff">
+  <div class="container">
+    <h2 class="section-title" data-zh="6. 結構模型評估" data-en="6. Structural Model Assessment">6. 結構模型評估</h2>
+
+    <p data-zh="確認測量模型通過評估後，才進行結構模型（路徑關係）的評估。" data-en="Only assess the structural model (path relationships) after the measurement model passes evaluation.">確認測量模型通過評估後，才進行結構模型（路徑關係）的評估。</p>
+
+    <div class="card" style="margin-top:1.5rem">
+      <h3 data-zh="結構模型評估五步驟" data-en="Five Steps of Structural Model Assessment">結構模型評估五步驟</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th data-zh="步驟" data-en="Step">步驟</th>
+            <th data-zh="評估內容" data-en="Assessment">評估內容</th>
+            <th data-zh="門檻 / 判斷準則" data-en="Threshold / Criterion">門檻 / 判斷準則</th>
+            <th data-zh="SmartPLS 位置" data-en="SmartPLS Location">SmartPLS 位置</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td data-zh="共線性 (VIF)" data-en="Collinearity (VIF)">共線性 (VIF)</td>
+              <td data-zh="Inner VIF < 5（理想 < 3）" data-en="Inner VIF < 5 (ideal < 3)">Inner VIF < 5（理想 < 3）</td>
+              <td>PLS Algorithm → Inner VIF Values</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td data-zh="路徑係數顯著性" data-en="Path Coefficient Significance">路徑係數顯著性</td>
+              <td>p < 0.05, |t| > 1.96</td>
+              <td>Bootstrapping → Path Coefficients</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td data-zh="R²（解釋變異量）" data-en="R² (Explained Variance)">R²（解釋變異量）</td>
+              <td data-zh="0.75 強、0.50 中、0.25 弱" data-en="0.75 strong, 0.50 moderate, 0.25 weak">0.75 強、0.50 中、0.25 弱</td>
+              <td>PLS Algorithm → R Square</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td data-zh="f²（效果量）" data-en="f² (Effect Size)">f²（效果量）</td>
+              <td data-zh="0.02 小、0.15 中、0.35 大" data-en="0.02 small, 0.15 medium, 0.35 large">0.02 小、0.15 中、0.35 大</td>
+              <td>PLS Algorithm → f Square</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td data-zh="Q²（預測相關性）" data-en="Q² (Predictive Relevance)">Q²（預測相關性）</td>
+              <td data-zh="Q² > 0 有預測相關性；0.02/0.15/0.35" data-en="Q² > 0 has predictive relevance; 0.02/0.15/0.35">Q² > 0 有預測相關性；0.02/0.15/0.35</td>
+              <td>Blindfolding → Construct Cross-validated Redundancy</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="concept-block">
+      <h4 data-zh="效果量 f² 的計算概念" data-en="f² Effect Size Concept">效果量 f² 的計算概念</h4>
+      <div class="formula-box">
+        f² = (R²<sub>included</sub> - R²<sub>excluded</sub>) / (1 - R²<sub>included</sub>)
+        <span class="label" data-zh="衡量移除某自變數後 R² 下降的程度" data-en="Measures how much R² decreases when removing a predictor">衡量移除某自變數後 R² 下降的程度</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Section 7: Interactive Calculators ========== -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title" data-zh="7. 互動計算工具" data-en="7. Interactive Calculators">7. 互動計算工具</h2>
+
+    <!-- VIF Checker -->
+    <div class="calculator">
+      <h3 data-zh="VIF 共線性檢查器" data-en="VIF Collinearity Checker">VIF 共線性檢查器</h3>
+      <div class="calc-row">
+        <label data-zh="輸入 VIF 值（用空格或逗號分隔）：" data-en="Enter VIF values (space or comma separated):">輸入 VIF 值（用空格或逗號分隔）：</label>
+        <input type="text" id="vif-values" placeholder="e.g. 1.2 2.3 4.1 1.8" style="width:280px">
+      </div>
+      <button class="calc-btn" onclick="calcVIF()" data-zh="檢查共線性" data-en="Check Collinearity">檢查共線性</button>
+      <div class="calc-result" id="vif-result"></div>
+    </div>
+
+    <!-- HTMT Checker -->
+    <div class="calculator">
+      <h3 data-zh="HTMT 區辨效度檢查器" data-en="HTMT Discriminant Validity Checker">HTMT 區辨效度檢查器</h3>
+      <div class="calc-row">
+        <label data-zh="輸入 HTMT 值（用空格或逗號分隔）：" data-en="Enter HTMT values (space or comma separated):">輸入 HTMT 值（用空格或逗號分隔）：</label>
+        <input type="text" id="htmt-values" placeholder="e.g. 0.72 0.85 0.63 0.91" style="width:280px">
+      </div>
+      <div class="calc-row">
+        <label data-zh="判斷標準：" data-en="Criterion:">判斷標準：</label>
+        <select id="htmt-threshold">
+          <option value="0.90" data-zh="< 0.90（一般標準）" data-en="< 0.90 (standard)">< 0.90（一般標準）</option>
+          <option value="0.85" data-zh="< 0.85（保守標準）" data-en="< 0.85 (conservative)">< 0.85（保守標準）</option>
+        </select>
+      </div>
+      <button class="calc-btn" onclick="calcHTMT()" data-zh="檢查區辨效度" data-en="Check Discriminant Validity">檢查區辨效度</button>
+      <div class="calc-result" id="htmt-result"></div>
+    </div>
+
+    <!-- R² / f² / Q² Interpreter -->
+    <div class="calculator">
+      <h3 data-zh="R² / f² / Q² 效果量解讀器" data-en="R² / f² / Q² Effect Size Interpreter">R² / f² / Q² 效果量解讀器</h3>
+      <div class="calc-row">
+        <label data-zh="選擇指標：" data-en="Select metric:">選擇指標：</label>
+        <select id="effect-type">
+          <option value="r2">R²</option>
+          <option value="f2">f²</option>
+          <option value="q2">Q²</option>
+        </select>
+      </div>
+      <div class="calc-row">
+        <label data-zh="輸入數值：" data-en="Enter value:">輸入數值：</label>
+        <input type="number" id="effect-value" step="0.01" placeholder="e.g. 0.45" style="width:120px">
+      </div>
+      <button class="calc-btn" onclick="calcEffect()" data-zh="解讀" data-en="Interpret">解讀</button>
+      <div class="calc-result" id="effect-result"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Section 8: Complete Workflow ========== -->
+<section class="section" style="background:#fff">
+  <div class="container">
+    <h2 class="section-title" data-zh="8. PLS-SEM 完整分析流程" data-en="8. Complete PLS-SEM Analysis Workflow">8. PLS-SEM 完整分析流程</h2>
+
+    <div class="diagram">
+      <svg viewBox="0 0 700 520" width="100%">
+        <defs>
+          <marker id="arrowFlow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#3498db"/></marker>
+        </defs>
+        <!-- Step 1 -->
+        <rect x="220" y="10" width="260" height="45" rx="8" fill="#2c3e50" stroke="none"/>
+        <text x="350" y="30" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">Step 1: Define Constructs &amp; Indicators</text>
+        <text x="350" y="45" text-anchor="middle" font-size="10" fill="#85c1e9">建立建構與指標的對應關係</text>
+        <line x1="350" y1="55" x2="350" y2="80" stroke="#3498db" stroke-width="2" marker-end="url(#arrowFlow)"/>
+        <!-- Step 2 -->
+        <rect x="220" y="80" width="260" height="45" rx="8" fill="#e74c3c" stroke="none"/>
+        <text x="350" y="100" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">Step 2: Reflective or Formative?</text>
+        <text x="350" y="115" text-anchor="middle" font-size="10" fill="#fad7d7">判斷各建構為反映型或形成型</text>
+        <line x1="350" y1="125" x2="350" y2="150" stroke="#3498db" stroke-width="2" marker-end="url(#arrowFlow)"/>
+        <!-- Step 3 -->
+        <rect x="220" y="150" width="260" height="45" rx="8" fill="#3498db" stroke="none"/>
+        <text x="350" y="170" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">Step 3: Draw Model in SmartPLS</text>
+        <text x="350" y="185" text-anchor="middle" font-size="10" fill="#d6eaf8">在 SmartPLS 中繪製路徑模型</text>
+        <line x1="350" y1="195" x2="350" y2="220" stroke="#3498db" stroke-width="2" marker-end="url(#arrowFlow)"/>
+        <!-- Step 4 -->
+        <rect x="220" y="220" width="260" height="45" rx="8" fill="#27ae60" stroke="none"/>
+        <text x="350" y="240" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">Step 4: Run PLS Algorithm</text>
+        <text x="350" y="255" text-anchor="middle" font-size="10" fill="#d4edda">執行 PLS 演算法取得估計值</text>
+        <line x1="350" y1="265" x2="350" y2="290" stroke="#3498db" stroke-width="2" marker-end="url(#arrowFlow)"/>
+        <!-- Step 5 -->
+        <rect x="120" y="290" width="220" height="55" rx="8" fill="#f39c12" stroke="none"/>
+        <text x="230" y="310" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">Step 5a: Assess Measurement</text>
+        <text x="230" y="325" text-anchor="middle" font-size="10" fill="#fff">Reflective: α, CR, AVE, HTMT</text>
+        <text x="230" y="338" text-anchor="middle" font-size="10" fill="#fff">Formative: VIF, Weights</text>
+        <rect x="370" y="290" width="220" height="55" rx="8" fill="#f39c12" stroke="none"/>
+        <text x="480" y="310" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">Pass?</text>
+        <text x="480" y="325" text-anchor="middle" font-size="10" fill="#fff">No → Revise indicators</text>
+        <text x="480" y="338" text-anchor="middle" font-size="10" fill="#fff">Yes → Continue ↓</text>
+        <line x1="340" y1="315" x2="370" y2="315" stroke="#fff" stroke-width="1.5" marker-end="url(#arrowFlow)"/>
+        <line x1="350" y1="345" x2="350" y2="370" stroke="#3498db" stroke-width="2" marker-end="url(#arrowFlow)"/>
+        <!-- Step 6 -->
+        <rect x="220" y="370" width="260" height="45" rx="8" fill="#8e44ad" stroke="none"/>
+        <text x="350" y="390" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">Step 6: Run Bootstrapping (5000x)</text>
+        <text x="350" y="405" text-anchor="middle" font-size="10" fill="#d7bde2">執行 Bootstrapping 檢定顯著性</text>
+        <line x1="350" y1="415" x2="350" y2="440" stroke="#3498db" stroke-width="2" marker-end="url(#arrowFlow)"/>
+        <!-- Step 7 -->
+        <rect x="220" y="440" width="260" height="55" rx="8" fill="#2c3e50" stroke="none"/>
+        <text x="350" y="460" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">Step 7: Assess Structural Model</text>
+        <text x="350" y="475" text-anchor="middle" font-size="10" fill="#85c1e9">VIF, Path coefficients, R², f², Q²</text>
+        <text x="350" y="490" text-anchor="middle" font-size="10" fill="#85c1e9">結構模型評估與假說檢定</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Section 9: Quiz ========== -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title" data-zh="9. 隨堂測驗" data-en="9. Quick Quiz">9. 隨堂測驗</h2>
+
+    <div class="quiz">
+      <h3 data-zh="測試你對 PLS-SEM 的理解" data-en="Test Your PLS-SEM Understanding">測試你對 PLS-SEM 的理解</h3>
+
+      <!-- Q1 -->
+      <div class="quiz-question">
+        <p data-zh="Q1：「社經地位」由教育程度、收入、職業聲望三個指標組成。這個建構應該設定為？" data-en="Q1: 'Socioeconomic Status' is composed of education, income, and occupational prestige. This construct should be set as?">Q1：「社經地位」由教育程度、收入、職業聲望三個指標組成。這個建構應該設定為？</p>
+        <div class="quiz-option" data-correct="false" data-zh="反映型 (Mode A)，因為這三個指標都與社經地位有關" data-en="Reflective (Mode A), because all three indicators relate to SES">反映型 (Mode A)，因為這三個指標都與社經地位有關</div>
+        <div class="quiz-option" data-correct="true" data-zh="形成型 (Mode B)，因為這三個指標共同「組成」社經地位的定義" data-en="Formative (Mode B), because these indicators collectively 'compose' the definition of SES">形成型 (Mode B)，因為這三個指標共同「組成」社經地位的定義</div>
+        <div class="quiz-option" data-correct="false" data-zh="兩者皆可，視研究者偏好" data-en="Either works, depending on researcher preference">兩者皆可，視研究者偏好</div>
+        <div class="quiz-feedback" data-zh="正確！教育程度、收入、職業聲望各代表社經地位的不同面向，是「組合」出建構的定義，因此為形成型。移除任一指標會改變建構的概念意義。" data-en="Correct! Education, income, and occupational prestige each represent different facets of SES, collectively 'forming' the construct. Removing any indicator changes the construct's conceptual meaning.">正確！教育程度、收入、職業聲望各代表社經地位的不同面向，是「組合」出建構的定義，因此為形成型。移除任一指標會改變建構的概念意義。</div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="quiz-question">
+        <p data-zh="Q2：一位研究者發現其形成型建構中兩個指標的 VIF 分別為 5.8 和 6.2。最適當的處理方式為？" data-en="Q2: A researcher finds two formative indicators with VIF values of 5.8 and 6.2. The most appropriate action is?">Q2：一位研究者發現其形成型建構中兩個指標的 VIF 分別為 5.8 和 6.2。最適當的處理方式為？</p>
+        <div class="quiz-option" data-correct="false" data-zh="直接刪除兩個高 VIF 指標" data-en="Remove both high-VIF indicators directly">直接刪除兩個高 VIF 指標</div>
+        <div class="quiz-option" data-correct="false" data-zh="忽略不管，因為形成型指標不需要檢查共線性" data-en="Ignore it, since formative indicators don't need collinearity checks">忽略不管，因為形成型指標不需要檢查共線性</div>
+        <div class="quiz-option" data-correct="true" data-zh="考慮合併這兩個高度相關的指標，或建立高階建構" data-en="Consider merging these two highly correlated indicators, or create a higher-order construct">考慮合併這兩個高度相關的指標，或建立高階建構</div>
+        <div class="quiz-feedback" data-zh="正確！VIF > 5 表示嚴重共線性。直接刪除形成型指標會改變建構定義，因此優先考慮合併指標或建立高階建構。形成型指標的共線性檢查是必要的評估步驟。" data-en="Correct! VIF > 5 indicates serious collinearity. Directly removing formative indicators changes the construct definition, so merging or creating higher-order constructs is preferred. Collinearity assessment is essential for formative indicators.">正確！VIF > 5 表示嚴重共線性。直接刪除形成型指標會改變建構定義，因此優先考慮合併指標或建立高階建構。形成型指標的共線性檢查是必要的評估步驟。</div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="quiz-question">
+        <p data-zh="Q3：評估反映型測量模型的區辨效度時，目前最被推薦的方法是？" data-en="Q3: What is the currently most recommended method for assessing discriminant validity in reflective measurement models?">Q3：評估反映型測量模型的區辨效度時，目前最被推薦的方法是？</p>
+        <div class="quiz-option" data-correct="false" data-zh="交叉負荷量 (Cross-Loadings)" data-en="Cross-Loadings">交叉負荷量 (Cross-Loadings)</div>
+        <div class="quiz-option" data-correct="false" data-zh="Fornell-Larcker 準則" data-en="Fornell-Larcker Criterion">Fornell-Larcker 準則</div>
+        <div class="quiz-option" data-correct="true" data-zh="HTMT (Heterotrait-Monotrait Ratio)" data-en="HTMT (Heterotrait-Monotrait Ratio)">HTMT (Heterotrait-Monotrait Ratio)</div>
+        <div class="quiz-feedback" data-zh="正確！Henseler et al. (2015) 的研究指出 HTMT 在偵測區辨效度問題上優於 Fornell-Larcker 和交叉負荷量。Hair et al. (2019) 建議 HTMT < 0.90（保守標準 < 0.85）。" data-en="Correct! Henseler et al. (2015) showed HTMT outperforms Fornell-Larcker and cross-loadings in detecting discriminant validity issues. Hair et al. (2019) recommend HTMT < 0.90 (conservative < 0.85).">正確！Henseler et al. (2015) 的研究指出 HTMT 在偵測區辨效度問題上優於 Fornell-Larcker 和交叉負荷量。Hair et al. (2019) 建議 HTMT < 0.90（保守標準 < 0.85）。</div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="quiz-question">
+        <p data-zh="Q4：一個反映型建構的 Composite Reliability (CR) 為 0.97。這個結果表示？" data-en="Q4: A reflective construct has a Composite Reliability (CR) of 0.97. This result indicates?">Q4：一個反映型建構的 Composite Reliability (CR) 為 0.97。這個結果表示？</p>
+        <div class="quiz-option" data-correct="false" data-zh="信度非常好，無需擔心" data-en="Excellent reliability, no concerns">信度非常好，無需擔心</div>
+        <div class="quiz-option" data-correct="true" data-zh="CR 過高 (> 0.95)，指標可能存在冗餘問題" data-en="CR is too high (> 0.95), indicators may be redundant">CR 過高 (> 0.95)，指標可能存在冗餘問題</div>
+        <div class="quiz-option" data-correct="false" data-zh="應改用 Cronbach's α 來評估" data-en="Should use Cronbach's α instead">應改用 Cronbach's α 來評估</div>
+        <div class="quiz-feedback" data-zh="正確！CR > 0.95 表示指標之間可能過度重複，測量了幾乎相同的內容。建議檢視是否可刪除部分冗餘指標。理想的 CR 範圍為 0.70 – 0.95。" data-en="Correct! CR > 0.95 suggests indicator redundancy — they may be measuring nearly the same thing. Consider removing redundant indicators. The ideal CR range is 0.70 – 0.95.">正確！CR > 0.95 表示指標之間可能過度重複，測量了幾乎相同的內容。建議檢視是否可刪除部分冗餘指標。理想的 CR 範圍為 0.70 – 0.95。</div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="quiz-question">
+        <p data-zh="Q5：在結構模型評估中，R² = 0.52 代表什麼意思？" data-en="Q5: In structural model assessment, what does R² = 0.52 mean?">Q5：在結構模型評估中，R² = 0.52 代表什麼意思？</p>
+        <div class="quiz-option" data-correct="true" data-zh="自變數共解釋了依變數 52% 的變異量，屬於中等解釋力" data-en="Independent variables explain 52% of the dependent variable's variance, moderate explanatory power">自變數共解釋了依變數 52% 的變異量，屬於中等解釋力</div>
+        <div class="quiz-option" data-correct="false" data-zh="模型適配度為 52%，可以接受" data-en="Model fit is 52%, acceptable">模型適配度為 52%，可以接受</div>
+        <div class="quiz-option" data-correct="false" data-zh="有 52% 的路徑係數是顯著的" data-en="52% of path coefficients are significant">有 52% 的路徑係數是顯著的</div>
+        <div class="quiz-feedback" data-zh="正確！R² 代表模型中的自變數（外生建構）能解釋依變數（內生建構）多少比例的變異量。R² = 0.52 屬於中等水準（0.25 弱、0.50 中、0.75 強）。" data-en="Correct! R² represents the proportion of variance in the dependent (endogenous) construct explained by the independent (exogenous) constructs. R² = 0.52 is moderate (0.25 weak, 0.50 moderate, 0.75 strong).">正確！R² 代表模型中的自變數（外生建構）能解釋依變數（內生建構）多少比例的變異量。R² = 0.52 屬於中等水準（0.25 弱、0.50 中、0.75 強）。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Section 10: Key Terms ========== -->
+<section class="section" style="background:#fff">
+  <div class="container">
+    <h2 class="section-title" data-zh="10. 重要術語" data-en="10. Key Terms">10. 重要術語</h2>
+
+    <div class="accordion-item">
+      <div class="accordion-header" data-zh="PLS-SEM (偏最小平方法結構方程模型)" data-en="PLS-SEM (Partial Least Squares SEM)">PLS-SEM (偏最小平方法結構方程模型)</div>
+      <div class="accordion-body">
+        <p data-zh="一種基於變異數的 SEM 方法，透過迭代演算法估計潛在變數分數，目標在於最大化依變數的 R²。相較於 CB-SEM，對樣本大小和分配假設的要求較低，且能同時處理反映型和形成型建構。" data-en="A variance-based SEM approach that estimates latent variable scores through an iterative algorithm, aiming to maximize R² of dependent variables. Compared to CB-SEM, it has fewer requirements for sample size and distributional assumptions, and can handle both reflective and formative constructs.">一種基於變異數的 SEM 方法，透過迭代演算法估計潛在變數分數，目標在於最大化依變數的 R²。相較於 CB-SEM，對樣本大小和分配假設的要求較低，且能同時處理反映型和形成型建構。</p>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-header" data-zh="反映型指標 (Reflective Indicators)" data-en="Reflective Indicators">反映型指標 (Reflective Indicators)</div>
+      <div class="accordion-body">
+        <p data-zh="建構導致指標出現的測量模型。指標被視為建構的「反映」或「表現」，彼此之間應高度相關。在 SmartPLS 中設定為 Mode A。評估使用 Outer Loadings、CR、AVE、HTMT。" data-en="A measurement model where the construct causes the indicators. Indicators are viewed as 'reflections' of the construct and should be highly correlated. Set as Mode A in SmartPLS. Assessed using Outer Loadings, CR, AVE, HTMT.">建構導致指標出現的測量模型。指標被視為建構的「反映」或「表現」，彼此之間應高度相關。在 SmartPLS 中設定為 Mode A。評估使用 Outer Loadings、CR、AVE、HTMT。</p>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-header" data-zh="形成型指標 (Formative Indicators)" data-en="Formative Indicators">形成型指標 (Formative Indicators)</div>
+      <div class="accordion-body">
+        <p data-zh="指標共同形成或定義建構的測量模型。每個指標捕捉建構的獨特面向，彼此不一定相關。在 SmartPLS 中需手動設定為 Mode B。評估使用 VIF、Outer Weights 顯著性、冗餘分析。刪除指標會改變建構的概念意義。" data-en="A measurement model where indicators collectively form or define the construct. Each indicator captures a unique facet and they are not necessarily correlated. Must be manually set to Mode B in SmartPLS. Assessed using VIF, Outer Weight significance, and redundancy analysis. Removing an indicator changes the construct's meaning.">指標共同形成或定義建構的測量模型。每個指標捕捉建構的獨特面向，彼此不一定相關。在 SmartPLS 中需手動設定為 Mode B。評估使用 VIF、Outer Weights 顯著性、冗餘分析。刪除指標會改變建構的概念意義。</p>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-header" data-zh="HTMT (異質-單質特質比)" data-en="HTMT (Heterotrait-Monotrait Ratio)">HTMT (異質-單質特質比)</div>
+      <div class="accordion-body">
+        <p data-zh="評估反映型建構之間區辨效度的方法。計算不同建構指標間相關的平均值（heterotrait-heteromethod）與同一建構指標間相關的幾何平均值（monotrait-heteromethod）之比率。HTMT < 0.90 表示具有區辨效度（保守標準 < 0.85）。" data-en="A method for assessing discriminant validity between reflective constructs. Calculates the ratio of the average correlations between indicators of different constructs (heterotrait-heteromethod) to the geometric mean of correlations between indicators within the same construct (monotrait-heteromethod). HTMT < 0.90 indicates discriminant validity (conservative: < 0.85).">評估反映型建構之間區辨效度的方法。計算不同建構指標間相關的平均值（heterotrait-heteromethod）與同一建構指標間相關的幾何平均值（monotrait-heteromethod）之比率。HTMT < 0.90 表示具有區辨效度（保守標準 < 0.85）。</p>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-header" data-zh="Bootstrapping（拔靴法）" data-en="Bootstrapping">Bootstrapping（拔靴法）</div>
+      <div class="accordion-body">
+        <p data-zh="一種非參數統計推論方法，透過重複抽樣（建議至少 5,000 次）來估計標準誤和信賴區間，進而檢定路徑係數和外部權重的統計顯著性。PLS-SEM 因為不假設常態分配，必須使用 Bootstrapping 進行推論統計。" data-en="A non-parametric statistical inference method that estimates standard errors and confidence intervals through repeated resampling (recommended ≥ 5,000 subsamples) to test the statistical significance of path coefficients and outer weights. PLS-SEM requires Bootstrapping for inferential statistics because it does not assume normality.">一種非參數統計推論方法，透過重複抽樣（建議至少 5,000 次）來估計標準誤和信賴區間，進而檢定路徑係數和外部權重的統計顯著性。PLS-SEM 因為不假設常態分配，必須使用 Bootstrapping 進行推論統計。</p>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-header" data-zh="f² 效果量 (Effect Size)" data-en="f² Effect Size">f² 效果量 (Effect Size)</div>
+      <div class="accordion-body">
+        <p data-zh="衡量特定自變數對依變數 R² 的貢獻程度。計算方式為移除該自變數前後 R² 的差異除以（1 - R²included）。判斷標準：0.02 小效果、0.15 中效果、0.35 大效果。f² ≈ 0 表示該自變數對依變數幾乎沒有實質影響。" data-en="Measures a specific predictor's contribution to the dependent variable's R². Calculated as the difference in R² with and without the predictor, divided by (1 - R²included). Benchmarks: 0.02 small, 0.15 medium, 0.35 large. f² ≈ 0 means the predictor has virtually no substantive impact.">衡量特定自變數對依變數 R² 的貢獻程度。計算方式為移除該自變數前後 R² 的差異除以（1 - R²included）。判斷標準：0.02 小效果、0.15 中效果、0.35 大效果。f² ≈ 0 表示該自變數對依變數幾乎沒有實質影響。</p>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <div class="accordion-header" data-zh="Q² 預測相關性 (Predictive Relevance)" data-en="Q² Predictive Relevance">Q² 預測相關性 (Predictive Relevance)</div>
+      <div class="accordion-body">
+        <p data-zh="使用 Blindfolding 程序（交叉驗證冗餘法）計算，衡量模型對內生建構指標的預測能力。Q² > 0 表示模型具有預測相關性。判斷標準與 f² 相同：0.02 小、0.15 中、0.35 大。Omission distance 建議設為 7。" data-en="Calculated using the Blindfolding procedure (cross-validated redundancy), measuring the model's predictive ability for endogenous construct indicators. Q² > 0 indicates predictive relevance. Benchmarks same as f²: 0.02 small, 0.15 medium, 0.35 large. Recommended omission distance: 7.">使用 Blindfolding 程序（交叉驗證冗餘法）計算，衡量模型對內生建構指標的預測能力。Q² > 0 表示模型具有預測相關性。判斷標準與 f² 相同：0.02 小、0.15 中、0.35 大。Omission distance 建議設為 7。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <p data-zh="SmartPLS 操作指南 | 基於 Hair et al. (2019) 第八版" data-en="SmartPLS Step-by-Step Guide | Based on Hair et al. (2019) 8th Ed.">SmartPLS 操作指南 | 基於 Hair et al. (2019) 第八版</p>
+    <p style="margin-top:.5rem;font-size:.8rem;opacity:.8">© 版權所有 葉欲禾 (Gary Yu-Ho Yeh)</p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+<script>
+/* ===== VIF Checker ===== */
+function calcVIF() {
+  const input = document.getElementById('vif-values').value.trim();
+  const values = input.split(/[\s,;]+/).map(Number).filter(v => !isNaN(v) && v > 0);
+  if (values.length < 1) {
+    showResult('vif-result', 'N/A', currentLang === 'zh' ? '請輸入至少一個 VIF 值' : 'Enter at least one VIF value', '');
+    return;
+  }
+  const maxVIF = Math.max(...values);
+  const problematic = values.filter(v => v >= 5);
+  const warning = values.filter(v => v >= 3 && v < 5);
+  let cls, msg;
+  if (problematic.length > 0) {
+    cls = 'bad';
+    msg = currentLang === 'zh'
+      ? `有 ${problematic.length} 個指標 VIF ≥ 5（嚴重共線性）：${problematic.map(v=>v.toFixed(2)).join(', ')}<br>建議：合併高共線性指標或建立高階建構`
+      : `${problematic.length} indicator(s) with VIF ≥ 5 (serious collinearity): ${problematic.map(v=>v.toFixed(2)).join(', ')}<br>Suggestion: Merge collinear indicators or create higher-order construct`;
+  } else if (warning.length > 0) {
+    cls = 'warn';
+    msg = currentLang === 'zh'
+      ? `有 ${warning.length} 個指標 VIF 介於 3-5（需注意）：${warning.map(v=>v.toFixed(2)).join(', ')}<br>整體可接受，但建議持續監控`
+      : `${warning.length} indicator(s) with VIF between 3-5 (monitor): ${warning.map(v=>v.toFixed(2)).join(', ')}<br>Generally acceptable, but keep monitoring`;
+  } else {
+    cls = 'good';
+    msg = currentLang === 'zh' ? '所有 VIF < 3，無共線性問題' : 'All VIF < 3, no collinearity issues';
+  }
+  const detail = currentLang === 'zh'
+    ? `最大 VIF: ${maxVIF.toFixed(3)} | 全部值: [${values.map(v=>v.toFixed(2)).join(', ')}]`
+    : `Max VIF: ${maxVIF.toFixed(3)} | All values: [${values.map(v=>v.toFixed(2)).join(', ')}]`;
+  showResult('vif-result', maxVIF.toFixed(3), msg + '<br><small>' + detail + '</small>', cls);
+}
+
+/* ===== HTMT Checker ===== */
+function calcHTMT() {
+  const input = document.getElementById('htmt-values').value.trim();
+  const values = input.split(/[\s,;]+/).map(Number).filter(v => !isNaN(v));
+  const threshold = parseFloat(document.getElementById('htmt-threshold').value);
+  if (values.length < 1) {
+    showResult('htmt-result', 'N/A', currentLang === 'zh' ? '請輸入至少一個 HTMT 值' : 'Enter at least one HTMT value', '');
+    return;
+  }
+  const maxHTMT = Math.max(...values);
+  const failed = values.filter(v => v >= threshold);
+  let cls, msg;
+  if (failed.length > 0) {
+    cls = 'bad';
+    msg = currentLang === 'zh'
+      ? `有 ${failed.length} 組建構配對的 HTMT ≥ ${threshold}：${failed.map(v=>v.toFixed(3)).join(', ')}<br>區辨效度不足，需檢視這些建構是否真的測量不同概念`
+      : `${failed.length} construct pair(s) with HTMT ≥ ${threshold}: ${failed.map(v=>v.toFixed(3)).join(', ')}<br>Discriminant validity not established — review whether these constructs truly measure different concepts`;
+  } else {
+    cls = 'good';
+    msg = currentLang === 'zh'
+      ? `所有 HTMT < ${threshold}，區辨效度成立`
+      : `All HTMT < ${threshold}, discriminant validity established`;
+  }
+  showResult('htmt-result', maxHTMT.toFixed(3), msg, cls);
+}
+
+/* ===== Effect Size Interpreter ===== */
+function calcEffect() {
+  const type = document.getElementById('effect-type').value;
+  const val = parseFloat(document.getElementById('effect-value').value);
+  if (isNaN(val)) {
+    showResult('effect-result', 'N/A', currentLang === 'zh' ? '請輸入數值' : 'Enter a value', '');
+    return;
+  }
+  let cls, msg;
+  if (type === 'r2') {
+    if (val >= 0.75) { cls = 'good'; msg = currentLang === 'zh' ? '強解釋力 (substantial)' : 'Substantial explanatory power'; }
+    else if (val >= 0.50) { cls = 'good'; msg = currentLang === 'zh' ? '中等解釋力 (moderate)' : 'Moderate explanatory power'; }
+    else if (val >= 0.25) { cls = 'warn'; msg = currentLang === 'zh' ? '弱解釋力 (weak)' : 'Weak explanatory power'; }
+    else { cls = 'bad'; msg = currentLang === 'zh' ? '解釋力不足 (< 0.25)' : 'Insufficient explanatory power (< 0.25)'; }
+    msg += currentLang === 'zh' ? `<br>自變數共解釋了依變數 ${(val*100).toFixed(1)}% 的變異量` : `<br>Independent variables explain ${(val*100).toFixed(1)}% of dependent variable variance`;
+  } else if (type === 'f2') {
+    if (val >= 0.35) { cls = 'good'; msg = currentLang === 'zh' ? '大效果量 (large effect)' : 'Large effect size'; }
+    else if (val >= 0.15) { cls = 'good'; msg = currentLang === 'zh' ? '中效果量 (medium effect)' : 'Medium effect size'; }
+    else if (val >= 0.02) { cls = 'warn'; msg = currentLang === 'zh' ? '小效果量 (small effect)' : 'Small effect size'; }
+    else { cls = 'bad'; msg = currentLang === 'zh' ? '幾乎無效果 (no effect)' : 'No substantive effect'; }
+  } else {
+    if (val <= 0) { cls = 'bad'; msg = currentLang === 'zh' ? '無預測相關性 (Q² ≤ 0)' : 'No predictive relevance (Q² ≤ 0)'; }
+    else if (val >= 0.35) { cls = 'good'; msg = currentLang === 'zh' ? '大預測相關性 (large)' : 'Large predictive relevance'; }
+    else if (val >= 0.15) { cls = 'good'; msg = currentLang === 'zh' ? '中預測相關性 (medium)' : 'Medium predictive relevance'; }
+    else if (val >= 0.02) { cls = 'warn'; msg = currentLang === 'zh' ? '小預測相關性 (small)' : 'Small predictive relevance'; }
+    else { cls = 'warn'; msg = currentLang === 'zh' ? '極小預測相關性' : 'Very small predictive relevance'; }
+  }
+  const label = type === 'r2' ? 'R²' : type === 'f2' ? 'f²' : 'Q²';
+  showResult('effect-result', label + ' = ' + val.toFixed(4), msg, cls);
+}
+</script>
+</body>
+</html>
