@@ -398,12 +398,197 @@
   </div>
 </section>
 
-<!-- ========== Section 4: Reflective Model Assessment ========== -->
+<!-- ========== Section 3.5: SmartPLS Model Diagram ========== -->
 <section class="section" style="background:#fff">
   <div class="container">
-    <h2 class="section-title" data-zh="4. 反映型測量模型評估" data-en="4. Reflective Measurement Model Assessment">4. 反映型測量模型評估</h2>
+    <h2 class="section-title" data-zh="3.5 SmartPLS 模型圖解讀：數值在哪裡？" data-en="3.5 Reading SmartPLS Model Output: Where Are the Numbers?">3.5 SmartPLS 模型圖解讀：數值在哪裡？</h2>
 
-    <p data-zh="反映型測量模型的評估包含四個面向，必須依序檢視：" data-en="Reflective measurement model assessment includes four aspects, examined in order:">反映型測量模型的評估包含四個面向，必須依序檢視：</p>
+    <p data-zh="執行 PLS Algorithm 後，模型圖上會自動顯示數值。以下是一個完整範例，展示「服務品質→滿意度→忠誠度」模型在 SmartPLS 中的輸出結果：" data-en="After running PLS Algorithm, numbers appear on the model diagram. Below is a complete example showing a 'Service Quality → Satisfaction → Loyalty' model output in SmartPLS:">執行 PLS Algorithm 後，模型圖上會自動顯示數值。以下是一個完整範例，展示「服務品質→滿意度→忠誠度」模型在 SmartPLS 中的輸出結果：</p>
+
+    <div class="card" style="margin-top:1.5rem">
+      <h3 data-zh="PLS Algorithm 執行後的模型圖" data-en="Model Diagram After PLS Algorithm">PLS Algorithm 執行後的模型圖</h3>
+      <div class="diagram">
+        <svg viewBox="0 0 820 420" width="100%">
+          <defs>
+            <marker id="arrowM" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2c3e50"/></marker>
+            <marker id="arrowBlue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#3498db"/></marker>
+          </defs>
+          <!-- SQ Construct -->
+          <ellipse cx="140" cy="200" rx="75" ry="40" fill="#d6eaf8" stroke="#3498db" stroke-width="2.5"/>
+          <text x="140" y="195" text-anchor="middle" font-size="12" font-weight="bold" fill="#2c3e50">Service</text>
+          <text x="140" y="210" text-anchor="middle" font-size="12" font-weight="bold" fill="#2c3e50">Quality</text>
+          <!-- SQ Indicators -->
+          <rect x="10" y="60" width="60" height="28" rx="4" fill="#eaf4fc" stroke="#3498db" stroke-width="1.5"/>
+          <text x="40" y="79" text-anchor="middle" font-size="10" fill="#2c3e50">SQ1</text>
+          <rect x="85" y="45" width="60" height="28" rx="4" fill="#eaf4fc" stroke="#3498db" stroke-width="1.5"/>
+          <text x="115" y="64" text-anchor="middle" font-size="10" fill="#2c3e50">SQ2</text>
+          <rect x="165" y="45" width="60" height="28" rx="4" fill="#eaf4fc" stroke="#3498db" stroke-width="1.5"/>
+          <text x="195" y="64" text-anchor="middle" font-size="10" fill="#2c3e50">SQ3</text>
+          <rect x="240" y="60" width="60" height="28" rx="4" fill="#eaf4fc" stroke="#3498db" stroke-width="1.5"/>
+          <text x="270" y="79" text-anchor="middle" font-size="10" fill="#2c3e50">SQ4</text>
+          <!-- SQ Loading arrows -->
+          <line x1="100" y1="165" x2="55" y2="88" stroke="#3498db" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+          <text x="58" y="128" font-size="10" fill="#e74c3c" font-weight="bold">0.82</text>
+          <line x1="120" y1="162" x2="115" y2="73" stroke="#3498db" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+          <text x="103" y="115" font-size="10" fill="#e74c3c" font-weight="bold">0.88</text>
+          <line x1="160" y1="162" x2="190" y2="73" stroke="#3498db" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+          <text x="186" y="115" font-size="10" fill="#e74c3c" font-weight="bold">0.85</text>
+          <line x1="185" y1="165" x2="255" y2="88" stroke="#3498db" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+          <text x="234" y="128" font-size="10" fill="#e74c3c" font-weight="bold">0.79</text>
+
+          <!-- SAT Construct -->
+          <ellipse cx="420" cy="200" rx="75" ry="40" fill="#d4edda" stroke="#27ae60" stroke-width="2.5"/>
+          <text x="420" y="195" text-anchor="middle" font-size="12" font-weight="bold" fill="#2c3e50">Satisfaction</text>
+          <text x="420" y="213" text-anchor="middle" font-size="11" fill="#27ae60" font-weight="bold">R²=0.58</text>
+          <!-- SAT Indicators -->
+          <rect x="340" y="310" width="60" height="28" rx="4" fill="#e8f5e9" stroke="#27ae60" stroke-width="1.5"/>
+          <text x="370" y="329" text-anchor="middle" font-size="10" fill="#2c3e50">SAT1</text>
+          <rect x="420" y="320" width="60" height="28" rx="4" fill="#e8f5e9" stroke="#27ae60" stroke-width="1.5"/>
+          <text x="450" y="339" text-anchor="middle" font-size="10" fill="#2c3e50">SAT2</text>
+          <rect x="500" y="310" width="60" height="28" rx="4" fill="#e8f5e9" stroke="#27ae60" stroke-width="1.5"/>
+          <text x="530" y="329" text-anchor="middle" font-size="10" fill="#2c3e50">SAT3</text>
+          <!-- SAT Loading arrows -->
+          <line x1="395" y1="238" x2="375" y2="310" stroke="#27ae60" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+          <text x="368" y="278" font-size="10" fill="#e74c3c" font-weight="bold">0.91</text>
+          <line x1="420" y1="240" x2="445" y2="320" stroke="#27ae60" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+          <text x="440" y="283" font-size="10" fill="#e74c3c" font-weight="bold">0.87</text>
+          <line x1="450" y1="238" x2="520" y2="310" stroke="#27ae60" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+          <text x="498" y="278" font-size="10" fill="#e74c3c" font-weight="bold">0.84</text>
+
+          <!-- LOY Construct -->
+          <ellipse cx="680" cy="200" rx="75" ry="40" fill="#fff3cd" stroke="#f39c12" stroke-width="2.5"/>
+          <text x="680" y="195" text-anchor="middle" font-size="12" font-weight="bold" fill="#2c3e50">Loyalty</text>
+          <text x="680" y="213" text-anchor="middle" font-size="11" fill="#f39c12" font-weight="bold">R²=0.45</text>
+          <!-- LOY Indicators -->
+          <rect x="620" y="60" width="60" height="28" rx="4" fill="#fffde7" stroke="#f39c12" stroke-width="1.5"/>
+          <text x="650" y="79" text-anchor="middle" font-size="10" fill="#2c3e50">LOY1</text>
+          <rect x="700" y="55" width="60" height="28" rx="4" fill="#fffde7" stroke="#f39c12" stroke-width="1.5"/>
+          <text x="730" y="74" text-anchor="middle" font-size="10" fill="#2c3e50">LOY2</text>
+          <rect x="745" y="95" width="60" height="28" rx="4" fill="#fffde7" stroke="#f39c12" stroke-width="1.5"/>
+          <text x="775" y="114" text-anchor="middle" font-size="10" fill="#2c3e50">LOY3</text>
+          <!-- LOY Loading arrows -->
+          <line x1="655" y1="163" x2="650" y2="88" stroke="#f39c12" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+          <text x="637" y="128" font-size="10" fill="#e74c3c" font-weight="bold">0.89</text>
+          <line x1="695" y1="163" x2="720" y2="83" stroke="#f39c12" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+          <text x="720" y="128" font-size="10" fill="#e74c3c" font-weight="bold">0.83</text>
+          <line x1="720" y1="172" x2="755" y2="123" stroke="#f39c12" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+          <text x="752" y="152" font-size="10" fill="#e74c3c" font-weight="bold">0.78</text>
+
+          <!-- Path: SQ → SAT -->
+          <line x1="215" y1="200" x2="345" y2="200" stroke="#2c3e50" stroke-width="3" marker-end="url(#arrowM)"/>
+          <rect x="250" y="180" width="50" height="22" rx="4" fill="#fff" stroke="#2c3e50" stroke-width="1"/>
+          <text x="275" y="195" text-anchor="middle" font-size="12" font-weight="bold" fill="#8e44ad">0.76</text>
+          <!-- Path: SAT → LOY -->
+          <line x1="495" y1="200" x2="605" y2="200" stroke="#2c3e50" stroke-width="3" marker-end="url(#arrowM)"/>
+          <rect x="520" y="180" width="50" height="22" rx="4" fill="#fff" stroke="#2c3e50" stroke-width="1"/>
+          <text x="545" y="195" text-anchor="middle" font-size="12" font-weight="bold" fill="#8e44ad">0.67</text>
+
+          <!-- Legend -->
+          <rect x="20" y="365" width="780" height="48" rx="6" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1"/>
+          <circle cx="50" cy="389" r="7" fill="#e74c3c"/>
+          <text x="62" y="393" font-size="10" fill="#2c3e50">= Outer Loadings (負荷量)</text>
+          <rect x="210" y="381" width="30" height="16" rx="3" fill="#fff" stroke="#2c3e50" stroke-width="1"/>
+          <text x="220" y="393" font-size="10" fill="#8e44ad" font-weight="bold">0.76</text>
+          <text x="248" y="393" font-size="10" fill="#2c3e50">= Path Coefficients (路徑係數)</text>
+          <text x="455" y="393" font-size="10" fill="#27ae60" font-weight="bold">R²=0.58</text>
+          <text x="510" y="393" font-size="10" fill="#2c3e50">= 解釋變異量 (explained variance)</text>
+          <text x="698" y="393" font-size="10" fill="#3498db">○</text>
+          <text x="710" y="393" font-size="10" fill="#2c3e50">= 潛在建構</text>
+          <text x="760" y="393" font-size="10" fill="#3498db">□</text>
+          <text x="770" y="393" font-size="10" fill="#2c3e50">= 指標</text>
+        </svg>
+        <div class="caption" data-zh="SmartPLS 模型圖範例：圓形為潛在建構（latent variable），方形為觀察指標（indicator）" data-en="SmartPLS model example: circles are latent variables, rectangles are observed indicators">SmartPLS 模型圖範例：圓形為潛在建構（latent variable），方形為觀察指標（indicator）</div>
+      </div>
+    </div>
+
+    <div class="concept-block success">
+      <h4 data-zh="白話解讀模型圖上的數值" data-en="Plain-Language Guide to Model Numbers">白話解讀模型圖上的數值</h4>
+      <ul style="font-size:.93rem;line-height:2">
+        <li data-zh="建構旁的紅色數字（如 0.82, 0.88）= Outer Loadings：每個問卷題目跟它所屬的建構有多「緊密」。越接近 1 代表這題越能代表這個概念。" data-en="Red numbers near indicators (e.g., 0.82, 0.88) = Outer Loadings: how 'tightly' each survey item relates to its construct. Closer to 1 means the item better represents the concept.">建構旁的<strong style="color:#e74c3c">紅色數字</strong>（如 0.82, 0.88）= <strong>Outer Loadings</strong>：每個問卷題目跟它所屬的建構有多「緊密」。越接近 1 代表這題越能代表這個概念。</li>
+        <li data-zh="箭頭上的紫色數字（如 0.76, 0.67）= Path Coefficients：兩個建構之間的影響力強度。0.76 代表服務品質對滿意度有很強的正向影響。" data-en="Purple numbers on arrows (e.g., 0.76, 0.67) = Path Coefficients: the strength of influence between two constructs. 0.76 means service quality has a strong positive effect on satisfaction.">箭頭上的<strong style="color:#8e44ad">紫色數字</strong>（如 0.76, 0.67）= <strong>Path Coefficients</strong>：兩個建構之間的影響力強度。0.76 代表服務品質對滿意度有很強的正向影響。</li>
+        <li data-zh="建構圓圈裡的 R²（如 R²=0.58）= 這個建構被前面的自變數解釋了多少。R²=0.58 代表服務品質解釋了滿意度 58% 的變異。" data-en="R² inside construct circles (e.g., R²=0.58) = how much of this construct is explained by its predictors. R²=0.58 means service quality explains 58% of satisfaction's variance.">建構圓圈裡的 <strong style="color:#27ae60">R²</strong>（如 R²=0.58）= 這個建構被前面的自變數解釋了多少。R²=0.58 代表服務品質解釋了滿意度 58% 的變異。</li>
+      </ul>
+    </div>
+
+    <!-- SmartPLS output navigation map -->
+    <div class="card" style="margin-top:1.5rem">
+      <h3 data-zh="SmartPLS 報表查詢地圖：哪個數值在哪裡找？" data-en="SmartPLS Output Navigation Map: Where to Find Each Metric?">SmartPLS 報表查詢地圖：哪個數值在哪裡找？</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th data-zh="你想知道的事" data-en="What You Want to Know">你想知道的事</th>
+            <th data-zh="看哪個數值" data-en="Which Metric">看哪個數值</th>
+            <th data-zh="SmartPLS 點選路徑" data-en="SmartPLS Navigation Path">SmartPLS 點選路徑</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td data-zh="每題跟建構的關聯度" data-en="Each item's association with its construct">每題跟建構的關聯度</td>
+              <td>Outer Loadings</td>
+              <td><strong>PLS Algorithm → Outer Loadings</strong></td>
+            </tr>
+            <tr>
+              <td data-zh="量表內部一致性好不好" data-en="Is the scale internally consistent?">量表內部一致性好不好</td>
+              <td>Cronbach's α, CR, rho_A</td>
+              <td><strong>PLS Algorithm → Construct Reliability and Validity</strong></td>
+            </tr>
+            <tr>
+              <td data-zh="建構能解釋指標多少變異" data-en="How much indicator variance does the construct explain?">建構能解釋指標多少變異</td>
+              <td>AVE</td>
+              <td><strong>PLS Algorithm → Construct Reliability and Validity</strong> (最右欄)</td>
+            </tr>
+            <tr>
+              <td data-zh="兩個建構是不是真的不同" data-en="Are two constructs really different?">兩個建構是不是真的不同</td>
+              <td>HTMT</td>
+              <td><strong>PLS Algorithm → Discriminant Validity → HTMT</strong></td>
+            </tr>
+            <tr>
+              <td data-zh="指標之間有沒有共線性" data-en="Is there collinearity among indicators?">指標之間有沒有共線性</td>
+              <td>Outer VIF / Inner VIF</td>
+              <td><strong>PLS Algorithm → Collinearity Statistics (VIF)</strong></td>
+            </tr>
+            <tr>
+              <td data-zh="路徑係數是否顯著" data-en="Is the path coefficient significant?">路徑係數是否顯著</td>
+              <td>t-value, p-value</td>
+              <td><strong>Bootstrapping → Path Coefficients</strong></td>
+            </tr>
+            <tr>
+              <td data-zh="模型解釋了依變數多少" data-en="How much does the model explain?">模型解釋了依變數多少</td>
+              <td>R²</td>
+              <td><strong>PLS Algorithm → R Square</strong></td>
+            </tr>
+            <tr>
+              <td data-zh="某個自變數的貢獻多大" data-en="How much does a specific predictor contribute?">某個自變數的貢獻多大</td>
+              <td>f²</td>
+              <td><strong>PLS Algorithm → f Square</strong></td>
+            </tr>
+            <tr>
+              <td data-zh="模型的預測能力如何" data-en="What's the model's predictive ability?">模型的預測能力如何</td>
+              <td>Q²</td>
+              <td><strong>Blindfolding → Construct Crossvalidated Redundancy</strong></td>
+            </tr>
+            <tr>
+              <td data-zh="形成型指標的相對重要性" data-en="Relative importance of formative indicators">形成型指標的相對重要性</td>
+              <td>Outer Weights</td>
+              <td><strong>Bootstrapping → Outer Weights</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="concept-block warn">
+      <h4 data-zh="Bootstrapping 後模型圖的變化" data-en="Model Diagram Changes After Bootstrapping">Bootstrapping 後模型圖的變化</h4>
+      <p data-zh="執行 Bootstrapping 後，你可以在模型圖上切換顯示 t-value 或 p-value（點選上方工具列的下拉選單）。如果路徑係數的 p < 0.05（或 t > 1.96），代表該路徑「統計上顯著」，也就是這個影響關係不太可能只是偶然出現的。" data-en="After Bootstrapping, you can toggle between t-values or p-values on the model diagram (via the dropdown in the toolbar). If a path coefficient has p < 0.05 (or t > 1.96), the path is 'statistically significant' — the relationship is unlikely due to chance.">執行 Bootstrapping 後，你可以在模型圖上切換顯示 t-value 或 p-value（點選上方工具列的下拉選單）。如果路徑係數的 p &lt; 0.05（或 t &gt; 1.96），代表該路徑「統計上顯著」，也就是這個影響關係不太可能只是偶然出現的。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Section 4: Reflective Model Assessment ========== -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title" data-zh="4. 反映型測量模型評估與公式" data-en="4. Reflective Measurement Model Assessment & Formulas">4. 反映型測量模型評估與公式</h2>
+
+    <p data-zh="反映型測量模型的評估包含四個面向，必須依序檢視。以下每個指標都附上公式與白話解釋：" data-en="Reflective measurement model assessment includes four aspects, examined in order. Each metric includes its formula and plain-language explanation:">反映型測量模型的評估包含四個面向，必須依序檢視。以下每個指標都附上公式與白話解釋：</p>
 
     <div class="tab-container">
       <div class="tab-header">
@@ -416,72 +601,108 @@
       <div class="tab-panel active" id="ref-loading">
         <div class="card">
           <h3 data-zh="指標信度 (Indicator Reliability)" data-en="Indicator Reliability">指標信度 (Indicator Reliability)</h3>
+          <div class="concept-block success">
+            <h4 data-zh="白話解釋" data-en="Plain-Language Explanation">白話解釋</h4>
+            <p data-zh="想像你用 4 題問卷來測量「滿意度」。Outer Loading 就是看每一題到底有多少分量是真正在量「滿意度」，又有多少只是測量誤差。Loading = 0.85 代表這題有 72%（0.85²）的變異量來自「滿意度」本身，只有 28% 是雜訊。" data-en="Imagine using 4 survey items to measure 'satisfaction'. Outer Loading tells you how much of each item actually measures 'satisfaction' vs. measurement error. Loading = 0.85 means 72% (0.85²) of the item's variance comes from 'satisfaction' itself, only 28% is noise.">想像你用 4 題問卷來測量「滿意度」。Outer Loading 就是看每一題到底有多少分量是真正在量「滿意度」，又有多少只是測量誤差。Loading = 0.85 代表這題有 72%（0.85²）的變異量來自「滿意度」本身，只有 28% 是雜訊。</p>
+          </div>
           <div class="formula-box">
-            <span data-zh="外部負荷量 (Outer Loading) ≥ 0.708（理想）" data-en="Outer Loading ≥ 0.708 (ideal)">外部負荷量 (Outer Loading) ≥ 0.708（理想）</span>
-            <span class="label" data-zh="因為 0.708² ≈ 0.50，表示指標解釋了建構 50% 以上的變異" data-en="Because 0.708² ≈ 0.50, meaning the indicator explains ≥ 50% of construct variance">因為 0.708² ≈ 0.50，表示指標解釋了建構 50% 以上的變異</span>
+            Indicator Reliability = &#955;<sub>i</sub>&#178;
+            <span class="label" data-zh="其中 λᵢ 為第 i 個指標的外部負荷量。λᵢ² 代表建構能解釋該指標多少比例的變異。門檻：λᵢ ≥ 0.708 → λᵢ² ≥ 0.50" data-en="Where λᵢ is the outer loading of indicator i. λᵢ² represents the proportion of indicator variance explained by the construct. Threshold: λᵢ ≥ 0.708 → λᵢ² ≥ 0.50">其中 λᵢ 為第 i 個指標的外部負荷量。λᵢ² 代表建構能解釋該指標多少比例的變異。門檻：λᵢ ≥ 0.708 → λᵢ² ≥ 0.50</span>
           </div>
           <div class="table-wrap">
             <table>
               <thead><tr><th data-zh="負荷量範圍" data-en="Loading Range">負荷量範圍</th><th data-zh="判斷" data-en="Decision">判斷</th><th data-zh="行動" data-en="Action">行動</th></tr></thead>
               <tbody>
-                <tr><td>≥ 0.708</td><td class="highlight-cell" data-zh="保留" data-en="Retain">保留</td><td data-zh="符合標準" data-en="Meets criterion">符合標準</td></tr>
+                <tr><td>≥ 0.708</td><td class="highlight-cell" data-zh="保留" data-en="Retain">保留</td><td data-zh="符合標準（λ² ≥ 0.50）" data-en="Meets criterion (λ² ≥ 0.50)">符合標準（λ² ≥ 0.50）</td></tr>
                 <tr><td>0.40 – 0.70</td><td data-zh="考慮刪除" data-en="Consider removing">考慮刪除</td><td data-zh="若刪除後能提高 CR 或 AVE 則刪除" data-en="Remove if it improves CR or AVE">若刪除後能提高 CR 或 AVE 則刪除</td></tr>
-                <tr><td>< 0.40</td><td style="color:var(--danger);font-weight:600" data-zh="應刪除" data-en="Should remove">應刪除</td><td data-zh="該指標解釋力不足" data-en="Indicator lacks explanatory power">該指標解釋力不足</td></tr>
+                <tr><td>< 0.40</td><td style="color:var(--danger);font-weight:600" data-zh="應刪除" data-en="Should remove">應刪除</td><td data-zh="該指標解釋力嚴重不足" data-en="Indicator seriously lacks explanatory power">該指標解釋力嚴重不足</td></tr>
               </tbody>
             </table>
           </div>
-          <p style="margin-top:1rem;font-size:.9rem" data-zh="SmartPLS 查看位置：PLS Algorithm → Outer Loadings" data-en="SmartPLS location: PLS Algorithm → Outer Loadings"><strong>SmartPLS 查看位置：</strong>PLS Algorithm → Outer Loadings</p>
+          <p style="margin-top:1rem;font-size:.9rem"><strong>SmartPLS 查看位置：</strong>PLS Algorithm → <strong>Outer Loadings</strong></p>
         </div>
       </div>
 
       <div class="tab-panel" id="ref-consistency">
         <div class="card">
           <h3 data-zh="內部一致性信度 (Internal Consistency Reliability)" data-en="Internal Consistency Reliability">內部一致性信度 (Internal Consistency Reliability)</h3>
+          <div class="concept-block success">
+            <h4 data-zh="白話解釋" data-en="Plain-Language Explanation">白話解釋</h4>
+            <p data-zh="內部一致性回答的問題是：「同一組題目之間是不是都在量同一件事？」如果 4 題都在量滿意度，受試者在這 4 題的回答應該很一致（都高或都低）。α 和 CR 就是在衡量這種「一致性」的程度。" data-en="Internal consistency answers: 'Are all items in this group measuring the same thing?' If 4 items all measure satisfaction, a respondent's answers should be consistent across them (all high or all low). α and CR quantify this 'consistency'.">內部一致性回答的問題是：「同一組題目之間是不是都在量同一件事？」如果 4 題都在量滿意度，受試者在這 4 題的回答應該很一致（都高或都低）。α 和 CR 就是在衡量這種「一致性」的程度。</p>
+          </div>
+          <div class="formula-box">
+            <strong>Cronbach's α</strong> = (k / (k-1)) × (1 - &#8721;&#963;<sub>i</sub>&#178; / &#963;<sub>total</sub>&#178;)
+            <span class="label" data-zh="k = 題目數；σᵢ² = 每題的變異數；σ²total = 總分的變異數。假設每題貢獻相等（等權重）" data-en="k = number of items; σᵢ² = variance of each item; σ²total = total score variance. Assumes equal contribution (tau-equivalent)">k = 題目數；σᵢ² = 每題的變異數；σ²total = 總分的變異數。假設每題貢獻相等（等權重）</span>
+          </div>
+          <div class="formula-box">
+            <strong>Composite Reliability (CR)</strong> = (&#8721;&#955;<sub>i</sub>)&#178; / [(&#8721;&#955;<sub>i</sub>)&#178; + &#8721;(1 - &#955;<sub>i</sub>&#178;)]
+            <span class="label" data-zh="λᵢ = 第 i 個指標的負荷量。CR 考慮每題不同的負荷量，比 α 更精確。在 PLS-SEM 中優先採用 CR" data-en="λᵢ = loading of indicator i. CR accounts for different loadings per item, more precise than α. Preferred in PLS-SEM">λᵢ = 第 i 個指標的負荷量。CR 考慮每題不同的負荷量，比 α 更精確。在 PLS-SEM 中優先採用 CR</span>
+          </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th data-zh="指標" data-en="Metric">指標</th><th data-zh="門檻值" data-en="Threshold">門檻值</th><th data-zh="說明" data-en="Notes">說明</th></tr></thead>
+              <thead><tr><th data-zh="指標" data-en="Metric">指標</th><th data-zh="門檻值" data-en="Threshold">門檻值</th><th data-zh="白話意義" data-en="Plain Meaning">白話意義</th></tr></thead>
               <tbody>
                 <tr>
                   <td>Cronbach's α</td>
                   <td>≥ 0.70</td>
-                  <td data-zh="下界估計，較保守" data-en="Lower bound, conservative">下界估計，較保守</td>
+                  <td data-zh="假設每題一樣重要，計算的一致性下限" data-en="Lower bound assuming equal item importance">假設每題一樣重要，計算的一致性下限</td>
                 </tr>
                 <tr>
-                  <td data-zh="組合信度 CR (Composite Reliability)" data-en="Composite Reliability (CR)">組合信度 CR (Composite Reliability)</td>
-                  <td>≥ 0.70</td>
-                  <td data-zh="考慮不同負荷量，比 α 更適合 PLS-SEM" data-en="Accounts for different loadings, more suitable for PLS-SEM than α">考慮不同負荷量，比 α 更適合 PLS-SEM</td>
+                  <td>CR</td>
+                  <td>0.70 – 0.95</td>
+                  <td data-zh="允許每題重要性不同，更精確的一致性指標" data-en="Allows different item importance, more precise consistency measure">允許每題重要性不同，更精確的一致性指標</td>
                 </tr>
                 <tr>
-                  <td>rho_A (ρ_A)</td>
+                  <td>rho_A (ρ<sub>A</sub>)</td>
                   <td>≥ 0.70</td>
-                  <td data-zh="介於 α 和 CR 之間，最精確的信度估計" data-en="Between α and CR, most accurate reliability estimate">介於 α 和 CR 之間，最精確的信度估計</td>
+                  <td data-zh="α 和 CR 之間的最佳折衷估計" data-en="Best compromise estimate between α and CR">α 和 CR 之間的最佳折衷估計</td>
                 </tr>
               </tbody>
             </table>
           </div>
           <div class="concept-block warn">
-            <p data-zh="注意：CR 不應超過 0.95，否則暗示指標之間過度重複（redundancy），可能測量同一件事。" data-en="Note: CR should not exceed 0.95, as this implies redundancy — indicators may be measuring the same thing.">注意：CR 不應超過 0.95，否則暗示指標之間過度重複（redundancy），可能測量同一件事。</p>
+            <p data-zh="注意：CR 不應超過 0.95！超過代表題目之間太過相似（幾乎在問同一件事），應考慮刪除冗餘題目。" data-en="Note: CR should NOT exceed 0.95! That means items are too similar (nearly asking the same thing) — consider removing redundant items.">注意：CR 不應超過 0.95！超過代表題目之間太過相似（幾乎在問同一件事），應考慮刪除冗餘題目。</p>
           </div>
-          <p style="margin-top:1rem;font-size:.9rem" data-zh="SmartPLS 查看位置：PLS Algorithm → Construct Reliability and Validity" data-en="SmartPLS location: PLS Algorithm → Construct Reliability and Validity"><strong>SmartPLS 查看位置：</strong>PLS Algorithm → Construct Reliability and Validity</p>
+          <p style="margin-top:1rem;font-size:.9rem"><strong>SmartPLS 查看位置：</strong>PLS Algorithm → <strong>Construct Reliability and Validity</strong></p>
         </div>
       </div>
 
       <div class="tab-panel" id="ref-convergent">
         <div class="card">
           <h3 data-zh="聚合效度 (Convergent Validity)" data-en="Convergent Validity">聚合效度 (Convergent Validity)</h3>
-          <div class="formula-box">
-            AVE = (&#8721; &#955;<sub>i</sub>&#178;) / n &#8805; 0.50
-            <span class="label" data-zh="平均變異萃取量：建構平均能解釋其指標 50% 以上的變異" data-en="Average Variance Extracted: the construct explains ≥ 50% of indicator variance on average">平均變異萃取量：建構平均能解釋其指標 50% 以上的變異</span>
+          <div class="concept-block success">
+            <h4 data-zh="白話解釋" data-en="Plain-Language Explanation">白話解釋</h4>
+            <p data-zh="聚合效度問的是：「這組題目是不是真的都聚集在同一個概念上？」AVE 計算的是：平均而言，建構能「吃掉」每題變異量的百分比。AVE = 0.60 代表建構平均解釋了每題 60% 的回答差異，剩下 40% 是測量誤差。如果 AVE < 0.50，代表誤差比建構本身的解釋力還大——題目可能不夠好。" data-en="Convergent validity asks: 'Are these items truly converging on the same concept?' AVE calculates the average percentage of each item's variance 'captured' by the construct. AVE = 0.60 means the construct explains 60% of each item's response variation on average, with 40% being measurement error. If AVE < 0.50, error exceeds the construct's explanatory power — items may be inadequate.">聚合效度問的是：「這組題目是不是真的都聚集在同一個概念上？」AVE 計算的是：平均而言，建構能「吃掉」每題變異量的百分比。AVE = 0.60 代表建構平均解釋了每題 60% 的回答差異，剩下 40% 是測量誤差。如果 AVE &lt; 0.50，代表誤差比建構本身的解釋力還大——題目可能不夠好。</p>
           </div>
-          <p data-zh="AVE ≥ 0.50 表示該建構對其指標有足夠的解釋力。若 AVE < 0.50，表示誤差變異大於建構解釋的變異。" data-en="AVE ≥ 0.50 means the construct explains enough of its indicators' variance. If AVE < 0.50, error variance exceeds the construct's explained variance.">AVE ≥ 0.50 表示該建構對其指標有足夠的解釋力。若 AVE < 0.50，表示誤差變異大於建構解釋的變異。</p>
-          <p style="margin-top:1rem;font-size:.9rem" data-zh="SmartPLS 查看位置：PLS Algorithm → Construct Reliability and Validity → AVE 欄位" data-en="SmartPLS location: PLS Algorithm → Construct Reliability and Validity → AVE column"><strong>SmartPLS 查看位置：</strong>PLS Algorithm → Construct Reliability and Validity → AVE 欄位</p>
+          <div class="formula-box">
+            <strong>AVE</strong> = (&#8721; &#955;<sub>i</sub>&#178;) / n
+            <span class="label" data-zh="n = 指標數量；λᵢ = 各指標的 Outer Loading。先把每個 Loading 平方，再取平均值。門檻：AVE ≥ 0.50" data-en="n = number of indicators; λᵢ = each indicator's Outer Loading. Square each loading, then average. Threshold: AVE ≥ 0.50">n = 指標數量；λᵢ = 各指標的 Outer Loading。先把每個 Loading 平方，再取平均值。門檻：AVE ≥ 0.50</span>
+          </div>
+          <div class="concept-block">
+            <h4 data-zh="計算範例" data-en="Worked Example">計算範例</h4>
+            <p data-zh="假設 Satisfaction 有 3 題，Loadings 分別為 0.91, 0.87, 0.84" data-en="Suppose Satisfaction has 3 items with Loadings 0.91, 0.87, 0.84">假設 Satisfaction 有 3 題，Loadings 分別為 0.91, 0.87, 0.84</p>
+            <p style="font-family:monospace;margin-top:.5rem">AVE = (0.91² + 0.87² + 0.84²) / 3 = (0.828 + 0.757 + 0.706) / 3 = <strong>0.764</strong> ≥ 0.50 ✓</p>
+          </div>
+          <p style="margin-top:1rem;font-size:.9rem"><strong>SmartPLS 查看位置：</strong>PLS Algorithm → <strong>Construct Reliability and Validity</strong> → AVE 欄位（最右邊的欄）</p>
         </div>
       </div>
 
       <div class="tab-panel" id="ref-discriminant">
         <div class="card">
           <h3 data-zh="區辨效度 (Discriminant Validity)" data-en="Discriminant Validity">區辨效度 (Discriminant Validity)</h3>
-          <p data-zh="區辨效度確認每個建構在統計上確實不同於其他建構。PLS-SEM 提供三種檢驗方法：" data-en="Discriminant validity confirms each construct is statistically distinct from others. PLS-SEM provides three assessment methods:">區辨效度確認每個建構在統計上確實不同於其他建構。PLS-SEM 提供三種檢驗方法：</p>
+          <div class="concept-block success">
+            <h4 data-zh="白話解釋" data-en="Plain-Language Explanation">白話解釋</h4>
+            <p data-zh="區辨效度回答的問題是：「滿意度和忠誠度真的是兩個不同的概念嗎？還是其實在量同一件事？」如果兩個建構的題目回答模式太過相似，我們就無法確定它們是不同的概念。HTMT 就像在算「兩組題目到底有多像」——越像（越接近 1）代表越難區分。" data-en="Discriminant validity answers: 'Are satisfaction and loyalty truly two different concepts, or are they measuring the same thing?' If response patterns of two constructs' items are too similar, we can't be sure they're distinct. HTMT measures 'how similar two sets of items are' — more similar (closer to 1) means harder to distinguish.">區辨效度回答的問題是：「滿意度和忠誠度真的是兩個不同的概念嗎？還是其實在量同一件事？」如果兩個建構的題目回答模式太過相似，我們就無法確定它們是不同的概念。HTMT 就像在算「兩組題目到底有多像」——越像（越接近 1）代表越難區分。</p>
+          </div>
+          <div class="formula-box">
+            <strong>HTMT</strong> = (heterotrait-heteromethod correlations) / geometric mean of (monotrait-heteromethod correlations)
+            <span class="label" data-zh="白話：不同建構的題目之間的「平均相關」÷ 同一建構題目之間的「平均相關」。如果比值接近 1，代表跨建構的相關跟建構內部一樣高——區辨效度有問題。" data-en="Plain: 'average correlation between items of different constructs' ÷ 'average correlation between items within the same construct'. Ratio near 1 means cross-construct correlations are as high as within-construct — discriminant validity is problematic.">白話：不同建構的題目之間的「平均相關」÷ 同一建構題目之間的「平均相關」。如果比值接近 1，代表跨建構的相關跟建構內部一樣高——區辨效度有問題。</span>
+          </div>
+          <div class="formula-box">
+            <strong>Fornell-Larcker</strong>: &#8730;AVE<sub>i</sub> &gt; r<sub>ij</sub> (for all j ≠ i)
+            <span class="label" data-zh="白話：一個建構的 √AVE 要大於它跟所有其他建構的相關係數。意思是「一個概念跟自己的題目的關係」應該比「跟別人的題目的關係」更強。" data-en="Plain: A construct's √AVE must exceed its correlations with all other constructs. Meaning: 'a concept's relationship with its own items' should be stronger than 'its relationship with other concepts' items'.">白話：一個建構的 √AVE 要大於它跟所有其他建構的相關係數。意思是「一個概念跟自己的題目的關係」應該比「跟別人的題目的關係」更強。</span>
+          </div>
+          <p data-zh="區辨效度確認每個建構在統計上確實不同於其他建構。PLS-SEM 提供三種檢驗方法：" data-en="Discriminant validity confirms each construct is statistically distinct from others. PLS-SEM provides three assessment methods:">PLS-SEM 提供三種檢驗方法：</p>
           <div class="table-wrap" style="margin-top:1rem">
             <table>
               <thead><tr><th data-zh="方法" data-en="Method">方法</th><th data-zh="準則" data-en="Criterion">準則</th><th data-zh="SmartPLS 位置" data-en="SmartPLS Location">SmartPLS 位置</th></tr></thead>
@@ -557,6 +778,11 @@
       <div class="tab-panel active" id="form-convergent">
         <div class="card">
           <h3 data-zh="聚合效度：冗餘分析 (Redundancy Analysis)" data-en="Convergent Validity: Redundancy Analysis">聚合效度：冗餘分析 (Redundancy Analysis)</h3>
+          <div class="concept-block success">
+            <h4 data-zh="白話解釋" data-en="Plain-Language Explanation">白話解釋</h4>
+            <p data-zh="形成型建構不能用 AVE 來檢驗聚合效度（因為指標之間不需要高度相關），所以我們換一個方式：額外問受試者一道「總結性」的題目，直接問他對這個概念的整體感受，然後看形成型建構跟這道總結題的關聯有多強。如果關聯夠高（路徑係數 ≥ 0.70），就表示那些指標組合起來確實在衡量我們想要衡量的東西。" data-en="Formative constructs can't use AVE to test convergent validity (because indicators don't need to be highly correlated). Instead, we add a 'summary' question asking respondents about their overall feeling of the concept, then check how strongly the formative construct relates to this summary item. If the relationship is strong enough (path coefficient ≥ 0.70), the indicator combination is indeed measuring what we intended.">形成型建構不能用 AVE 來檢驗聚合效度（因為指標之間不需要高度相關），所以我們換一個方式：額外問受試者一道「總結性」的題目，直接問他對這個概念的整體感受，然後看形成型建構跟這道總結題的關聯有多強。如果關聯夠高（路徑係數 ≥ 0.70），就表示那些指標組合起來確實在衡量我們想要衡量的東西。</p>
+          </div>
+          <h4 data-zh="操作步驟" data-en="Steps" style="margin-top:1rem">操作步驟</h4>
           <ol style="line-height:2;font-size:.95rem">
             <li data-zh="建立一個與形成型建構測量相同概念的全域性單一指標 (global single item)" data-en="Create a global single item measuring the same concept as the formative construct">建立一個與形成型建構測量相同概念的全域性單一指標 (global single item)</li>
             <li data-zh="將形成型建構與該全域指標之間建立路徑" data-en="Create a path between the formative construct and the global item">將形成型建構與該全域指標之間建立路徑</li>
@@ -565,15 +791,20 @@
           <div class="concept-block">
             <p data-zh="例如：若建構為「工作壓力」（由5個壓力來源指標形成），需加入一題「整體而言，我感受到的工作壓力程度」作為全域指標進行冗餘分析。" data-en="Example: If the construct is 'Job Stress' (formed by 5 stressor indicators), add a global item 'Overall, my level of work stress is...' for redundancy analysis.">例如：若建構為「工作壓力」（由5個壓力來源指標形成），需加入一題「整體而言，我感受到的工作壓力程度」作為全域指標進行冗餘分析。</p>
           </div>
+          <p style="margin-top:1rem;font-size:.9rem"><strong>SmartPLS 查看位置：</strong>PLS Algorithm → Path Coefficients（查看形成型建構到全域指標的路徑係數）</p>
         </div>
       </div>
 
       <div class="tab-panel" id="form-collinearity">
         <div class="card">
           <h3 data-zh="共線性診斷 (Collinearity Assessment)" data-en="Collinearity Assessment">共線性診斷 (Collinearity Assessment)</h3>
+          <div class="concept-block success">
+            <h4 data-zh="白話解釋" data-en="Plain-Language Explanation">白話解釋</h4>
+            <p data-zh="共線性就是「兩個指標太過相似，幾乎在量同一件事」。例如「月收入」和「年收入」放在同一個形成型建構裡，它們幾乎完全重疊。VIF 衡量的是一個指標被其他指標「預測」的程度——VIF 越高，代表這個指標跟其他指標越像，會讓統計結果變得不穩定。" data-en="Collinearity means 'two indicators are so similar they're nearly measuring the same thing'. For example, 'monthly income' and 'annual income' in the same formative construct almost completely overlap. VIF measures how well one indicator is 'predicted' by others — higher VIF means more overlap, making statistical results unstable.">共線性就是「兩個指標太過相似，幾乎在量同一件事」。例如「月收入」和「年收入」放在同一個形成型建構裡，它們幾乎完全重疊。VIF 衡量的是一個指標被其他指標「預測」的程度——VIF 越高，代表這個指標跟其他指標越像，會讓統計結果變得不穩定。</p>
+          </div>
           <div class="formula-box">
-            VIF (Variance Inflation Factor) < 5
-            <span class="label" data-zh="理想值 < 3；VIF ≥ 5 表示有嚴重的共線性問題" data-en="Ideal < 3; VIF ≥ 5 indicates serious collinearity issues">理想值 < 3；VIF ≥ 5 表示有嚴重的共線性問題</span>
+            <strong>VIF</strong><sub>i</sub> = 1 / (1 - R<sub>i</sub>&#178;)
+            <span class="label" data-zh="Rᵢ² = 用其他所有指標去預測第 i 個指標的 R²。如果其他指標能完美預測它（R²=1），VIF→∞；如果完全不相關（R²=0），VIF=1。門檻：VIF < 5（理想 < 3）" data-en="Rᵢ² = R² from regressing indicator i on all other indicators. If others perfectly predict it (R²=1), VIF→∞; if uncorrelated (R²=0), VIF=1. Threshold: VIF < 5 (ideal < 3)">Rᵢ² = 用其他所有指標去預測第 i 個指標的 R²。如果其他指標能完美預測它（R²→1），VIF→∞；如果完全不相關（R²=0），VIF=1。門檻：VIF &lt; 5（理想 &lt; 3）</span>
           </div>
           <div class="table-wrap">
             <table>
@@ -600,6 +831,10 @@
       <div class="tab-panel" id="form-weights">
         <div class="card">
           <h3 data-zh="外部權重顯著性與相關性" data-en="Outer Weight Significance & Relevance">外部權重顯著性與相關性</h3>
+          <div class="concept-block success">
+            <h4 data-zh="白話解釋" data-en="Plain-Language Explanation">白話解釋</h4>
+            <p data-zh="外部權重 (Outer Weight) 是每個指標對形成型建構的「相對貢獻度」。想像你在組一支籃球隊（建構），每位球員（指標）的貢獻不同——有人是主力得分手，有人負責防守。外部權重就是告訴你每位球員對球隊整體戰力的相對重要性。透過 Bootstrapping 檢驗權重是否顯著，就是在確認這位球員是否真的對球隊有貢獻，還是只是板凳球員。如果權重不顯著，再看外部負荷量（絕對貢獻）——如果連絕對貢獻都很低，就要考慮是否該把這位球員移出名單。" data-en="Outer Weight is each indicator's 'relative contribution' to the formative construct. Imagine building a basketball team (construct) — each player (indicator) contributes differently. Outer weight tells you each player's relative importance. Bootstrapping tests whether the weight is significant, confirming if a player truly contributes or is just a bench warmer. If weight isn't significant, check outer loading (absolute contribution) — if even that is low, consider removing the player from the roster.">外部權重 (Outer Weight) 是每個指標對形成型建構的「相對貢獻度」。想像你在組一支籃球隊（建構），每位球員（指標）的貢獻不同——有人是主力得分手，有人負責防守。外部權重就是告訴你每位球員對球隊整體戰力的相對重要性。透過 Bootstrapping 檢驗權重是否顯著，就是在確認這位球員是否真的對球隊有貢獻，還是只是板凳球員。如果權重不顯著，再看外部負荷量（絕對貢獻）——如果連絕對貢獻都很低，就要考慮是否該把這位球員移出名單。</p>
+          </div>
           <p data-zh="使用 Bootstrapping 結果檢驗每個指標的外部權重 (Outer Weight) 是否顯著：" data-en="Use Bootstrapping results to test whether each indicator's outer weight is significant:">使用 Bootstrapping 結果檢驗每個指標的外部權重 (Outer Weight) 是否顯著：</p>
           <div class="diagram" style="margin-top:1rem">
             <svg viewBox="0 0 500 320" width="100%">
@@ -724,12 +959,38 @@
       </div>
     </div>
 
-    <div class="concept-block">
-      <h4 data-zh="效果量 f² 的計算概念" data-en="f² Effect Size Concept">效果量 f² 的計算概念</h4>
-      <div class="formula-box">
-        f² = (R²<sub>included</sub> - R²<sub>excluded</sub>) / (1 - R²<sub>included</sub>)
-        <span class="label" data-zh="衡量移除某自變數後 R² 下降的程度" data-en="Measures how much R² decreases when removing a predictor">衡量移除某自變數後 R² 下降的程度</span>
+    <!-- R² -->
+    <div class="card" style="margin-top:1.5rem">
+      <h3 data-zh="R²（判定係數）白話解釋與公式" data-en="R² (Coefficient of Determination) Explained">R²（判定係數）白話解釋與公式</h3>
+      <div class="concept-block success">
+        <p data-zh="R² 回答最直覺的問題：「我的模型到底解釋了多少？」R² = 0.58 代表你的自變數共同解釋了依變數 58% 的變異量。剩下的 42% 是由你沒有放進模型的其他因素所造成的。想像成考試：你的模型答對了 58 分（滿分 100），還有 42 分的差異是其他原因造成的。" data-en="R² answers the most intuitive question: 'How much does my model explain?' R² = 0.58 means your predictors collectively explain 58% of the dependent variable's variance. The remaining 42% is due to factors not in your model. Think of it as an exam: your model scored 58 out of 100.">R² 回答最直覺的問題：「我的模型到底解釋了多少？」R² = 0.58 代表你的自變數共同解釋了依變數 58% 的變異量。剩下的 42% 是由你沒有放進模型的其他因素所造成的。想像成考試：你的模型答對了 58 分（滿分 100），還有 42 分的差異是其他原因造成的。</p>
       </div>
+    </div>
+
+    <!-- f² -->
+    <div class="card" style="margin-top:1rem">
+      <h3 data-zh="f²（效果量）白話解釋與公式" data-en="f² (Effect Size) Explained">f²（效果量）白話解釋與公式</h3>
+      <div class="concept-block success">
+        <p data-zh="f² 回答的問題是：「如果我把某一個自變數從模型中拿掉，R² 會掉多少？」它衡量的是一個自變數「獨特的貢獻」。f² = 0.35 代表這個自變數對模型有很大的獨特貢獻；f² = 0.02 代表幾乎可有可無。想像成一個團隊：f² 就是看「少了這個人，團隊績效會掉多少」。" data-en="f² answers: 'If I remove one predictor from the model, how much does R² drop?' It measures a predictor's 'unique contribution'. f² = 0.35 means a large unique contribution; f² = 0.02 means almost negligible. Think of it as a team: f² measures 'how much team performance drops without this person'.">f² 回答的問題是：「如果我把某一個自變數從模型中拿掉，R² 會掉多少？」它衡量的是一個自變數「獨特的貢獻」。f² = 0.35 代表這個自變數對模型有很大的獨特貢獻；f² = 0.02 代表幾乎可有可無。想像成一個團隊：f² 就是看「少了這個人，團隊績效會掉多少」。</p>
+      </div>
+      <div class="formula-box">
+        <strong>f²</strong> = (R²<sub>included</sub> - R²<sub>excluded</sub>) / (1 - R²<sub>included</sub>)
+        <span class="label" data-zh="R²included = 完整模型的 R²；R²excluded = 移除該自變數後的 R²。分母 (1-R²) 是「未解釋的變異」作為基準" data-en="R²included = full model R²; R²excluded = R² without the predictor. Denominator (1-R²) is 'unexplained variance' as baseline">R²<sub>included</sub> = 完整模型的 R²；R²<sub>excluded</sub> = 移除該自變數後的 R²。分母 (1-R²) 是「未解釋的變異」作為基準</span>
+      </div>
+      <div class="concept-block">
+        <h4 data-zh="計算範例" data-en="Worked Example">計算範例</h4>
+        <p data-zh="完整模型 R² = 0.58；移除「服務品質」後 R² = 0.25" data-en="Full model R² = 0.58; After removing 'Service Quality', R² = 0.25">完整模型 R² = 0.58；移除「服務品質」後 R² = 0.25</p>
+        <p style="font-family:monospace;margin-top:.5rem">f² = (0.58 - 0.25) / (1 - 0.58) = 0.33 / 0.42 = <strong>0.786</strong> → 大效果量 (large)</p>
+      </div>
+    </div>
+
+    <!-- Q² -->
+    <div class="card" style="margin-top:1rem">
+      <h3 data-zh="Q²（預測相關性）白話解釋" data-en="Q² (Predictive Relevance) Explained">Q²（預測相關性）白話解釋</h3>
+      <div class="concept-block success">
+        <p data-zh="Q² 回答的問題是：「我的模型不只能解釋現有的資料，還能預測新的資料嗎？」它用 Blindfolding（遮蔽法）技術：故意遮住一部分資料，用剩下的資料去預測被遮住的部分。如果預測得比「瞎猜」好（Q² > 0），代表模型具有預測能力。Q² 越高，預測越精準。" data-en="Q² answers: 'Can my model not only explain existing data, but also predict new data?' It uses Blindfolding: intentionally hide some data, then predict hidden data from the rest. If prediction beats 'random guessing' (Q² > 0), the model has predictive power. Higher Q² = more accurate prediction.">Q² 回答的問題是：「我的模型不只能解釋現有的資料，還能預測新的資料嗎？」它用 Blindfolding（遮蔽法）技術：故意遮住一部分資料，用剩下的資料去預測被遮住的部分。如果預測得比「瞎猜」好（Q² &gt; 0），代表模型具有預測能力。Q² 越高，預測越精準。</p>
+      </div>
+      <p style="margin-top:1rem;font-size:.9rem"><strong>SmartPLS 操作：</strong>Calculate → Blindfolding → Omission distance = 7 → 查看 <strong>Construct Crossvalidated Redundancy</strong></p>
     </div>
   </div>
 </section>
