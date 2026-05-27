@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CFA 建構效度 | Confirmatory Factor Analysis & Construct Validity</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="lang-zh">
+<div class="progress-bar"><div class="fill"></div></div>
+
+<nav class="top-nav">
+  <div class="container">
+    <a href="../index.html" class="brand" data-zh="多變量資料分析" data-en="Multivariate Data Analysis">多變量資料分析</a>
+    <div class="nav-links">
+      <a href="../index.html" data-zh="首頁" data-en="Home">首頁</a>
+      <a href="ch3-reliability-validity.html" data-zh="信效度基礎" data-en="R&V Basics">信效度基礎</a>
+      <a href="ch10-cfa-validity.html" class="active" data-zh="CFA效度" data-en="CFA Validity">CFA效度</a>
+      <button class="lang-toggle">EN</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1 data-zh="驗證性因素分析與建構效度" data-en="Confirmatory Factor Analysis & Construct Validity">驗證性因素分析與建構效度</h1>
+    <p data-zh="Ch.10 CFA 中的 AVE、CR、聚合效度與區辨效度之進階衡量" data-en="Ch.10 AVE, CR, Convergent & Discriminant Validity in CFA">Ch.10 CFA 中的 AVE、CR、聚合效度與區辨效度之進階衡量</p>
+  </div>
+</header>
+
+<main class="section">
+<div class="container">
+
+<!-- ================================ -->
+<!-- SECTION 1: EFA vs CFA            -->
+<!-- ================================ -->
+<h2 class="section-title" data-zh="一、EFA 與 CFA 的差異" data-en="1. EFA vs. CFA">一、EFA 與 CFA 的差異</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>在前一章我們學到，<strong>探索性因素分析（EFA）</strong>是從資料中「探索」可能的因素結構。而<strong>驗證性因素分析（CFA）</strong>是用來「驗證」研究者事先提出的測量理論是否與實際資料吻合。</p>
+  </div>
+  <div class="en">
+    <p>Previously we learned that <strong>Exploratory Factor Analysis (EFA)</strong> "explores" potential factor structures from data. <strong>Confirmatory Factor Analysis (CFA)</strong> "confirms" whether a pre-specified measurement theory fits the actual data.</p>
+  </div>
+</div>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="特徵" data-en="Feature">特徵</th>
+        <th>EFA</th>
+        <th>CFA</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-zh="目的" data-en="Purpose">目的</td>
+        <td data-zh="探索因素結構" data-en="Explore factor structure">探索因素結構</td>
+        <td data-zh="驗證（確認）測量理論" data-en="Confirm measurement theory">驗證（確認）測量理論</td>
+      </tr>
+      <tr>
+        <td data-zh="因素數量" data-en="Number of factors">因素數量</td>
+        <td data-zh="由資料決定" data-en="Determined by data">由資料決定</td>
+        <td data-zh="由研究者事先指定" data-en="Pre-specified by researcher">由研究者事先指定</td>
+      </tr>
+      <tr>
+        <td data-zh="變數歸屬" data-en="Variable assignment">變數歸屬</td>
+        <td data-zh="所有變數在所有因素上都有負荷量" data-en="All variables load on all factors">所有變數在所有因素上都有負荷量</td>
+        <td data-zh="研究者指定每個變數只歸屬一個因素" data-en="Researcher specifies each variable loads on one factor">研究者指定每個變數只歸屬一個因素</td>
+      </tr>
+      <tr>
+        <td data-zh="交叉負荷" data-en="Cross-loadings">交叉負荷</td>
+        <td data-zh="允許（自由估計）" data-en="Allowed (freely estimated)">允許（自由估計）</td>
+        <td data-zh="固定為零（constrained）" data-en="Fixed to zero (constrained)">固定為零（constrained）</td>
+      </tr>
+      <tr>
+        <td data-zh="理論基礎" data-en="Theory basis">理論基礎</td>
+        <td data-zh="不需要事先理論" data-en="No prior theory needed">不需要事先理論</td>
+        <td data-zh="必須有測量理論" data-en="Measurement theory required">必須有測量理論</td>
+      </tr>
+      <tr>
+        <td data-zh="適配度檢驗" data-en="Fit assessment">適配度檢驗</td>
+        <td data-zh="有限" data-en="Limited">有限</td>
+        <td data-zh="全面（χ², CFI, RMSEA 等）" data-en="Comprehensive (χ², CFI, RMSEA, etc.)">全面（χ², CFI, RMSEA 等）</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="心理計量學基礎" data-en="Psychometric Foundation">心理計量學基礎</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p>CFA 植根於<strong>心理計量學（Psychometrics）</strong>——心理學中專門研究如何正確衡量潛在心理建構的分支。心理計量原則要求：</p>
+      <ol style="padding-left:1.2rem">
+        <li>只有理論上連結的題項-建構路徑才被自由估計</li>
+        <li>所有其他可能的負荷固定為零</li>
+        <li>殘差之間不存在共變異</li>
+      </ol>
+      <p style="margin-top:.5rem">符合這些條件的測量模型稱為<strong>同源模型（Congeneric Model）</strong>，代表良好的心理計量屬性。</p>
+    </div>
+    <div class="en">
+      <p>CFA is rooted in <strong>Psychometrics</strong> — the branch of psychology addressing proper quantitative measurement of latent constructs. Psychometric principles require:</p>
+      <ol style="padding-left:1.2rem">
+        <li>Only theoretically linked item-construct paths are freely estimated</li>
+        <li>All other possible loadings are constrained to zero</li>
+        <li>No covariance exists among residuals</li>
+      </ol>
+      <p style="margin-top:.5rem">A measurement model meeting these conditions is called a <strong>Congeneric Model</strong>, representing good psychometric properties.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- SECTION 2: CFA MODEL             -->
+<!-- ================================ -->
+<h2 class="section-title" data-zh="二、CFA 測量模型的組成要素" data-en="2. Components of a CFA Measurement Model">二、CFA 測量模型的組成要素</h2>
+
+<div class="bilingual">
+  <div class="zh"><p>指定 CFA 測量模型時，需要定義五個要素：</p></div>
+  <div class="en"><p>When specifying a CFA measurement model, five elements must be defined:</p></div>
+</div>
+
+<div class="card-grid" style="margin-top:1rem">
+  <div class="card">
+    <h3>1. <span data-zh="潛在建構" data-en="Latent Constructs">潛在建構</span></h3>
+    <div class="zh-only"><p>以<strong>橢圓形</strong>表示的不可直接觀察的理論概念（如：工作滿意度、組織承諾）。</p></div>
+    <div class="en-only"><p>Unobservable theoretical concepts represented by <strong>ellipses/circles</strong> (e.g., job satisfaction, organizational commitment).</p></div>
+  </div>
+  <div class="card">
+    <h3>2. <span data-zh="觀察變數（指標）" data-en="Measured Variables (Indicators)">觀察變數（指標）</span></h3>
+    <div class="zh-only"><p>以<strong>矩形</strong>表示的實際測量題項（如問卷問題）。</p></div>
+    <div class="en-only"><p>Actual measured items represented by <strong>rectangles</strong> (e.g., survey questions).</p></div>
+  </div>
+  <div class="card">
+    <h3>3. <span data-zh="因素負荷量模式" data-en="Loading Pattern">因素負荷量模式</span></h3>
+    <div class="zh-only"><p>以<strong>單向箭頭</strong>表示建構指向指標的路徑（λ）。在 CFA 中，每個題項只指向一個建構。</p></div>
+    <div class="en-only"><p><strong>Single-headed arrows</strong> from constructs to indicators (λ). In CFA, each item loads on only one construct.</p></div>
+  </div>
+  <div class="card">
+    <h3>4. <span data-zh="建構間關係" data-en="Construct Relationships">建構間關係</span></h3>
+    <div class="zh-only"><p>以<strong>雙向曲線箭頭</strong>表示建構之間的相關或共變異關係。</p></div>
+    <div class="en-only"><p><strong>Two-headed curved arrows</strong> representing correlational or covariance relationships between constructs.</p></div>
+  </div>
+  <div class="card">
+    <h3>5. <span data-zh="誤差變異" data-en="Error Variance">誤差變異</span></h3>
+    <div class="zh-only"><p>每個指標都有一個<strong>誤差項（e）</strong>，代表潛在建構未能解釋的變異量。</p></div>
+    <div class="en-only"><p>Each indicator has an <strong>error term (e)</strong> representing variance not explained by the latent construct.</p></div>
+  </div>
+</div>
+
+<!-- Path Diagram -->
+<div class="diagram">
+  <svg viewBox="0 0 750 300" xmlns="http://www.w3.org/2000/svg" style="max-width:680px">
+    <defs>
+      <marker id="arr2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#2c3e50"/>
+      </marker>
+    </defs>
+
+    <!-- Construct 1 -->
+    <ellipse cx="200" cy="60" rx="100" ry="35" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+    <text x="200" y="55" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Construct A</text>
+    <text x="200" y="72" text-anchor="middle" font-size="11" fill="#6c757d">建構 A</text>
+
+    <!-- Construct 2 -->
+    <ellipse cx="550" cy="60" rx="100" ry="35" fill="#d5f5e3" stroke="#27ae60" stroke-width="2"/>
+    <text x="550" y="55" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Construct B</text>
+    <text x="550" y="72" text-anchor="middle" font-size="11" fill="#6c757d">建構 B</text>
+
+    <!-- Correlation arrow -->
+    <path d="M 300 50 C 350 10 400 10 450 50" fill="none" stroke="#e74c3c" stroke-width="2" marker-end="url(#arr2)"/>
+    <path d="M 450 50 C 400 10 350 10 300 50" fill="none" stroke="#e74c3c" stroke-width="2" marker-end="url(#arr2)"/>
+    <text x="375" y="18" text-anchor="middle" font-size="11" fill="#e74c3c">r / cov</text>
+
+    <!-- Indicators for A -->
+    <line x1="130" y1="95" x2="80" y2="160" stroke="#3498db" stroke-width="2" marker-end="url(#arr2)"/>
+    <line x1="200" y1="95" x2="200" y2="160" stroke="#3498db" stroke-width="2" marker-end="url(#arr2)"/>
+    <line x1="270" y1="95" x2="320" y2="160" stroke="#3498db" stroke-width="2" marker-end="url(#arr2)"/>
+    <text x="90" y="135" text-anchor="middle" font-size="10" fill="#3498db">λ₁</text>
+    <text x="212" y="135" text-anchor="middle" font-size="10" fill="#3498db">λ₂</text>
+    <text x="308" y="135" text-anchor="middle" font-size="10" fill="#3498db">λ₃</text>
+
+    <rect x="45" y="165" width="70" height="35" rx="4" fill="#fff" stroke="#3498db" stroke-width="1.5"/>
+    <text x="80" y="187" text-anchor="middle" font-size="12" fill="#2c3e50">X₁</text>
+    <rect x="165" y="165" width="70" height="35" rx="4" fill="#fff" stroke="#3498db" stroke-width="1.5"/>
+    <text x="200" y="187" text-anchor="middle" font-size="12" fill="#2c3e50">X₂</text>
+    <rect x="285" y="165" width="70" height="35" rx="4" fill="#fff" stroke="#3498db" stroke-width="1.5"/>
+    <text x="320" y="187" text-anchor="middle" font-size="12" fill="#2c3e50">X₃</text>
+
+    <!-- Error terms for A -->
+    <line x1="80" y1="200" x2="80" y2="240" stroke="#999" stroke-width="1.5" marker-end="url(#arr2)"/>
+    <line x1="200" y1="200" x2="200" y2="240" stroke="#999" stroke-width="1.5" marker-end="url(#arr2)"/>
+    <line x1="320" y1="200" x2="320" y2="240" stroke="#999" stroke-width="1.5" marker-end="url(#arr2)"/>
+    <ellipse cx="80" cy="258" rx="22" ry="15" fill="#f8f9fa" stroke="#999" stroke-width="1"/>
+    <text x="80" y="262" text-anchor="middle" font-size="10" fill="#999">e₁</text>
+    <ellipse cx="200" cy="258" rx="22" ry="15" fill="#f8f9fa" stroke="#999" stroke-width="1"/>
+    <text x="200" y="262" text-anchor="middle" font-size="10" fill="#999">e₂</text>
+    <ellipse cx="320" cy="258" rx="22" ry="15" fill="#f8f9fa" stroke="#999" stroke-width="1"/>
+    <text x="320" y="262" text-anchor="middle" font-size="10" fill="#999">e₃</text>
+
+    <!-- Indicators for B -->
+    <line x1="480" y1="95" x2="430" y2="160" stroke="#27ae60" stroke-width="2" marker-end="url(#arr2)"/>
+    <line x1="550" y1="95" x2="550" y2="160" stroke="#27ae60" stroke-width="2" marker-end="url(#arr2)"/>
+    <line x1="620" y1="95" x2="670" y2="160" stroke="#27ae60" stroke-width="2" marker-end="url(#arr2)"/>
+    <text x="442" y="135" text-anchor="middle" font-size="10" fill="#27ae60">λ₄</text>
+    <text x="562" y="135" text-anchor="middle" font-size="10" fill="#27ae60">λ₅</text>
+    <text x="658" y="135" text-anchor="middle" font-size="10" fill="#27ae60">λ₆</text>
+
+    <rect x="395" y="165" width="70" height="35" rx="4" fill="#fff" stroke="#27ae60" stroke-width="1.5"/>
+    <text x="430" y="187" text-anchor="middle" font-size="12" fill="#2c3e50">X₄</text>
+    <rect x="515" y="165" width="70" height="35" rx="4" fill="#fff" stroke="#27ae60" stroke-width="1.5"/>
+    <text x="550" y="187" text-anchor="middle" font-size="12" fill="#2c3e50">X₅</text>
+    <rect x="635" y="165" width="70" height="35" rx="4" fill="#fff" stroke="#27ae60" stroke-width="1.5"/>
+    <text x="670" y="187" text-anchor="middle" font-size="12" fill="#2c3e50">X₆</text>
+
+    <!-- Error terms for B -->
+    <line x1="430" y1="200" x2="430" y2="240" stroke="#999" stroke-width="1.5" marker-end="url(#arr2)"/>
+    <line x1="550" y1="200" x2="550" y2="240" stroke="#999" stroke-width="1.5" marker-end="url(#arr2)"/>
+    <line x1="670" y1="200" x2="670" y2="240" stroke="#999" stroke-width="1.5" marker-end="url(#arr2)"/>
+    <ellipse cx="430" cy="258" rx="22" ry="15" fill="#f8f9fa" stroke="#999" stroke-width="1"/>
+    <text x="430" y="262" text-anchor="middle" font-size="10" fill="#999">e₄</text>
+    <ellipse cx="550" cy="258" rx="22" ry="15" fill="#f8f9fa" stroke="#999" stroke-width="1"/>
+    <text x="550" y="262" text-anchor="middle" font-size="10" fill="#999">e₅</text>
+    <ellipse cx="670" cy="258" rx="22" ry="15" fill="#f8f9fa" stroke="#999" stroke-width="1"/>
+    <text x="670" y="262" text-anchor="middle" font-size="10" fill="#999">e₆</text>
+  </svg>
+  <p class="caption" data-zh="圖：CFA 同源測量模型（Congeneric Model）— 每個指標只歸屬一個建構，殘差間無共變異" data-en="Figure: CFA Congeneric Measurement Model — each indicator loads on one construct, no error covariance">圖：CFA 同源測量模型（Congeneric Model）</p>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="每個建構需要多少指標？" data-en="How Many Indicators Per Construct?">每個建構需要多少指標？</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li><strong>最佳：</strong>每個建構 ≥ 4 個指標（過度識別，可計算適配度）</li>
+        <li><strong>可接受：</strong>3 個指標（恰好識別，df = 0，適配度完美但無意義）</li>
+        <li><strong>避免：</strong>2 個或更少的指標（不足識別，需額外約束條件）</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li><strong>Ideal:</strong> ≥ 4 indicators per construct (overidentified, fit can be assessed)</li>
+        <li><strong>Acceptable:</strong> 3 indicators (just-identified, df = 0, perfect but meaningless fit)</li>
+        <li><strong>Avoid:</strong> 2 or fewer indicators (underidentified, additional constraints needed)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 3: CONSTRUCT VALIDITY IN CFA         -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="三、CFA 中的建構效度評估" data-en="3. Construct Validity Assessment in CFA">三、CFA 中的建構效度評估</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p><strong>建構效度</strong>是 CFA/SEM 的主要目標之一。它評估一組觀察變數是否確實反映了其被設計來衡量的潛在建構。在 CFA 中，需要評估以下五個層面：</p>
+  </div>
+  <div class="en">
+    <p><strong>Construct validity</strong> is a primary objective of CFA/SEM. It assesses whether a set of measured variables actually reflects the theoretical constructs they are designed to measure. In CFA, five aspects are evaluated:</p>
+  </div>
+</div>
+
+<!-- Tab: 5 aspects of construct validity -->
+<div class="tab-container" style="margin-top:1.5rem">
+  <div class="tab-header">
+    <button class="tab-btn active" data-tab="tab-fit" data-zh="1. 適配效度" data-en="1. Fit Validity">1. 適配效度</button>
+    <button class="tab-btn" data-tab="tab-conv" data-zh="2. 聚合效度" data-en="2. Convergent">2. 聚合效度</button>
+    <button class="tab-btn" data-tab="tab-disc" data-zh="3. 區辨效度" data-en="3. Discriminant">3. 區辨效度</button>
+    <button class="tab-btn" data-tab="tab-nomo" data-zh="4. 法則+表面" data-en="4. Nomological+Face">4. 法則+表面</button>
+  </div>
+
+  <!-- Fit Validity -->
+  <div class="tab-panel active" id="tab-fit">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>適配效度（Fit Validity）</h4>
+        <p>CFA 的第一步是確認整體模型與資料的吻合程度。常用的適配度指標：</p>
+        <div class="table-wrap" style="margin-top:.75rem">
+          <table>
+            <thead><tr><th>指標</th><th>門檻值</th><th>說明</th></tr></thead>
+            <tbody>
+              <tr><td>χ²/df</td><td>< 3.0 (寬鬆 < 5.0)</td><td>卡方自由度比</td></tr>
+              <tr><td>CFI</td><td>≥ .95 (可接受 ≥ .90)</td><td>比較適配指標</td></tr>
+              <tr><td>RMSEA</td><td>≤ .06 (可接受 ≤ .08)</td><td>近似均方根誤差</td></tr>
+              <tr><td>SRMR</td><td>≤ .08</td><td>標準化均方根殘差</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:.5rem">適配度達標後，才能進一步評估聚合效度與區辨效度。</p>
+      </div>
+      <div class="en">
+        <h4>Fit Validity</h4>
+        <p>The first step in CFA is confirming overall model fit with the data. Common fit indices:</p>
+        <div class="table-wrap" style="margin-top:.75rem">
+          <table>
+            <thead><tr><th>Index</th><th>Threshold</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>χ²/df</td><td>< 3.0 (lenient < 5.0)</td><td>Chi-square to df ratio</td></tr>
+              <tr><td>CFI</td><td>≥ .95 (acceptable ≥ .90)</td><td>Comparative Fit Index</td></tr>
+              <tr><td>RMSEA</td><td>≤ .06 (acceptable ≤ .08)</td><td>Root Mean Square Error of Approximation</td></tr>
+              <tr><td>SRMR</td><td>≤ .08</td><td>Standardized Root Mean Square Residual</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:.5rem">Only after acceptable fit can convergent and discriminant validity be assessed.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Convergent Validity -->
+  <div class="tab-panel" id="tab-conv">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>聚合效度（Convergent Validity）在 CFA 中的評估</h4>
+        <p>確認同一建構的指標們「聚合」在一起，共享高比例的共同變異。三個評估工具：</p>
+
+        <div class="concept-block" style="margin:1rem 0">
+          <h4>工具一：因素負荷量（Factor Loadings）</h4>
+          <p>標準化負荷量代表指標與其建構之間的關聯強度。</p>
+          <ul style="padding-left:1.2rem">
+            <li><strong>≥ .70</strong>（理想）：λ² = .49，建構解釋了指標約一半的變異</li>
+            <li><strong>≥ .50</strong>（最低門檻）：統計上顯著但仍有較多誤差變異</li>
+            <li><strong>< .50</strong>：考慮刪除該題項</li>
+          </ul>
+        </div>
+
+        <div class="concept-block success" style="margin:1rem 0">
+          <h4>工具二：平均變異萃取量（AVE）</h4>
+          <div class="formula-box">
+            AVE = Σλ²<sub>i</sub> / n
+            <span class="label">= 所有標準化負荷量平方的平均值</span>
+          </div>
+          <p style="margin-top:.5rem"><strong>門檻：AVE ≥ .50</strong></p>
+          <p>AVE = .50 表示建構解釋了其指標 50% 的變異量。低於 .50 代表誤差變異大於被解釋的變異。</p>
+        </div>
+
+        <div class="concept-block" style="margin:1rem 0">
+          <h4>工具三：組合信度（CR）</h4>
+          <div class="formula-box">
+            CR = (Σλ<sub>i</sub>)² / [(Σλ<sub>i</sub>)² + Σe<sub>i</sub>]
+            <span class="label">e<sub>i</sub> = 1 - λ²<sub>i</sub>（各題項的誤差變異）</span>
+          </div>
+          <p style="margin-top:.5rem"><strong>門檻：CR ≥ .70</strong></p>
+          <p>CR 與 Cronbach's α 類似但更精確，因為它考慮了不同題項的負荷量差異。</p>
+        </div>
+      </div>
+      <div class="en">
+        <h4>Convergent Validity Assessment in CFA</h4>
+        <p>Confirms that indicators of a specific construct converge, sharing a high proportion of common variance. Three assessment tools:</p>
+
+        <div class="concept-block" style="margin:1rem 0">
+          <h4>Tool 1: Factor Loadings</h4>
+          <p>Standardized loadings represent the strength of the relationship between indicator and construct.</p>
+          <ul style="padding-left:1.2rem">
+            <li><strong>≥ .70</strong> (ideal): λ² = .49, construct explains about half the indicator's variance</li>
+            <li><strong>≥ .50</strong> (minimum): Statistically significant but more error variance than explained</li>
+            <li><strong>< .50</strong>: Candidate for deletion</li>
+          </ul>
+        </div>
+
+        <div class="concept-block success" style="margin:1rem 0">
+          <h4>Tool 2: Average Variance Extracted (AVE)</h4>
+          <div class="formula-box">
+            AVE = Σλ²<sub>i</sub> / n
+            <span class="label">= mean of all squared standardized loadings</span>
+          </div>
+          <p style="margin-top:.5rem"><strong>Threshold: AVE ≥ .50</strong></p>
+          <p>AVE = .50 means the construct explains 50% of its indicators' variance. Below .50 means more error than explained variance on average.</p>
+        </div>
+
+        <div class="concept-block" style="margin:1rem 0">
+          <h4>Tool 3: Composite Reliability (CR)</h4>
+          <div class="formula-box">
+            CR = (Σλ<sub>i</sub>)² / [(Σλ<sub>i</sub>)² + Σe<sub>i</sub>]
+            <span class="label">e<sub>i</sub> = 1 - λ²<sub>i</sub> (error variance per item)</span>
+          </div>
+          <p style="margin-top:.5rem"><strong>Threshold: CR ≥ .70</strong></p>
+          <p>CR is similar to Cronbach's α but more accurate since it accounts for different loading magnitudes.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Discriminant Validity -->
+  <div class="tab-panel" id="tab-disc">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>區辨效度（Discriminant Validity）在 CFA 中的評估</h4>
+        <p>確認每個建構都是<strong>獨一無二</strong>的，能捕捉到其他建構所未能衡量的現象。</p>
+
+        <div class="concept-block danger" style="margin:1rem 0">
+          <h4>方法一：模型比較法（Model Comparison）</h4>
+          <p>將兩個建構之間的相關固定為 1.0（即合併為一個建構），然後比較此一因素模型與原始二因素模型的適配度差異。若適配度顯著不同，支持區辨效度。</p>
+          <p style="margin-top:.5rem;font-size:.85rem;color:var(--text-light)"><strong>限制：</strong>此方法不夠嚴格，因為即使高達 .90 的相關仍可能產生顯著的適配度差異。</p>
+        </div>
+
+        <div class="concept-block success" style="margin:1rem 0">
+          <h4>方法二：Fornell-Larcker 判準（更嚴格的檢驗）</h4>
+          <p>比較兩個建構各自的 AVE 與它們之間相關係數的平方（r²）：</p>
+          <div class="formula-box">
+            <strong>AVE<sub>A</sub> > r²<sub>AB</sub> 且 AVE<sub>B</sub> > r²<sub>AB</sub></strong>
+            <span class="label">兩個建構的 AVE 都必須大於它們之間相關的平方</span>
+          </div>
+          <p style="margin-top:.75rem"><strong>邏輯：</strong>潛在建構應該解釋其自身指標的變異量（AVE）要比它與另一個建構所共享的變異量（r²）更多。</p>
+        </div>
+
+        <div class="concept-block" style="margin:1rem 0">
+          <h4>交叉負荷的問題</h4>
+          <p>CFA 中若發現顯著的交叉負荷（cross-loadings），即是區辨效度不足的證據。即使允許交叉負荷可改善模型適配度，但這同時承認了建構效度的缺失，應避免這樣做。</p>
+        </div>
+      </div>
+      <div class="en">
+        <h4>Discriminant Validity Assessment in CFA</h4>
+        <p>Confirms that each construct is <strong>truly unique</strong> and captures phenomena other measures do not.</p>
+
+        <div class="concept-block danger" style="margin:1rem 0">
+          <h4>Method 1: Model Comparison</h4>
+          <p>Fix the correlation between two constructs to 1.0 (merge into one construct) and compare the one-factor model fit with the original two-factor model. Significantly different fit supports discriminant validity.</p>
+          <p style="margin-top:.5rem;font-size:.85rem;color:var(--text-light)"><strong>Limitation:</strong> Not strict enough — even correlations as high as .90 can produce significant fit differences.</p>
+        </div>
+
+        <div class="concept-block success" style="margin:1rem 0">
+          <h4>Method 2: Fornell-Larcker Criterion (More Rigorous)</h4>
+          <p>Compare each construct's AVE with the squared correlation (r²) between constructs:</p>
+          <div class="formula-box">
+            <strong>AVE<sub>A</sub> > r²<sub>AB</sub> AND AVE<sub>B</sub> > r²<sub>AB</sub></strong>
+            <span class="label">Both constructs' AVEs must exceed the squared inter-construct correlation</span>
+          </div>
+          <p style="margin-top:.75rem"><strong>Logic:</strong> A latent construct should explain more variance in its own indicators (AVE) than it shares with another construct (r²).</p>
+        </div>
+
+        <div class="concept-block" style="margin:1rem 0">
+          <h4>Cross-Loading Issues</h4>
+          <p>Significant cross-loadings in CFA indicate discriminant validity problems. Even if freeing cross-loadings improves fit, it simultaneously admits a lack of construct validity and should be avoided.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nomological + Face -->
+  <div class="tab-panel" id="tab-nomo">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>表面效度與法則效度</h4>
+        <p><strong>表面效度（Face Validity）：</strong>在進行任何統計測試之前，研究者必須確認每個題項的內容與建構定義一致。在 CFA 中，這是最重要的效度測試，因為沒有對題項含義的理解，就無法正確指定測量理論。</p>
+        <p style="margin-top:.75rem"><strong>法則效度（Nomological Validity）：</strong>檢驗建構之間的相關是否符合理論預期。CFA 輸出中的<strong>建構相關矩陣</strong>可用於此評估。</p>
+        <p style="margin-top:.75rem"><strong>特別注意：</strong>使用已發表的量表時，即使這些量表已在其他研究中展現良好的信效度，研究者仍應仔細檢查：當兩個借用的量表放在同一個測量模型中時，是否存在題項內容重疊的問題。</p>
+      </div>
+      <div class="en">
+        <h4>Face Validity & Nomological Validity</h4>
+        <p><strong>Face Validity:</strong> Before any statistical testing, researchers must confirm each item's content is consistent with the construct definition. In CFA, this is arguably the most important validity test — without understanding item meaning, one cannot correctly specify a measurement theory.</p>
+        <p style="margin-top:.75rem"><strong>Nomological Validity:</strong> Tests whether correlations among constructs make sense theoretically. The <strong>construct correlation matrix</strong> from CFA output is useful for this assessment.</p>
+        <p style="margin-top:.75rem"><strong>Special note:</strong> When using previously published scales, even if they showed good reliability and validity in other research, researchers should carefully check for content overlap when two borrowed scales are used together in a single measurement model.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 4: RULES OF THUMB SUMMARY            -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="四、CFA 建構效度判斷標準彙整（Rules of Thumb 10-1）" data-en="4. CFA Construct Validity Thresholds (Rules of Thumb 10-1)">四、CFA 建構效度判斷標準彙整</h2>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="指標" data-en="Metric">指標</th>
+        <th data-zh="門檻值" data-en="Threshold">門檻值</th>
+        <th data-zh="代表的效度類型" data-en="Validity Type">代表的效度類型</th>
+        <th data-zh="說明" data-en="Explanation">說明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong data-zh="標準化因素負荷量" data-en="Standardized Loading">標準化因素負荷量</strong></td>
+        <td class="highlight-cell">≥ .50 (ideally ≥ .70)</td>
+        <td data-zh="聚合效度" data-en="Convergent">聚合效度</td>
+        <td data-zh="λ² = 該指標被建構解釋的變異比例" data-en="λ² = proportion of variance explained by the construct">λ² = 該指標被建構解釋的變異比例</td>
+      </tr>
+      <tr>
+        <td><strong>AVE</strong></td>
+        <td class="highlight-cell">≥ .50</td>
+        <td data-zh="聚合效度" data-en="Convergent">聚合效度</td>
+        <td data-zh="所有指標 λ² 的平均值" data-en="Average of all indicators' λ²">所有指標 λ² 的平均值</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="組合信度 CR" data-en="Composite Reliability CR">組合信度 CR</strong></td>
+        <td class="highlight-cell">≥ .70</td>
+        <td data-zh="聚合效度 / 信度" data-en="Convergent / Reliability">聚合效度 / 信度</td>
+        <td data-zh="先於效度建立，確認內部一致性" data-en="Established before validity; confirms internal consistency">先於效度建立，確認內部一致性</td>
+      </tr>
+      <tr>
+        <td><strong>AVE vs. r²</strong></td>
+        <td class="highlight-cell">AVE > r² (Fornell-Larcker)</td>
+        <td data-zh="區辨效度" data-en="Discriminant">區辨效度</td>
+        <td data-zh="建構應解釋自身指標更多變異" data-en="Construct should explain more of its own indicators' variance">建構應解釋自身指標更多變異</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="同源模型" data-en="Congeneric Model">同源模型</strong></td>
+        <td data-zh="無交叉負荷、無殘差共變異" data-en="No cross-loadings, no error covariance">無交叉負荷、無殘差共變異</td>
+        <td data-zh="整體建構效度" data-en="Overall construct validity">整體建構效度</td>
+        <td data-zh="良好心理計量的基本要求" data-en="Basic requirement for good psychometrics">良好心理計量的基本要求</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 5: MODEL DIAGNOSTICS                 -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="五、模型診斷工具" data-en="5. Model Diagnostics">五、模型診斷工具</h2>
+
+<div class="card-grid">
+  <div class="card">
+    <h3 data-zh="標準化殘差（Standardized Residuals）" data-en="Standardized Residuals">標準化殘差</h3>
+    <div class="zh-only">
+      <p>觀察共變異與估計共變異的差異除以標準誤。</p>
+      <ul style="padding-left:1.2rem;margin-top:.5rem">
+        <li>< |2.50|：通常不構成問題</li>
+        <li>|2.50| 到 |4.00|：值得關注但不一定要修改</li>
+        <li>> |4.00|：可能需要刪除有問題的題項</li>
+        <li><strong>模式比個別值更重要：</strong>若某個變數與多個其他變數都有高殘差，這比單一高殘差更值得關注</li>
+      </ul>
+    </div>
+    <div class="en-only">
+      <p>Differences between observed and estimated covariances divided by the standard error.</p>
+      <ul style="padding-left:1.2rem;margin-top:.5rem">
+        <li>< |2.50|: Generally not problematic</li>
+        <li>|2.50| to |4.00|: Deserve attention but may not require changes</li>
+        <li>> |4.00|: May need to delete the offending item</li>
+        <li><strong>Patterns matter more than individual values:</strong> One variable with high residuals across many others is more concerning than a single high residual</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 data-zh="修正指標（Modification Indices）" data-en="Modification Indices">修正指標</h3>
+    <div class="zh-only">
+      <p>顯示釋放（估計）任何未估計路徑後，整體模型 χ² 值的減少量。</p>
+      <ul style="padding-left:1.2rem;margin-top:.5rem">
+        <li>MI ≥ 4.0 暗示釋放該路徑可顯著改善適配度</li>
+        <li><strong>但不應僅根據 MI 進行模型修改</strong>——必須有理論支持</li>
+        <li>修正指標是診斷工具，不是模型建構工具</li>
+        <li>CFA 不是探索性工具</li>
+      </ul>
+    </div>
+    <div class="en-only">
+      <p>Shows how much the overall χ² would decrease by freeing (estimating) any non-estimated path.</p>
+      <ul style="padding-left:1.2rem;margin-top:.5rem">
+        <li>MI ≥ 4.0 suggests freeing that path would significantly improve fit</li>
+        <li><strong>Model changes based solely on MI are not recommended</strong> — must have theoretical support</li>
+        <li>Modification indices are diagnostic tools, not model-building tools</li>
+        <li>CFA is not an exploratory tool</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="concept-block danger">
+  <h4 data-zh="模型修改的注意事項（Rules of Thumb 10-5）" data-en="Caveats in Model Respecification (Rules of Thumb 10-5)">模型修改的注意事項</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li>若超過 <strong>20% 的題項</strong>被刪除或重新歸類，應使用<strong>新的資料集</strong>重新驗證</li>
+        <li>刪除一兩個題項屬於微小修改，通常不會損害確認性測試</li>
+        <li>即使某題項表現不佳，若刪除後會違反三指標規則或改變量表含義，可保留</li>
+        <li><strong>理論應始終在模型修改中佔據核心地位</strong></li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li>If more than <strong>20% of items</strong> are deleted or reassigned, a <strong>new dataset</strong> should be used for re-verification</li>
+        <li>Dropping one or two items is a minor modification that generally does not jeopardize confirmatory testing</li>
+        <li>A poorly performing item may be retained if dropping it violates the three-indicator rule or changes scale meaning</li>
+        <li><strong>Theory should always be prominently considered in model modifications</strong></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 6: INTERACTIVE CALCULATORS           -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="六、互動計算器" data-en="6. Interactive Calculators">六、互動計算器</h2>
+
+<!-- AVE Calculator -->
+<div class="calculator">
+  <h3 data-zh="AVE 計算器（平均變異萃取量）" data-en="AVE Calculator (Average Variance Extracted)">AVE 計算器</h3>
+  <div class="bilingual" style="margin-bottom:1rem">
+    <div class="zh"><p>輸入每個指標的<strong>標準化因素負荷量</strong>（用逗號或空格分隔），計算 AVE 值。</p></div>
+    <div class="en"><p>Enter <strong>standardized factor loadings</strong> for each indicator (separated by commas or spaces) to compute AVE.</p></div>
+  </div>
+  <div class="calc-row">
+    <label data-zh="因素負荷量 (λ)：" data-en="Factor loadings (λ):">因素負荷量 (λ)：</label>
+    <input type="text" id="ave-loadings" value="0.78, 0.89, 0.83, 0.87" style="width:260px" placeholder="e.g., 0.78, 0.89, 0.83, 0.87">
+  </div>
+  <button class="calc-btn" onclick="calcAVE()" data-zh="計算 AVE" data-en="Calculate AVE">計算 AVE</button>
+  <div class="calc-result" id="ave-result"></div>
+</div>
+
+<!-- CR Calculator -->
+<div class="calculator">
+  <h3 data-zh="組合信度 CR 計算器" data-en="Composite Reliability (CR) Calculator">組合信度 CR 計算器</h3>
+  <div class="bilingual" style="margin-bottom:1rem">
+    <div class="zh"><p>輸入每個指標的<strong>標準化因素負荷量</strong>（用逗號或空格分隔），計算 CR 值。</p></div>
+    <div class="en"><p>Enter <strong>standardized factor loadings</strong> (separated by commas or spaces) to compute CR.</p></div>
+  </div>
+  <div class="calc-row">
+    <label data-zh="因素負荷量 (λ)：" data-en="Factor loadings (λ):">因素負荷量 (λ)：</label>
+    <input type="text" id="cr-loadings" value="0.78, 0.89, 0.83, 0.87" style="width:260px" placeholder="e.g., 0.78, 0.89, 0.83, 0.87">
+  </div>
+  <button class="calc-btn" onclick="calcCR()" data-zh="計算 CR" data-en="Calculate CR">計算 CR</button>
+  <div class="calc-result" id="cr-result"></div>
+</div>
+
+<!-- Discriminant Validity Checker -->
+<div class="calculator">
+  <h3 data-zh="區辨效度檢驗器（Fornell-Larcker 判準）" data-en="Discriminant Validity Checker (Fornell-Larcker Criterion)">區辨效度檢驗器</h3>
+  <div class="bilingual" style="margin-bottom:1rem">
+    <div class="zh"><p>輸入兩個建構的 AVE 以及它們之間的相關係數，檢驗 Fornell-Larcker 判準。</p></div>
+    <div class="en"><p>Enter the AVE for two constructs and their inter-construct correlation to test the Fornell-Larcker criterion.</p></div>
+  </div>
+  <div class="calc-row">
+    <label data-zh="建構 A 的 AVE：" data-en="Construct A AVE:">建構 A 的 AVE：</label>
+    <input type="number" id="dv-ave1" value="0.71" step="0.01" min="0" max="1" style="width:100px">
+  </div>
+  <div class="calc-row">
+    <label data-zh="建構 B 的 AVE：" data-en="Construct B AVE:">建構 B 的 AVE：</label>
+    <input type="number" id="dv-ave2" value="0.52" step="0.01" min="0" max="1" style="width:100px">
+  </div>
+  <div class="calc-row">
+    <label data-zh="建構間相關 (r)：" data-en="Inter-construct correlation (r):">建構間相關 (r)：</label>
+    <input type="number" id="dv-corr" value="0.65" step="0.01" min="-1" max="1" style="width:100px">
+  </div>
+  <button class="calc-btn" onclick="calcDiscriminant()" data-zh="檢驗區辨效度" data-en="Check Discriminant Validity">檢驗區辨效度</button>
+  <div class="calc-result" id="dv-result"></div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 7: WORKED EXAMPLE                    -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="七、範例演練" data-en="7. Worked Example">七、範例演練</h2>
+
+<div class="card">
+  <h3 data-zh="範例：員工授權感（Empowerment）四題項模型" data-en="Example: Employee Empowerment 4-Item Model">範例：員工授權感（Empowerment）四題項模型</h3>
+  <div class="bilingual">
+    <div class="zh">
+      <p><strong>四個指標的標準化因素負荷量：</strong></p>
+      <ul style="padding-left:1.2rem">
+        <li>X₁：λ = 0.78（這個組織讓我做自己覺得有意義的事情）</li>
+        <li>X₂：λ = 0.89（這個組織讓我有機會在工作中表現卓越）</li>
+        <li>X₃：λ = 0.83（我被鼓勵提出改善組織效能的建議）</li>
+        <li>X₄：λ = 0.87（這個組織鼓勵人們自己解決問題）</li>
+      </ul>
+    </div>
+    <div class="en">
+      <p><strong>Standardized factor loadings for four indicators:</strong></p>
+      <ul style="padding-left:1.2rem">
+        <li>X₁: λ = 0.78 (This organization allows me to do things I find personally satisfying)</li>
+        <li>X₂: λ = 0.89 (This organization provides an opportunity for me to excel in my job)</li>
+        <li>X₃: λ = 0.83 (I am encouraged to make suggestions about effectiveness)</li>
+        <li>X₄: λ = 0.87 (This organization encourages people to solve problems by themselves)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="margin-top:1rem;padding:1rem;background:#f8f9fa;border-radius:var(--radius)">
+    <div class="bilingual">
+      <div class="zh">
+        <p><strong>計算過程：</strong></p>
+        <p>λ² 值：0.78² = 0.608, 0.89² = 0.792, 0.83² = 0.689, 0.87² = 0.757</p>
+        <p><strong>AVE</strong> = (0.608 + 0.792 + 0.689 + 0.757) / 4 = <strong style="color:var(--success)">0.712</strong> ✓ (> .50)</p>
+        <p style="margin-top:.5rem">Σλ = 0.78 + 0.89 + 0.83 + 0.87 = 3.37</p>
+        <p>Σe = (1-0.608) + (1-0.792) + (1-0.689) + (1-0.757) = 1.154</p>
+        <p><strong>CR</strong> = 3.37² / (3.37² + 1.154) = 11.357 / 12.511 = <strong style="color:var(--success)">0.908</strong> ✓ (> .70)</p>
+        <p style="margin-top:.5rem"><strong>結論：</strong>聚合效度良好（AVE = .712 > .50, CR = .908 > .70，所有負荷量 > .70）</p>
+      </div>
+      <div class="en">
+        <p><strong>Calculation:</strong></p>
+        <p>λ² values: 0.78² = 0.608, 0.89² = 0.792, 0.83² = 0.689, 0.87² = 0.757</p>
+        <p><strong>AVE</strong> = (0.608 + 0.792 + 0.689 + 0.757) / 4 = <strong style="color:var(--success)">0.712</strong> ✓ (> .50)</p>
+        <p style="margin-top:.5rem">Σλ = 0.78 + 0.89 + 0.83 + 0.87 = 3.37</p>
+        <p>Σe = (1-0.608) + (1-0.792) + (1-0.689) + (1-0.757) = 1.154</p>
+        <p><strong>CR</strong> = 3.37² / (3.37² + 1.154) = 11.357 / 12.511 = <strong style="color:var(--success)">0.908</strong> ✓ (> .70)</p>
+        <p style="margin-top:.5rem"><strong>Conclusion:</strong> Good convergent validity (AVE = .712 > .50, CR = .908 > .70, all loadings > .70)</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 8: COMPREHENSIVE WORKFLOW            -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="八、CFA 建構效度完整評估流程" data-en="8. Complete CFA Construct Validity Workflow">八、CFA 建構效度完整評估流程</h2>
+
+<div class="diagram">
+  <svg viewBox="0 0 800 520" xmlns="http://www.w3.org/2000/svg" style="max-width:700px">
+    <defs>
+      <marker id="arr3" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#6c757d"/>
+      </marker>
+    </defs>
+
+    <rect x="200" y="10" width="400" height="50" rx="8" fill="#2c3e50" stroke="none"/>
+    <text x="400" y="40" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff">Step 1: Define Constructs (Stage 1)</text>
+
+    <line x1="400" y1="60" x2="400" y2="85" stroke="#6c757d" stroke-width="2" marker-end="url(#arr3)"/>
+
+    <rect x="200" y="85" width="400" height="50" rx="8" fill="#3498db" stroke="none"/>
+    <text x="400" y="105" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff">Step 2: Specify Measurement Model (Stage 2)</text>
+    <text x="400" y="122" text-anchor="middle" font-size="11" fill="#d6eaf8">Congeneric model, ≥3 indicators/construct</text>
+
+    <line x1="400" y1="135" x2="400" y2="160" stroke="#6c757d" stroke-width="2" marker-end="url(#arr3)"/>
+
+    <rect x="200" y="160" width="400" height="50" rx="8" fill="#27ae60" stroke="none"/>
+    <text x="400" y="180" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff">Step 3: Assess Overall Model Fit (Stage 4)</text>
+    <text x="400" y="197" text-anchor="middle" font-size="11" fill="#d5f5e3">CFI ≥ .95, RMSEA ≤ .06, SRMR ≤ .08</text>
+
+    <line x1="400" y1="210" x2="400" y2="235" stroke="#6c757d" stroke-width="2" marker-end="url(#arr3)"/>
+
+    <rect x="200" y="235" width="400" height="50" rx="8" fill="#f39c12" stroke="none"/>
+    <text x="400" y="255" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff">Step 4: Check Factor Loadings</text>
+    <text x="400" y="272" text-anchor="middle" font-size="11" fill="#fef9e7">All λ ≥ .50 (ideally ≥ .70), significant</text>
+
+    <line x1="400" y1="285" x2="400" y2="310" stroke="#6c757d" stroke-width="2" marker-end="url(#arr3)"/>
+
+    <rect x="200" y="310" width="400" height="50" rx="8" fill="#e74c3c" stroke="none"/>
+    <text x="400" y="330" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff">Step 5: Compute CR & AVE</text>
+    <text x="400" y="347" text-anchor="middle" font-size="11" fill="#fadbd8">CR ≥ .70, AVE ≥ .50</text>
+
+    <line x1="400" y1="360" x2="400" y2="385" stroke="#6c757d" stroke-width="2" marker-end="url(#arr3)"/>
+
+    <rect x="200" y="385" width="400" height="50" rx="8" fill="#8e44ad" stroke="none"/>
+    <text x="400" y="405" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff">Step 6: Fornell-Larcker Test</text>
+    <text x="400" y="422" text-anchor="middle" font-size="11" fill="#ebdef0">AVE > r² for all construct pairs</text>
+
+    <line x1="400" y1="435" x2="400" y2="460" stroke="#6c757d" stroke-width="2" marker-end="url(#arr3)"/>
+
+    <rect x="200" y="460" width="400" height="50" rx="8" fill="#1abc9c" stroke="none"/>
+    <text x="400" y="485" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff">Step 7: Face & Nomological Validity ✓</text>
+  </svg>
+  <p class="caption" data-zh="圖：CFA 建構效度完整評估七步驟流程" data-en="Figure: Complete 7-step CFA construct validity assessment workflow">圖：CFA 建構效度完整評估七步驟流程</p>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 9: QUIZ                              -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="九、自我測驗" data-en="9. Self-Assessment Quiz">九、自我測驗</h2>
+
+<div class="quiz">
+  <h3 data-zh="測試你對 CFA 建構效度的理解" data-en="Test Your Understanding of CFA Construct Validity">測試你對 CFA 建構效度的理解</h3>
+
+  <div class="quiz-question">
+    <p data-zh="Q1: 在 CFA 中，同源模型（Congeneric Model）要求什麼條件？" data-en="Q1: What does a congeneric model require in CFA?">Q1: 在 CFA 中，同源模型（Congeneric Model）要求什麼條件？</p>
+    <div class="quiz-option" data-correct="false" data-zh="允許交叉負荷以改善模型適配度" data-en="Allow cross-loadings to improve fit">允許交叉負荷以改善模型適配度</div>
+    <div class="quiz-option" data-correct="true" data-zh="所有交叉負荷固定為零，殘差間無共變異" data-en="All cross-loadings fixed to zero, no error covariance">所有交叉負荷固定為零，殘差間無共變異</div>
+    <div class="quiz-option" data-correct="false" data-zh="所有因素負荷量必須相等（tau 等值）" data-en="All factor loadings must be equal (tau equivalence)">所有因素負荷量必須相等（tau 等值）</div>
+    <div class="quiz-option" data-correct="false" data-zh="每個建構至少需要 5 個指標" data-en="Each construct needs at least 5 indicators">每個建構至少需要 5 個指標</div>
+    <div class="quiz-feedback" data-zh="正確！同源模型是良好心理計量屬性的代表。它要求：(1) 每個指標只歸屬一個建構，(2) 所有交叉負荷固定為零，(3) 殘差項之間無共變異。即使放寬這些條件可能改善適配度，但這會損害建構效度。" data-en="Correct! A congeneric model represents good psychometric properties. It requires: (1) each indicator loads on only one construct, (2) all cross-loadings fixed to zero, (3) no error covariance. Even if relaxing these improves fit, it compromises construct validity.">正確！同源模型要求所有交叉負荷為零且殘差間無共變異。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q2: 一個建構有 4 個指標，其標準化負荷量分別為 .65, .72, .81, .58。請問 AVE 是否達到門檻？" data-en="Q2: A construct has 4 indicators with standardized loadings .65, .72, .81, .58. Does the AVE meet the threshold?">Q2: 一個建構有 4 個指標，其標準化負荷量分別為 .65, .72, .81, .58。請問 AVE 是否達到門檻？</p>
+    <div class="quiz-option" data-correct="true" data-zh="否，AVE = 0.484，未達到 .50 門檻" data-en="No, AVE = 0.484, does not meet .50 threshold">否，AVE = 0.484，未達到 .50 門檻</div>
+    <div class="quiz-option" data-correct="false" data-zh="是，AVE 達到門檻" data-en="Yes, AVE meets the threshold">是，AVE 達到門檻</div>
+    <div class="quiz-option" data-correct="false" data-zh="無法判斷，需要更多資訊" data-en="Cannot determine, need more information">無法判斷，需要更多資訊</div>
+    <div class="quiz-feedback" data-zh="正確！AVE = (.65² + .72² + .81² + .58²) / 4 = (.4225 + .5184 + .6561 + .3364) / 4 = 1.9334 / 4 = 0.4834。未達到 .50 門檻，聚合效度不足。可能需要刪除負荷量最低的指標（.58）或改善題項。" data-en="Correct! AVE = (.65² + .72² + .81² + .58²) / 4 = 0.4834. Does not meet .50 threshold — convergent validity is insufficient. Consider dropping the lowest loading item (.58) or improving items.">正確！AVE = 0.4834，未達 .50 門檻。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q3: CFA 修正指標（MI）建議釋放某條路徑，你應該怎麼做？" data-en="Q3: A CFA modification index suggests freeing a path. What should you do?">Q3: CFA 修正指標（MI）建議釋放某條路徑，你應該怎麼做？</p>
+    <div class="quiz-option" data-correct="false" data-zh="立即釋放該路徑以改善適配度" data-en="Immediately free the path to improve fit">立即釋放該路徑以改善適配度</div>
+    <div class="quiz-option" data-correct="false" data-zh="釋放所有 MI ≥ 4.0 的路徑" data-en="Free all paths with MI ≥ 4.0">釋放所有 MI ≥ 4.0 的路徑</div>
+    <div class="quiz-option" data-correct="true" data-zh="先檢視其他診斷指標，並只在有理論支持時才考慮修改" data-en="Consult other diagnostics and only consider changes with theoretical justification">先檢視其他診斷指標，並只在有理論支持時才考慮修改</div>
+    <div class="quiz-option" data-correct="false" data-zh="忽略所有修正指標" data-en="Ignore all modification indices">忽略所有修正指標</div>
+    <div class="quiz-feedback" data-zh="正確！僅根據修正指標進行修改不符合 CFA 和 SEM 的理論基礎。修正指標是診斷工具，提供潛在交叉負荷的資訊。任何修改都必須有理論支持，並應同時參考殘差診斷。" data-en="Correct! Making changes based solely on modification indices is inconsistent with the theoretical basis of CFA/SEM. MIs are diagnostic tools. Any modification must have theoretical support and should be informed by residual diagnostics.">正確！修正指標是診斷工具，不是自動修改工具。</div>
+  </div>
+</div>
+
+
+</div><!-- container -->
+</main>
+
+<!-- Navigation -->
+<div style="padding:2rem 0;background:#f0f3f5">
+  <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+    <a href="ch3-reliability-validity.html" style="font-weight:600;background:var(--accent);color:#fff;padding:.5rem 1rem;border-radius:4px" data-zh="← 上一章：信效度基礎" data-en="← Previous: R&V Basics">← 上一章：信效度基礎</a>
+    <a href="../index.html" style="font-weight:600" data-zh="回到首頁 →" data-en="Back to Home →">回到首頁 →</a>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>Hair, J.F., Black, W.C., Babin, B.J., & Anderson, R.E. (2019). <em>Multivariate Data Analysis</em> (8th ed.).</p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

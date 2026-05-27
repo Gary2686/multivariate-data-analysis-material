@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>信度與效度：基本概念與衡量 | Reliability & Validity</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="lang-zh">
+<div class="progress-bar"><div class="fill"></div></div>
+
+<nav class="top-nav">
+  <div class="container">
+    <a href="../index.html" class="brand" data-zh="多變量資料分析" data-en="Multivariate Data Analysis">多變量資料分析</a>
+    <div class="nav-links">
+      <a href="../index.html" data-zh="首頁" data-en="Home">首頁</a>
+      <a href="ch3-reliability-validity.html" class="active" data-zh="信效度基礎" data-en="R&V Basics">信效度基礎</a>
+      <a href="ch10-cfa-validity.html" data-zh="CFA效度" data-en="CFA Validity">CFA效度</a>
+      <button class="lang-toggle">EN</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1 data-zh="信度與效度：基本概念與衡量" data-en="Reliability & Validity: Concepts and Measurement">信度與效度：基本概念與衡量</h1>
+    <p data-zh="Ch.1 測量誤差 + Ch.3 總加量表之信效度評估" data-en="Ch.1 Measurement Error + Ch.3 Summated Scale Reliability & Validity Assessment">Ch.1 測量誤差 + Ch.3 總加量表之信效度評估</p>
+  </div>
+</header>
+
+<main class="section">
+<div class="container">
+
+<!-- ============================================ -->
+<!-- SECTION 1: WHY RELIABILITY & VALIDITY MATTER -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="一、為什麼信度與效度很重要？" data-en="1. Why Do Reliability & Validity Matter?">一、為什麼信度與效度很重要？</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>在多變量分析中，我們依賴<strong>變數的組合（variate）</strong>來進行估計與推論。但所有觀察到的變數都包含某種程度的<strong>測量誤差（measurement error）</strong>。</p>
+    <p style="margin-top:.75rem">測量誤差會在觀察值中加入「雜訊」（noise），使得：</p>
+    <ul style="margin-top:.5rem;padding-left:1.5rem">
+      <li>相關係數被<strong>低估</strong>（弱化真實關係）</li>
+      <li>平均數<strong>不精確</strong></li>
+      <li>多變量模型的<strong>統計檢力下降</strong></li>
+    </ul>
+  </div>
+  <div class="en">
+    <p>In multivariate analysis, we rely on <strong>combinations of variables (variates)</strong> for estimation and inference. But all observed variables contain some degree of <strong>measurement error</strong>.</p>
+    <p style="margin-top:.75rem">Measurement error adds "noise" to observed variables, causing:</p>
+    <ul style="margin-top:.5rem;padding-left:1.5rem">
+      <li>Correlations to be <strong>weakened</strong> (masking true relationships)</li>
+      <li>Means to be <strong>less precise</strong></li>
+      <li><strong>Reduced statistical power</strong> in multivariate models</li>
+    </ul>
+  </div>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="核心公式：觀察值 = 真實值 + 測量誤差" data-en="Core Formula: Observed Value = True Value + Measurement Error">核心公式：觀察值 = 真實值 + 測量誤差</h4>
+  <div class="formula-box">
+    X<sub>observed</sub> = X<sub>true</sub> + e<sub>error</sub>
+    <span class="label" data-zh="減少測量誤差是研究者的首要目標之一" data-en="Reducing measurement error is a primary goal for researchers">減少測量誤差是研究者的首要目標之一</span>
+  </div>
+</div>
+
+<div class="concept-block success">
+  <h4 data-zh="解決方案：多重衡量（Multivariate Measurement）" data-en="Solution: Multivariate Measurement">解決方案：多重衡量（Multivariate Measurement）</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p>使用<strong>多個指標（indicators）</strong>來衡量同一概念，而非僅依賴單一問項。多個回應的「平均值」更能反映真實值，這就是<strong>總加量表（summated scales）</strong>的核心思維。</p>
+    </div>
+    <div class="en">
+      <p>Use <strong>multiple indicators</strong> to measure the same concept rather than relying on a single item. The "average" across related responses more accurately reflects the true value — this is the rationale behind <strong>summated scales</strong>.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================================ -->
+<!-- SECTION 2: VALIDITY              -->
+<!-- ================================ -->
+<h2 class="section-title" data-zh="二、效度（Validity）" data-en="2. Validity">二、效度（Validity）</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p><strong>效度</strong>是指測量工具<strong>精確代表所欲衡量概念的程度</strong>。即使測量非常精確，如果問的是「錯誤的問題」，仍然無效。</p>
+    <p style="margin-top:.5rem">例如：想衡量「可支配收入」，卻問「家庭總收入」→ 精確但無效。</p>
+  </div>
+  <div class="en">
+    <p><strong>Validity</strong> is the degree to which a measure <strong>accurately represents what it is supposed to</strong>. Even if measurement is precise, asking the "wrong question" makes it invalid.</p>
+    <p style="margin-top:.5rem">Example: Wanting to measure "discretionary income" but asking about "total household income" → precise but invalid.</p>
+  </div>
+</div>
+
+<!-- Validity Types -->
+<h3 style="margin-top:1.5rem" data-zh="效度的四種類型" data-en="Four Types of Validity">效度的四種類型</h3>
+
+<div class="card-grid" style="margin-top:1rem">
+  <div class="card">
+    <h3 data-zh="1. 內容效度 / 表面效度" data-en="1. Content / Face Validity">1. 內容效度 / 表面效度</h3>
+    <div class="zh-only">
+      <p><strong>定義：</strong>量表項目與概念定義之間的對應程度。</p>
+      <p><strong>評估方式：</strong>透過專家判斷、前測、多個子群體檢驗等<strong>主觀方式</strong>進行評估。</p>
+      <p><strong>重要性：</strong>這是最基本的效度，必須在任何統計測試之前先確認。</p>
+      <p style="margin-top:.5rem;font-size:.85rem;color:var(--text-light)">Content validity assesses whether items match the conceptual definition through expert ratings and pretests.</p>
+    </div>
+    <div class="en-only">
+      <p><strong>Definition:</strong> The correspondence between individual items and the conceptual definition of the construct.</p>
+      <p><strong>Assessment:</strong> Subjective evaluation through expert judges, pretests, and multiple subpopulations.</p>
+      <p><strong>Importance:</strong> The most fundamental validity; must be established before any statistical testing.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 data-zh="2. 聚合效度（Convergent Validity）" data-en="2. Convergent Validity">2. 聚合效度（Convergent Validity）</h3>
+    <div class="zh-only">
+      <p><strong>定義：</strong>衡量同一概念的兩個或多個指標之間<strong>高度相關</strong>的程度。</p>
+      <p><strong>評估方式：</strong></p>
+      <ul style="padding-left:1.2rem">
+        <li>因素負荷量（Factor loadings）應 ≥ .50，理想 ≥ .70</li>
+        <li>平均變異萃取量（AVE）應 ≥ .50</li>
+        <li>組合信度（CR）應 ≥ .70</li>
+      </ul>
+      <p style="margin-top:.5rem;font-size:.85rem;color:var(--text-light)">High correlations between measures of the same concept indicate convergent validity.</p>
+    </div>
+    <div class="en-only">
+      <p><strong>Definition:</strong> The degree to which two or more measures of the same concept are <strong>highly correlated</strong>.</p>
+      <p><strong>Assessment:</strong></p>
+      <ul style="padding-left:1.2rem">
+        <li>Factor loadings should be ≥ .50, ideally ≥ .70</li>
+        <li>Average Variance Extracted (AVE) should be ≥ .50</li>
+        <li>Composite Reliability (CR) should be ≥ .70</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 data-zh="3. 區辨效度（Discriminant Validity）" data-en="3. Discriminant Validity">3. 區辨效度（Discriminant Validity）</h3>
+    <div class="zh-only">
+      <p><strong>定義：</strong>兩個概念上相似但<strong>理論上不同的概念</strong>之間，確實存在<strong>差異</strong>的程度。</p>
+      <p><strong>評估方式：</strong></p>
+      <ul style="padding-left:1.2rem">
+        <li>量表與相似但不同的概念之間的相關應該<strong>低</strong></li>
+        <li>Fornell-Larcker判準：AVE > 兩建構間相關的平方</li>
+      </ul>
+      <p style="margin-top:.5rem;font-size:.85rem;color:var(--text-light)">Measures should be sufficiently different from conceptually similar but distinct constructs.</p>
+    </div>
+    <div class="en-only">
+      <p><strong>Definition:</strong> The degree to which two conceptually similar concepts are truly <strong>distinct</strong>.</p>
+      <p><strong>Assessment:</strong></p>
+      <ul style="padding-left:1.2rem">
+        <li>Correlation with similar but distinct measures should be <strong>low</strong></li>
+        <li>Fornell-Larcker criterion: AVE > squared correlation between constructs</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 data-zh="4. 法則效度（Nomological Validity）" data-en="4. Nomological Validity">4. 法則效度（Nomological Validity）</h3>
+    <div class="zh-only">
+      <p><strong>定義：</strong>量表在理論模型中能<strong>準確預測其他概念</strong>的程度。</p>
+      <p><strong>評估方式：</strong>檢驗量表是否展現出理論或過去研究所支持的關係模式。</p>
+      <p><strong>邏輯：</strong>如果理論預測 A → B，而我們的量表所測得的 A 確實與 B 有預期的關聯，則具備法則效度。</p>
+      <p style="margin-top:.5rem;font-size:.85rem;color:var(--text-light)">Tests whether the scale demonstrates theoretically supported relationships with other concepts.</p>
+    </div>
+    <div class="en-only">
+      <p><strong>Definition:</strong> The degree to which the scale makes <strong>accurate predictions of other concepts</strong> in a theoretically-based model.</p>
+      <p><strong>Assessment:</strong> Examine whether the scale demonstrates relationships that theory or prior research supports.</p>
+      <p><strong>Logic:</strong> If theory predicts A → B, and our measure of A does relate to B as expected, nomological validity is supported.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Validity Comparison Table -->
+<div class="table-wrap" style="margin-top:1.5rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="效度類型" data-en="Validity Type">效度類型</th>
+        <th data-zh="核心問題" data-en="Core Question">核心問題</th>
+        <th data-zh="評估方法" data-en="Assessment Method">評估方法</th>
+        <th data-zh="期望結果" data-en="Expected Result">期望結果</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-zh="內容/表面效度" data-en="Content/Face">內容/表面效度</td>
+        <td data-zh="項目是否符合概念定義？" data-en="Do items match the definition?">項目是否符合概念定義？</td>
+        <td data-zh="專家判斷、前測" data-en="Expert judgment, pretests">專家判斷、前測</td>
+        <td data-zh="主觀一致性" data-en="Subjective agreement">主觀一致性</td>
+      </tr>
+      <tr>
+        <td data-zh="聚合效度" data-en="Convergent">聚合效度</td>
+        <td data-zh="相同概念的指標是否相關？" data-en="Do same-concept indicators correlate?">相同概念的指標是否相關？</td>
+        <td data-zh="因素負荷量、AVE、CR" data-en="Factor loadings, AVE, CR">因素負荷量、AVE、CR</td>
+        <td data-zh="高相關 / 高負荷量" data-en="High correlation / loadings">高相關 / 高負荷量</td>
+      </tr>
+      <tr>
+        <td data-zh="區辨效度" data-en="Discriminant">區辨效度</td>
+        <td data-zh="不同概念是否真正不同？" data-en="Are different concepts truly distinct?">不同概念是否真正不同？</td>
+        <td data-zh="AVE vs. r², 模型比較" data-en="AVE vs. r², model comparison">AVE vs. r², 模型比較</td>
+        <td data-zh="低跨概念相關" data-en="Low cross-concept correlation">低跨概念相關</td>
+      </tr>
+      <tr>
+        <td data-zh="法則效度" data-en="Nomological">法則效度</td>
+        <td data-zh="量表能否如理論預測？" data-en="Does the scale predict as theory suggests?">量表能否如理論預測？</td>
+        <td data-zh="理論關係驗證" data-en="Theoretical relationship test">理論關係驗證</td>
+        <td data-zh="符合理論預期" data-en="Matches theoretical expectations">符合理論預期</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ================================ -->
+<!-- SECTION 3: RELIABILITY           -->
+<!-- ================================ -->
+<h2 class="section-title" data-zh="三、信度（Reliability）" data-en="3. Reliability">三、信度（Reliability）</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p><strong>信度</strong>是指觀察變數衡量「真實值」且「無誤差」的程度。它關心的不是「我們是否測了對的東西」（那是效度的問題），而是「我們測量的方式是否一致」。</p>
+    <p style="margin-top:.5rem">信度與效度的關係：<strong>有效度必然有信度，但有信度不一定有效度</strong>。</p>
+  </div>
+  <div class="en">
+    <p><strong>Reliability</strong> is the degree to which the observed variable measures the "true" value and is "error free." It concerns not "whether we measured the right thing" (that's validity) but "whether our measurement is consistent."</p>
+    <p style="margin-top:.5rem">The relationship: <strong>Validity implies reliability, but reliability does not imply validity</strong>.</p>
+  </div>
+</div>
+
+<!-- Reliability Types -->
+<div class="tab-container" style="margin-top:1.5rem">
+  <div class="tab-header">
+    <button class="tab-btn active" data-tab="tab-retest" data-zh="再測信度" data-en="Test-Retest">再測信度</button>
+    <button class="tab-btn" data-tab="tab-internal" data-zh="內部一致性" data-en="Internal Consistency">內部一致性</button>
+    <button class="tab-btn" data-tab="tab-composite" data-zh="組合信度 CR" data-en="Composite Reliability">組合信度 CR</button>
+  </div>
+
+  <div class="tab-panel active" id="tab-retest">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>再測信度（Test-Retest Reliability）</h4>
+        <p>在兩個不同時間點對同一群受試者進行相同的測量，比較兩次結果的一致性。</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>目的：</strong>確保測量結果不會因時間而產生過大的變異</li>
+          <li><strong>評估：</strong>計算兩次測量的相關係數</li>
+          <li><strong>限制：</strong>受測者可能因記憶效果或練習效果而影響結果</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>Test-Retest Reliability</h4>
+        <p>Measures consistency between responses of the same individuals at two points in time.</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>Purpose:</strong> Ensure responses are not too varied across time periods</li>
+          <li><strong>Assessment:</strong> Correlation between the two measurements</li>
+          <li><strong>Limitation:</strong> Memory or practice effects may influence results</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-internal">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>內部一致性（Internal Consistency）— Cronbach's Alpha</h4>
+        <p>最常用的信度指標。評估量表中各題項之間的一致性程度。</p>
+        <div class="formula-box" style="margin:1rem 0">
+          <strong>Cronbach's α = (k / (k-1)) × (1 - Σσ²<sub>i</sub> / σ²<sub>total</sub>)</strong>
+          <span class="label">k = 題項數, σ²<sub>i</sub> = 各題項變異數, σ²<sub>total</sub> = 總分變異數</span>
+        </div>
+        <p><strong>判斷標準（Hair et al.）：</strong></p>
+        <ul style="padding-left:1.2rem">
+          <li>α ≥ .70：良好，可接受的基本門檻</li>
+          <li>α ≥ .60：僅在探索性研究中可接受</li>
+          <li>α < .60：信度不足，需要改善量表</li>
+          <li>題項數越多（接近10題以上），門檻值應提高</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>Internal Consistency — Cronbach's Alpha</h4>
+        <p>The most commonly used reliability measure. Assesses consistency among variables in a summated scale.</p>
+        <div class="formula-box" style="margin:1rem 0">
+          <strong>Cronbach's α = (k / (k-1)) × (1 - Σσ²<sub>i</sub> / σ²<sub>total</sub>)</strong>
+          <span class="label">k = number of items, σ²<sub>i</sub> = item variances, σ²<sub>total</sub> = total score variance</span>
+        </div>
+        <p><strong>Thresholds (Hair et al.):</strong></p>
+        <ul style="padding-left:1.2rem">
+          <li>α ≥ .70: Good, basic acceptable threshold</li>
+          <li>α ≥ .60: Acceptable only in exploratory research</li>
+          <li>α < .60: Insufficient reliability, scale needs improvement</li>
+          <li>Threshold should be raised as items approach 10 or more</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="concept-block">
+      <h4 data-zh="進階診斷工具" data-en="Advanced Diagnostics">進階診斷工具</h4>
+      <div class="bilingual">
+        <div class="zh">
+          <p><strong>項目-總分相關（Item-to-total correlation）：</strong>每個題項與總分之間的相關。低相關的題項可能需要刪除。</p>
+          <p><strong>刪除後的 Alpha（Alpha if item deleted）：</strong>如果刪除某題後 Alpha 值上升，代表該題項可能降低了量表信度。</p>
+          <p><strong>項目間相關（Inter-item correlations）：</strong>每對題項之間的相關係數。應該都是正向且適度的。</p>
+        </div>
+        <div class="en">
+          <p><strong>Item-to-total correlation:</strong> Correlation of each item with the summated scale score. Items with low correlations may need to be deleted.</p>
+          <p><strong>Alpha if item deleted:</strong> If Alpha increases when an item is removed, that item may be reducing scale reliability.</p>
+          <p><strong>Inter-item correlations:</strong> Correlations between every pair of items. Should all be positive and moderate.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-composite">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>組合信度（Composite Reliability, CR）</h4>
+        <p>在 SEM / CFA 中更常使用的信度指標，基於因素負荷量計算。</p>
+        <div class="formula-box" style="margin:1rem 0">
+          <strong>CR = (Σλ<sub>i</sub>)² / [(Σλ<sub>i</sub>)² + Σe<sub>i</sub>]</strong>
+          <span class="label">λ<sub>i</sub> = 標準化因素負荷量, e<sub>i</sub> = 誤差變異 (1 - λ²<sub>i</sub>)</span>
+        </div>
+        <p><strong>判斷標準：</strong>CR ≥ .70 表示具有足夠的內部一致性。</p>
+        <p style="margin-top:.5rem"><strong>與 Cronbach's α 的差異：</strong>CR 考慮了不同題項的因素負荷量差異（加權計算），而 α 假設所有題項權重相等。因此 CR 通常被認為較 α 更為準確。</p>
+      </div>
+      <div class="en">
+        <h4>Composite Reliability (CR)</h4>
+        <p>More commonly used in SEM/CFA contexts, calculated from factor loadings.</p>
+        <div class="formula-box" style="margin:1rem 0">
+          <strong>CR = (Σλ<sub>i</sub>)² / [(Σλ<sub>i</sub>)² + Σe<sub>i</sub>]</strong>
+          <span class="label">λ<sub>i</sub> = standardized factor loading, e<sub>i</sub> = error variance (1 - λ²<sub>i</sub>)</span>
+        </div>
+        <p><strong>Threshold:</strong> CR ≥ .70 indicates adequate internal consistency.</p>
+        <p style="margin-top:.5rem"><strong>Difference from Cronbach's α:</strong> CR accounts for different factor loadings (weighted), while α assumes equal weights. Thus CR is generally considered more accurate.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ======================================== -->
+<!-- SECTION 4: SUMMATED SCALE CONSTRUCTION   -->
+<!-- ======================================== -->
+<h2 class="section-title" data-zh="四、總加量表建構的四個要素" data-en="4. Four Elements of Summated Scale Construction">四、總加量表建構的四個要素</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>根據 Hair et al.，建構一個好的總加量表需要依序檢驗以下四個要素：</p>
+  </div>
+  <div class="en">
+    <p>According to Hair et al., constructing a good summated scale requires checking four elements in order:</p>
+  </div>
+</div>
+
+<!-- Decision Flow -->
+<div class="diagram">
+  <svg viewBox="0 0 800 380" xmlns="http://www.w3.org/2000/svg" style="max-width:700px">
+    <!-- Step 1 -->
+    <rect x="250" y="10" width="300" height="60" rx="8" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+    <text x="400" y="35" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">Step 1: Conceptual Definition</text>
+    <text x="400" y="55" text-anchor="middle" font-size="12" fill="#6c757d">概念定義 → Content Validity</text>
+    <line x1="400" y1="70" x2="400" y2="100" stroke="#3498db" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <!-- Step 2 -->
+    <rect x="250" y="100" width="300" height="60" rx="8" fill="#d5f5e3" stroke="#27ae60" stroke-width="2"/>
+    <text x="400" y="125" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">Step 2: Dimensionality</text>
+    <text x="400" y="145" text-anchor="middle" font-size="12" fill="#6c757d">單一維度檢驗 → EFA / CFA</text>
+    <line x1="400" y1="160" x2="400" y2="190" stroke="#27ae60" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <!-- Step 3 -->
+    <rect x="250" y="190" width="300" height="60" rx="8" fill="#fdebd0" stroke="#f39c12" stroke-width="2"/>
+    <text x="400" y="215" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">Step 3: Reliability</text>
+    <text x="400" y="235" text-anchor="middle" font-size="12" fill="#6c757d">信度檢驗 → Cronbach's α / CR</text>
+    <line x1="400" y1="250" x2="400" y2="280" stroke="#f39c12" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <!-- Step 4 -->
+    <rect x="250" y="280" width="300" height="60" rx="8" fill="#fadbd8" stroke="#e74c3c" stroke-width="2"/>
+    <text x="400" y="305" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">Step 4: Construct Validity</text>
+    <text x="400" y="325" text-anchor="middle" font-size="12" fill="#6c757d">建構效度 → Conv. / Disc. / Nomo.</text>
+
+    <!-- Arrow marker -->
+    <defs>
+      <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#6c757d"/>
+      </marker>
+    </defs>
+  </svg>
+  <p class="caption" data-zh="圖：總加量表建構流程 — 必須依序完成每個步驟" data-en="Figure: Summated scale construction process — each step must be completed in order">圖：總加量表建構流程 — 必須依序完成每個步驟</p>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="重要提醒（Rules of Thumb 3-7）" data-en="Important Reminders (Rules of Thumb 3-7)">重要提醒（Rules of Thumb 3-7）</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li>量表再好也只取決於所用的題項品質——即使通過所有統計檢驗，沒有理論基礎仍然無用</li>
+        <li>在評估信度之前，必須先以 EFA 或 CFA 確認單一維度性</li>
+        <li>Cronbach's α 應至少達到 .70（探索性研究可放寬到 .60）</li>
+        <li>確認信度後，才能進一步評估效度</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li>A scale is only as good as its items — even if it passes all empirical tests, it is useless without theoretical justification</li>
+        <li>Must first confirm unidimensionality with EFA or CFA before assessing reliability</li>
+        <li>Cronbach's α should exceed .70 (.60 acceptable for exploratory research)</li>
+        <li>Once reliability is established, then assess validity</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ======================================== -->
+<!-- SECTION 5: THRESHOLD SUMMARY TABLE       -->
+<!-- ======================================== -->
+<h2 class="section-title" data-zh="五、信效度指標判斷標準彙整" data-en="5. Reliability & Validity Threshold Summary">五、信效度指標判斷標準彙整</h2>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="指標" data-en="Metric">指標</th>
+        <th data-zh="門檻值" data-en="Threshold">門檻值</th>
+        <th data-zh="衡量對象" data-en="What It Measures">衡量對象</th>
+        <th data-zh="出處" data-en="Source">出處</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Cronbach's α</strong></td>
+        <td class="highlight-cell">≥ .70 (.60 for exploratory)</td>
+        <td data-zh="內部一致性信度" data-en="Internal consistency reliability">內部一致性信度</td>
+        <td>Ch.3, Rules of Thumb 3-7</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="組合信度 CR" data-en="Composite Reliability CR">組合信度 CR</strong></td>
+        <td class="highlight-cell">≥ .70</td>
+        <td data-zh="建構信度（CFA）" data-en="Construct reliability (CFA)">建構信度（CFA）</td>
+        <td>Ch.10, Rules of Thumb 10-1</td>
+      </tr>
+      <tr>
+        <td><strong>AVE</strong></td>
+        <td class="highlight-cell">≥ .50</td>
+        <td data-zh="聚合效度" data-en="Convergent validity">聚合效度</td>
+        <td>Ch.10, Rules of Thumb 10-1</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="因素負荷量" data-en="Factor Loading">因素負荷量</strong></td>
+        <td class="highlight-cell">≥ .50 (ideally ≥ .70)</td>
+        <td data-zh="聚合效度 / 項目品質" data-en="Convergent validity / item quality">聚合效度 / 項目品質</td>
+        <td>Ch.10, Rules of Thumb 10-1</td>
+      </tr>
+      <tr>
+        <td><strong>AVE vs. r²</strong></td>
+        <td class="highlight-cell">AVE > r² (Fornell-Larcker)</td>
+        <td data-zh="區辨效度" data-en="Discriminant validity">區辨效度</td>
+        <td>Ch.10, Rules of Thumb 10-1</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="標準化殘差" data-en="Std. Residuals">標準化殘差</strong></td>
+        <td>< |2.50| acceptable; > |4.00| problematic</td>
+        <td data-zh="模型適配診斷" data-en="Model fit diagnostics">模型適配診斷</td>
+        <td>Ch.10, Rules of Thumb 10-5</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ======================================== -->
+<!-- SECTION 6: INTERACTIVE CALCULATOR        -->
+<!-- ======================================== -->
+<h2 class="section-title" data-zh="六、互動計算器" data-en="6. Interactive Calculators">六、互動計算器</h2>
+
+<!-- Cronbach's Alpha Calculator -->
+<div class="calculator">
+  <h3 data-zh="Cronbach's Alpha 計算器" data-en="Cronbach's Alpha Calculator">Cronbach's Alpha 計算器</h3>
+  <div class="bilingual" style="margin-bottom:1rem">
+    <div class="zh"><p>輸入題項數、各題項變異數之和、以及總分變異數來計算 Cronbach's α。</p></div>
+    <div class="en"><p>Enter the number of items, sum of item variances, and total score variance to compute Cronbach's α.</p></div>
+  </div>
+  <div class="calc-row">
+    <label data-zh="題項數 (k)：" data-en="Number of items (k):">題項數 (k)：</label>
+    <input type="number" id="alpha-k" value="5" min="2" max="100">
+  </div>
+  <div class="calc-row">
+    <label data-zh="Σσ²ᵢ (各題項變異數之和)：" data-en="Σσ²ᵢ (sum of item variances):">Σσ²ᵢ (各題項變異數之和)：</label>
+    <input type="number" id="alpha-sumvar" value="8.2" step="0.1" style="width:100px">
+  </div>
+  <div class="calc-row">
+    <label data-zh="σ²total (總分變異數)：" data-en="σ²total (total score variance):">σ²total (總分變異數)：</label>
+    <input type="number" id="alpha-totalvar" value="25.6" step="0.1" style="width:100px">
+  </div>
+  <button class="calc-btn" onclick="calcAlpha()" data-zh="計算 α" data-en="Calculate α">計算 α</button>
+  <div class="calc-result" id="alpha-result"></div>
+</div>
+
+
+<!-- ======================================== -->
+<!-- SECTION 7: QUIZ                          -->
+<!-- ======================================== -->
+<h2 class="section-title" data-zh="七、自我測驗" data-en="7. Self-Assessment Quiz">七、自我測驗</h2>
+
+<div class="quiz">
+  <h3 data-zh="測試你對信效度的理解" data-en="Test Your Understanding of Reliability & Validity">測試你對信效度的理解</h3>
+
+  <div class="quiz-question">
+    <p data-zh="Q1: 「效度」與「信度」的關係，下列何者正確？" data-en="Q1: Which statement about the relationship between validity and reliability is correct?">Q1: 「效度」與「信度」的關係，下列何者正確？</p>
+    <div class="quiz-option" data-correct="false" data-zh="有信度就一定有效度" data-en="Reliability guarantees validity">有信度就一定有效度</div>
+    <div class="quiz-option" data-correct="true" data-zh="有效度就一定有信度，但有信度不一定有效度" data-en="Validity implies reliability, but reliability does not imply validity">有效度就一定有信度，但有信度不一定有效度</div>
+    <div class="quiz-option" data-correct="false" data-zh="兩者完全獨立，互不影響" data-en="They are completely independent">兩者完全獨立，互不影響</div>
+    <div class="quiz-option" data-correct="false" data-zh="效度和信度是相同的概念" data-en="Validity and reliability are the same concept">效度和信度是相同的概念</div>
+    <div class="quiz-feedback" data-zh="正確！效度是更高階的要求。一個有效的測量必然是可靠的（一致的），但一致的測量可能測的是錯誤的東西。例如：一把秤持續顯示錯誤的重量（有信度但無效度）。" data-en="Correct! Validity is a higher-order requirement. A valid measure must be reliable (consistent), but a consistent measure might be measuring the wrong thing. Example: a scale that consistently shows the wrong weight (reliable but not valid).">正確！效度是更高階的要求。一個有效的測量必然是可靠的（一致的），但一致的測量可能測的是錯誤的東西。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q2: 建構總加量表時，應該在檢驗信度（Cronbach's α）之前先做什麼？" data-en="Q2: Before assessing reliability (Cronbach's α), what must be done first when constructing a summated scale?">Q2: 建構總加量表時，應該在檢驗信度（Cronbach's α）之前先做什麼？</p>
+    <div class="quiz-option" data-correct="false" data-zh="先進行區辨效度檢驗" data-en="Assess discriminant validity first">先進行區辨效度檢驗</div>
+    <div class="quiz-option" data-correct="false" data-zh="先計算 AVE" data-en="Calculate AVE first">先計算 AVE</div>
+    <div class="quiz-option" data-correct="true" data-zh="先以 EFA 或 CFA 確認單一維度性（unidimensionality）" data-en="Confirm unidimensionality with EFA or CFA first">先以 EFA 或 CFA 確認單一維度性（unidimensionality）</div>
+    <div class="quiz-option" data-correct="false" data-zh="先進行再測信度檢驗" data-en="Assess test-retest reliability first">先進行再測信度檢驗</div>
+    <div class="quiz-feedback" data-zh="正確！單一維度性是建構總加量表的基本假設與必要條件。必須先用因素分析確認所有題項都高度負荷在同一個因素上，才能計算信度。" data-en="Correct! Unidimensionality is a fundamental assumption and requirement. Each summated scale should consist of items loading highly on a single factor before reliability can be assessed.">正確！單一維度性是建構總加量表的基本假設與必要條件。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q3: 在 Hair et al. 的標準中，Cronbach's α 的基本門檻值為多少？" data-en="Q3: According to Hair et al., what is the basic threshold for Cronbach's α?">Q3: 在 Hair et al. 的標準中，Cronbach's α 的基本門檻值為多少？</p>
+    <div class="quiz-option" data-correct="false">.50</div>
+    <div class="quiz-option" data-correct="false">.60</div>
+    <div class="quiz-option" data-correct="true">.70</div>
+    <div class="quiz-option" data-correct="false">.80</div>
+    <div class="quiz-feedback" data-zh="正確！基本門檻是 .70。僅在探索性研究中可接受 .60。當題項數接近 10 題或更多時，門檻應進一步提高。" data-en="Correct! The basic threshold is .70. Only .60 is acceptable for exploratory research. The threshold should be raised as items approach 10 or more.">正確！基本門檻是 .70。僅在探索性研究中可接受 .60。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q4: 「聚合效度」是在確認什麼？" data-en="Q4: What does 'convergent validity' confirm?">Q4: 「聚合效度」是在確認什麼？</p>
+    <div class="quiz-option" data-correct="true" data-zh="衡量同一概念的多個指標之間應高度相關" data-en="Multiple indicators of the same concept should be highly correlated">衡量同一概念的多個指標之間應高度相關</div>
+    <div class="quiz-option" data-correct="false" data-zh="不同概念之間應該存在差異" data-en="Different concepts should be distinct">不同概念之間應該存在差異</div>
+    <div class="quiz-option" data-correct="false" data-zh="量表能預測理論模型中的其他概念" data-en="The scale can predict other concepts in a model">量表能預測理論模型中的其他概念</div>
+    <div class="quiz-option" data-correct="false" data-zh="題項的內容符合專家的判斷" data-en="Item content matches expert judgment">題項的內容符合專家的判斷</div>
+    <div class="quiz-feedback" data-zh="正確！聚合效度確認的是同一建構的指標們「聚合」在一起——它們共享高比例的共同變異。評估工具包括因素負荷量（≥.50）、AVE（≥.50）和 CR（≥.70）。" data-en="Correct! Convergent validity confirms that indicators of the same construct 'converge' — they share a high proportion of variance in common. Tools include factor loadings (≥.50), AVE (≥.50), and CR (≥.70).">正確！聚合效度確認的是同一建構的指標們「聚合」在一起。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q5: Fornell-Larcker 判準如何評估區辨效度？" data-en="Q5: How does the Fornell-Larcker criterion assess discriminant validity?">Q5: Fornell-Larcker 判準如何評估區辨效度？</p>
+    <div class="quiz-option" data-correct="false" data-zh="比較 Cronbach's α 與因素負荷量" data-en="Compare Cronbach's α with factor loadings">比較 Cronbach's α 與因素負荷量</div>
+    <div class="quiz-option" data-correct="true" data-zh="每個建構的 AVE 應大於該建構與其他建構之間相關係數的平方" data-en="Each construct's AVE should exceed the squared correlation between that and other constructs">每個建構的 AVE 應大於該建構與其他建構之間相關係數的平方</div>
+    <div class="quiz-option" data-correct="false" data-zh="所有因素負荷量都應大於 .70" data-en="All factor loadings should exceed .70">所有因素負荷量都應大於 .70</div>
+    <div class="quiz-option" data-correct="false" data-zh="比較一因素模型與二因素模型的適配度差異" data-en="Compare fit of one-factor vs. two-factor models">比較一因素模型與二因素模型的適配度差異</div>
+    <div class="quiz-feedback" data-zh="正確！Fornell-Larcker 判準的邏輯是：一個潛在建構應該解釋其自身指標的變異量（AVE），要比它與另一個建構所共享的變異量（r²）更多。若 AVE > r²，則支持區辨效度。" data-en="Correct! The Fornell-Larcker logic is: a latent construct should explain more of the variance in its own indicators (AVE) than the variance it shares with another construct (r²). If AVE > r², discriminant validity is supported.">正確！邏輯是：潛在建構解釋自身指標的變異量應大於它與其他建構共享的變異量。</div>
+  </div>
+</div>
+
+
+<!-- ======================================== -->
+<!-- SECTION 8: KEY CONCEPTS ACCORDION        -->
+<!-- ======================================== -->
+<h2 class="section-title" data-zh="八、關鍵名詞解釋" data-en="8. Key Terms Glossary">八、關鍵名詞解釋</h2>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="測量誤差（Measurement Error）" data-en="Measurement Error">測量誤差（Measurement Error）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>觀察值未能代表「真實值」的程度。來源包括資料輸入錯誤、量表精度不足（如使用7點量表但受試者只能區分3個等級），以及受試者無法精確提供資訊。測量誤差會弱化相關係數並降低統計檢力。</p></div>
+      <div class="en"><p>The degree to which observed values are not representative of the "true" values. Sources include data entry errors, imprecision of measurement, and inability of respondents to accurately provide information. It weakens correlations and reduces statistical power.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="總加量表（Summated Scale）" data-en="Summated Scale">總加量表（Summated Scale）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>將多個衡量同一概念的變數合併為一個單一的複合指標，通常使用平均分數。好處包括：(1) 降低測量誤差——多個指標減少對單一回應的依賴；(2) 在單一指標中代表概念的多個面向。</p></div>
+      <div class="en"><p>Combining several variables measuring the same concept into a single composite measure, usually using the average score. Benefits: (1) Reduces measurement error by not relying on a single response; (2) Represents multiple aspects of a concept in a single measure.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="單一維度性（Unidimensionality）" data-en="Unidimensionality">單一維度性（Unidimensionality）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>量表中的所有題項都強烈關聯且僅代表<strong>一個單一概念</strong>。這是建構總加量表的基本假設與必要條件。透過因素分析檢驗——所有題項應高度負荷在同一個因素上。若量表被提出具有多個維度，每個維度應被一個獨立的因素所反映。</p></div>
+      <div class="en"><p>All items are strongly associated and represent <strong>a single concept</strong>. This is a fundamental assumption and requirement for summated scales. Tested through factor analysis — all items should load highly on a single factor. If a scale has multiple dimensions, each should be reflected by a separate factor.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="平均變異萃取量 AVE（Average Variance Extracted）" data-en="Average Variance Extracted (AVE)">平均變異萃取量 AVE（Average Variance Extracted）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh">
+        <p>代表一組題項中被其潛在建構所解釋的<strong>平均變異比例</strong>。計算方式為所有標準化因素負荷量的平方之平均值。</p>
+        <p style="margin-top:.5rem">AVE = Σλ²ᵢ / n</p>
+        <p style="margin-top:.5rem">AVE ≥ .50 表示建構解釋了其指標至少一半以上的變異，支持聚合效度。AVE < .50 表示平均而言，誤差變異大於被建構所解釋的變異。</p>
+      </div>
+      <div class="en">
+        <p>The <strong>average percentage of variation explained</strong> among the items of a construct. Calculated as the mean of all squared standardized factor loadings.</p>
+        <p style="margin-top:.5rem">AVE = Σλ²ᵢ / n</p>
+        <p style="margin-top:.5rem">AVE ≥ .50 means the construct explains at least half the variance of its indicators, supporting convergent validity. AVE < .50 means more error remains than explained variance on average.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="反向計分（Reverse Scoring）" data-en="Reverse Scoring">反向計分（Reverse Scoring）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>當同一因素中有正向與反向負荷的變數時，必須對反向負荷的題項進行反向計分，使所有負荷都為正向。例如在0-10的量表上：反向計分 = 10 - 原始分數。這確保所有題項的方向一致後才能計算總加量表分數。</p></div>
+      <div class="en"><p>When variables within the same factor have both positive and negative loadings, the negatively loaded items must be reverse scored so all loadings become positive. For example, on a 0-10 scale: reverse score = 10 - original value. This ensures consistent direction before computing summated scale scores.</p></div>
+    </div>
+  </div>
+</div>
+
+
+</div><!-- container -->
+</main>
+
+<!-- Navigation -->
+<div style="padding:2rem 0;background:#f0f3f5">
+  <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+    <a href="../index.html" style="font-weight:600" data-zh="← 回到首頁" data-en="← Back to Home">← 回到首頁</a>
+    <a href="ch10-cfa-validity.html" style="font-weight:600;background:var(--accent);color:#fff;padding:.5rem 1rem;border-radius:4px" data-zh="下一章：CFA 建構效度 →" data-en="Next: CFA Construct Validity →">下一章：CFA 建構效度 →</a>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>Hair, J.F., Black, W.C., Babin, B.J., & Anderson, R.E. (2019). <em>Multivariate Data Analysis</em> (8th ed.).</p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+</body>
+</html>
