@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多元判別分析 | Multiple Discriminant Analysis</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="lang-zh">
+<div class="progress-bar"><div class="fill"></div></div>
+
+<nav class="top-nav">
+  <div class="container">
+    <a href="../index.html" class="brand" data-zh="多變量資料分析" data-en="Multivariate Data Analysis">多變量資料分析</a>
+    <div class="nav-links">
+      <a href="../index.html" data-zh="首頁" data-en="Home">首頁</a>
+      <a href="ch7-discriminant-analysis.html" class="active" data-zh="判別分析" data-en="MDA">判別分析</a>
+      <a href="ch8-logistic-regression.html" data-zh="羅吉斯迴歸" data-en="Logistic Reg.">羅吉斯迴歸</a>
+      <button class="lang-toggle">EN</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1 data-zh="多元判別分析" data-en="Multiple Discriminant Analysis (MDA)">多元判別分析</h1>
+    <p data-zh="Ch.7 預測群體成員隸屬關係的多變量技術" data-en="Ch.7 A Multivariate Technique for Predicting Group Membership">Ch.7 預測群體成員隸屬關係的多變量技術</p>
+  </div>
+</header>
+
+<main class="section">
+<div class="container">
+
+<!-- ============================================ -->
+<!-- SECTION 1: OVERVIEW                          -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="一、判別分析概述" data-en="1. Overview of Discriminant Analysis">一、判別分析概述</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p><strong>多元判別分析（MDA）</strong>是一種依變數為<strong>類別變數</strong>（非計量）、自變數為<strong>計量變數</strong>的多變量技術。其核心目的是：</p>
+    <ul style="margin-top:.5rem;padding-left:1.5rem">
+      <li>找出最能<strong>區辨</strong>（discriminate）不同群體的自變數組合</li>
+      <li>建立<strong>判別函數</strong>（discriminant function），用來將新觀察值<strong>分類</strong>到已知群體</li>
+      <li>了解哪些自變數對分類最具貢獻</li>
+    </ul>
+  </div>
+  <div class="en">
+    <p><strong>Multiple Discriminant Analysis (MDA)</strong> is a multivariate technique where the dependent variable is <strong>categorical</strong> (nonmetric) and the independent variables are <strong>metric</strong>. Its core purposes are:</p>
+    <ul style="margin-top:.5rem;padding-left:1.5rem">
+      <li>Identify the combination of IVs that best <strong>discriminates</strong> among groups</li>
+      <li>Build <strong>discriminant functions</strong> to <strong>classify</strong> new observations into known groups</li>
+      <li>Understand which IVs contribute most to classification</li>
+    </ul>
+  </div>
+</div>
+
+<div class="concept-block success">
+  <h4 data-zh="白話解釋" data-en="Plain Language Explanation">白話解釋</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p>判別分析就像<strong>海關人員分辨旅客類別</strong>。海關人員觀察旅客的護照國籍、行李數量、停留天數等多項特徵（自變數），綜合判斷旅客屬於「觀光客」、「商務旅客」還是「留學生」（類別依變數）。判別分析做的就是找出哪些特徵組合最能準確分辨旅客類別，並建立一套分類規則。</p>
+    </div>
+    <div class="en">
+      <p>Discriminant analysis is like a <strong>customs officer classifying travelers</strong>. The officer observes passport nationality, number of bags, length of stay, and other characteristics (IVs), then determines whether a traveler is a "tourist," "business traveler," or "student" (categorical DV). MDA finds the combination of features that best separates these groups and builds a classification rule.</p>
+    </div>
+  </div>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="MDA vs. MANOVA" data-en="MDA vs. MANOVA">MDA vs. MANOVA</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p>MDA 與 MANOVA 使用相同的數學運算，但<strong>目的不同</strong>：</p>
+      <ul style="padding-left:1.2rem">
+        <li><strong>MANOVA：</strong>檢驗群組間的平均數是否有顯著差異（假說檢定取向）</li>
+        <li><strong>MDA：</strong>建立分類規則，預測新觀察值屬於哪個群組（預測取向）</li>
+      </ul>
+    </div>
+    <div class="en">
+      <p>MDA and MANOVA use the same mathematics but with <strong>different goals</strong>:</p>
+      <ul style="padding-left:1.2rem">
+        <li><strong>MANOVA:</strong> Tests whether group means differ significantly (hypothesis testing)</li>
+        <li><strong>MDA:</strong> Builds classification rules to predict group membership (prediction)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 2: DISCRIMINANT FUNCTIONS            -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="二、判別函數" data-en="2. Discriminant Functions">二、判別函數</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>判別函數是自變數的線性組合，其形式類似迴歸方程式，但目的是<strong>最大化群體間的差異</strong>。</p>
+  </div>
+  <div class="en">
+    <p>A discriminant function is a linear combination of IVs, similar in form to a regression equation, but designed to <strong>maximize between-group differences</strong>.</p>
+  </div>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="判別函數方程式" data-en="Discriminant Function Equation">判別函數方程式</h4>
+  <div class="formula-box">
+    D = b<sub>1</sub>X<sub>1</sub> + b<sub>2</sub>X<sub>2</sub> + ... + b<sub>k</sub>X<sub>k</sub>
+    <span class="label" data-zh="D = 判別分數, b = 判別係數（權重）, X = 自變數" data-en="D = discriminant score, b = discriminant weight, X = independent variable">D = 判別分數, b = 判別係數（權重）, X = 自變數</span>
+  </div>
+</div>
+
+<div class="bilingual">
+  <div class="zh">
+    <p><strong>重心（Centroid）：</strong>每個群體在判別函數上的平均判別分數。兩組判別分析中，若兩組重心距離越遠，判別函數的分類效果越好。</p>
+    <p style="margin-top:.75rem"><strong>最大函數數量：</strong>可以萃取的判別函數數量 = min(群組數 - 1, 自變數數量)。</p>
+    <ul style="margin-top:.5rem;padding-left:1.5rem">
+      <li>兩組判別分析：最多 1 個判別函數</li>
+      <li>三組判別分析、5 個自變數：最多 2 個判別函數</li>
+    </ul>
+  </div>
+  <div class="en">
+    <p><strong>Centroid:</strong> The mean discriminant score for each group. In two-group MDA, the farther apart the centroids, the better the function separates the groups.</p>
+    <p style="margin-top:.75rem"><strong>Maximum number of functions:</strong> Number of discriminant functions = min(groups - 1, predictors).</p>
+    <ul style="margin-top:.5rem;padding-left:1.5rem">
+      <li>Two-group MDA: at most 1 discriminant function</li>
+      <li>Three-group MDA with 5 IVs: at most 2 discriminant functions</li>
+    </ul>
+  </div>
+</div>
+
+<!-- SVG Diagram: Two-Group Discriminant Analysis -->
+<div class="diagram">
+  <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" style="max-width:650px">
+    <defs>
+      <marker id="arrowDA" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#6c757d"/>
+      </marker>
+    </defs>
+    <!-- Axis -->
+    <line x1="60" y1="260" x2="640" y2="260" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowDA)"/>
+    <text x="350" y="295" text-anchor="middle" font-size="13" fill="#6c757d">Discriminant Score (D)</text>
+    <!-- Group 1 Distribution -->
+    <ellipse cx="220" cy="160" rx="110" ry="80" fill="#d6eaf8" fill-opacity="0.6" stroke="#3498db" stroke-width="2"/>
+    <text x="220" y="120" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Group 1</text>
+    <text x="220" y="140" text-anchor="middle" font-size="11" fill="#6c757d">e.g. Non-purchasers</text>
+    <!-- Group 1 Centroid -->
+    <circle cx="220" cy="190" r="8" fill="#3498db" stroke="#fff" stroke-width="2"/>
+    <text x="220" y="220" text-anchor="middle" font-size="11" fill="#3498db">Centroid 1</text>
+    <!-- Group 2 Distribution -->
+    <ellipse cx="480" cy="160" rx="110" ry="80" fill="#fadbd8" fill-opacity="0.6" stroke="#e74c3c" stroke-width="2"/>
+    <text x="480" y="120" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Group 2</text>
+    <text x="480" y="140" text-anchor="middle" font-size="11" fill="#6c757d">e.g. Purchasers</text>
+    <!-- Group 2 Centroid -->
+    <circle cx="480" cy="190" r="8" fill="#e74c3c" stroke="#fff" stroke-width="2"/>
+    <text x="480" y="220" text-anchor="middle" font-size="11" fill="#e74c3c">Centroid 2</text>
+    <!-- Cutting Score -->
+    <line x1="350" y1="60" x2="350" y2="255" stroke="#f39c12" stroke-width="2" stroke-dasharray="8,4"/>
+    <text x="350" y="50" text-anchor="middle" font-size="12" font-weight="bold" fill="#f39c12">Cutting Score</text>
+    <!-- Overlap Area -->
+    <text x="350" y="175" text-anchor="middle" font-size="10" fill="#e67e22">Overlap</text>
+    <text x="350" y="190" text-anchor="middle" font-size="10" fill="#e67e22">(misclassification)</text>
+  </svg>
+  <p class="caption" data-zh="圖：兩組判別分析 -- 群體重心與分類邊界" data-en="Figure: Two-group MDA -- group centroids and classification boundary">圖：兩組判別分析 -- 群體重心與分類邊界</p>
+</div>
+
+<!-- Tab: Two-group vs Multiple-group -->
+<div class="tab-container" style="margin-top:1.5rem">
+  <div class="tab-header">
+    <button class="tab-btn active" data-tab="tab-twogroup" data-zh="兩組判別分析" data-en="Two-Group MDA">兩組判別分析</button>
+    <button class="tab-btn" data-tab="tab-multigroup" data-zh="多組判別分析" data-en="Multiple-Group MDA">多組判別分析</button>
+  </div>
+
+  <div class="tab-panel active" id="tab-twogroup">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>兩組判別分析</h4>
+        <p>最基本的判別分析形式，依變數只有兩個類別（如：購買/不購買、通過/未通過）。</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li>僅產生 <strong>1 個判別函數</strong></li>
+          <li>分類依據：計算判別分數 D，與<strong>切割分數（cutting score）</strong>比較</li>
+          <li>若兩組樣本數相等：切割分數 = 兩組重心的中點</li>
+          <li>若兩組樣本數不等：使用加權切割分數 Z<sub>CE</sub> = (N<sub>A</sub>Z<sub>B</sub> + N<sub>B</sub>Z<sub>A</sub>) / (N<sub>A</sub> + N<sub>B</sub>)</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>Two-Group Discriminant Analysis</h4>
+        <p>The most basic form of MDA, where the DV has only two categories (e.g., purchase/no purchase, pass/fail).</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li>Produces only <strong>1 discriminant function</strong></li>
+          <li>Classification: compute discriminant score D, compare with <strong>cutting score</strong></li>
+          <li>Equal group sizes: cutting score = midpoint of the two centroids</li>
+          <li>Unequal group sizes: weighted cutting score Z<sub>CE</sub> = (N<sub>A</sub>Z<sub>B</sub> + N<sub>B</sub>Z<sub>A</sub>) / (N<sub>A</sub> + N<sub>B</sub>)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-multigroup">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>多組判別分析</h4>
+        <p>依變數有三個或以上類別（如：高/中/低忠誠度客戶）。</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li>可產生 <strong>多個判別函數</strong>，最多 min(g-1, p) 個</li>
+          <li>各判別函數彼此<strong>正交（orthogonal）</strong>，互相獨立</li>
+          <li>第一個函數解釋最多的群體間差異，第二個解釋次多，以此類推</li>
+          <li>分類依據：計算每個觀察值到各組重心的<strong>距離</strong>，歸類到最近的群組</li>
+          <li>需要使用<strong>分類函數（classification functions）</strong>，為每個群體建立一組係數</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>Multiple-Group Discriminant Analysis</h4>
+        <p>DV has three or more categories (e.g., high/medium/low loyalty customers).</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li>Can produce <strong>multiple discriminant functions</strong>, up to min(g-1, p)</li>
+          <li>Functions are <strong>orthogonal</strong> (uncorrelated with each other)</li>
+          <li>First function explains the most between-group variance, second explains the next most, etc.</li>
+          <li>Classification: compute <strong>distance</strong> from each observation to group centroids, assign to nearest</li>
+          <li>Uses <strong>classification functions</strong> with a separate set of coefficients for each group</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 3: STATISTICAL SIGNIFICANCE          -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="三、統計顯著性" data-en="3. Statistical Significance">三、統計顯著性</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>判別函數建立後，必須評估其是否具有統計顯著性。主要使用三個指標：</p>
+  </div>
+  <div class="en">
+    <p>After deriving discriminant functions, we must assess their statistical significance using three key metrics:</p>
+  </div>
+</div>
+
+<div class="card-grid" style="margin-top:1rem">
+  <div class="card">
+    <h3 data-zh="Wilks' Lambda (&#x39B;)" data-en="Wilks' Lambda (&#x39B;)">Wilks' Lambda (&Lambda;)</h3>
+    <div class="zh-only">
+      <p><strong>定義：</strong>群體內變異數 / 總變異數。衡量群體間重疊程度。</p>
+      <p><strong>範圍：</strong>0 到 1。越接近 0 表示群體間差異越大（判別函數越好）。</p>
+      <p><strong>檢定：</strong>以卡方轉換進行顯著性檢定。</p>
+      <p style="margin-top:.5rem;font-size:.85rem;color:var(--text-light)">Wilks' Lambda is the ratio of within-group to total variability. Closer to 0 = better discrimination.</p>
+    </div>
+    <div class="en-only">
+      <p><strong>Definition:</strong> Ratio of within-group to total variability. Measures group overlap.</p>
+      <p><strong>Range:</strong> 0 to 1. Closer to 0 means greater between-group difference (better function).</p>
+      <p><strong>Test:</strong> Converted to chi-square for significance testing.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 data-zh="特徵值 (Eigenvalue)" data-en="Eigenvalue">特徵值 (Eigenvalue)</h3>
+    <div class="zh-only">
+      <p><strong>定義：</strong>群體間變異數 / 群體內變異數的比值。</p>
+      <p><strong>解釋：</strong>值越大表示判別函數解釋的群體差異越多。</p>
+      <p><strong>用途：</strong>計算各判別函數解釋的變異量百分比。</p>
+      <p style="margin-top:.5rem;font-size:.85rem;color:var(--text-light)">Eigenvalue is the ratio of between-group to within-group variance. Larger = better.</p>
+    </div>
+    <div class="en-only">
+      <p><strong>Definition:</strong> Ratio of between-group to within-group variance.</p>
+      <p><strong>Interpretation:</strong> Larger values indicate the function accounts for more group differences.</p>
+      <p><strong>Use:</strong> Calculate the percentage of variance explained by each function.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 data-zh="典型相關 (Canonical Correlation)" data-en="Canonical Correlation">典型相關 (Canonical Correlation)</h3>
+    <div class="zh-only">
+      <p><strong>定義：</strong>判別分數與群組成員之間的相關程度。</p>
+      <p><strong>R<sub>c</sub>²</strong>：判別函數所解釋的依變數變異量百分比（類似 R²）。</p>
+      <p><strong>計算：</strong>R<sub>c</sub>² = 特徵值 / (1 + 特徵值)</p>
+      <p style="margin-top:.5rem;font-size:.85rem;color:var(--text-light)">Canonical correlation measures the association between discriminant scores and group membership.</p>
+    </div>
+    <div class="en-only">
+      <p><strong>Definition:</strong> Correlation between discriminant scores and group membership.</p>
+      <p><strong>R<sub>c</sub>²</strong>: Percentage of DV variance explained by the function (analogous to R²).</p>
+      <p><strong>Formula:</strong> R<sub>c</sub>² = Eigenvalue / (1 + Eigenvalue)</p>
+    </div>
+  </div>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="係數解釋方法" data-en="Interpreting Discriminant Weights">係數解釋方法</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p>解釋各自變數對判別函數的貢獻時，可使用三種方法：</p>
+      <ul style="padding-left:1.2rem;margin-top:.5rem">
+        <li><strong>標準化判別係數：</strong>類似標準化迴歸係數（Beta），考量尺度差異後比較各變數的相對重要性</li>
+        <li><strong>結構矩陣（Structure Matrix）：</strong>各自變數與判別函數的相關（也稱為判別負荷量）。通常被認為較係數更可靠</li>
+        <li><strong>偏 F 比率：</strong>類似逐步迴歸中各變數的 F 值，反映個別區辨能力</li>
+      </ul>
+    </div>
+    <div class="en">
+      <p>Three approaches for interpreting each IV's contribution:</p>
+      <ul style="padding-left:1.2rem;margin-top:.5rem">
+        <li><strong>Standardized discriminant weights:</strong> Like standardized Beta in regression, compare relative importance across variables</li>
+        <li><strong>Structure matrix:</strong> Correlations of each IV with the discriminant function (also called discriminant loadings). Generally considered more reliable than weights</li>
+        <li><strong>Partial F-ratios:</strong> Like stepwise regression F-values, reflecting individual discriminating power</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 4: CLASSIFICATION ACCURACY           -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="四、分類準確度" data-en="4. Classification Accuracy">四、分類準確度</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>判別分析的最終目的是正確分類，因此必須評估分類的準確度。</p>
+  </div>
+  <div class="en">
+    <p>The ultimate goal of MDA is correct classification, so we must evaluate classification accuracy.</p>
+  </div>
+</div>
+
+<!-- Confusion Matrix Template -->
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="混淆矩陣" data-en="Confusion Matrix">混淆矩陣</th>
+        <th colspan="2" data-zh="預測群組" data-en="Predicted Group">預測群組</th>
+        <th data-zh="合計" data-en="Total">合計</th>
+      </tr>
+      <tr>
+        <th data-zh="實際群組" data-en="Actual Group">實際群組</th>
+        <th data-zh="群組 1" data-en="Group 1">群組 1</th>
+        <th data-zh="群組 2" data-en="Group 2">群組 2</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-zh="群組 1" data-en="Group 1"><strong>群組 1</strong></td>
+        <td class="highlight-cell" data-zh="正確分類 (a)" data-en="Correct (a)">正確分類 (a)</td>
+        <td data-zh="誤分類 (b)" data-en="Misclassified (b)">誤分類 (b)</td>
+        <td>a + b</td>
+      </tr>
+      <tr>
+        <td data-zh="群組 2" data-en="Group 2"><strong>群組 2</strong></td>
+        <td data-zh="誤分類 (c)" data-en="Misclassified (c)">誤分類 (c)</td>
+        <td class="highlight-cell" data-zh="正確分類 (d)" data-en="Correct (d)">正確分類 (d)</td>
+        <td>c + d</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="命中率與統計檢定" data-en="Hit Ratio and Statistical Tests">命中率與統計檢定</h4>
+  <div class="formula-box">
+    <span data-zh="命中率 (Hit Ratio)" data-en="Hit Ratio">命中率 (Hit Ratio)</span> = (a + d) / (a + b + c + d) &times; 100%
+    <span class="label" data-zh="正確分類的觀察值佔全體比例" data-en="Proportion of correctly classified observations">正確分類的觀察值佔全體比例</span>
+  </div>
+  <div class="bilingual" style="margin-top:1rem">
+    <div class="zh">
+      <p><strong>命中率必須顯著高於隨機分類。</strong>判斷基準包括：</p>
+      <ul style="padding-left:1.2rem;margin-top:.5rem">
+        <li><strong>最大機率準則：</strong>命中率應超過最大群組的比例（例如群組 1 佔 60%，命中率應 > 60%）</li>
+        <li><strong>比例機率準則：</strong>命中率應超過各群組比例平方和（p₁² + p₂² + ...）</li>
+        <li><strong>實務標準：</strong>命中率應至少超過隨機準則 25%</li>
+      </ul>
+    </div>
+    <div class="en">
+      <p><strong>The hit ratio must be significantly better than chance.</strong> Benchmarks include:</p>
+      <ul style="padding-left:1.2rem;margin-top:.5rem">
+        <li><strong>Maximum chance criterion:</strong> Hit ratio must exceed the largest group's proportion (e.g., if Group 1 = 60%, hit ratio > 60%)</li>
+        <li><strong>Proportional chance criterion:</strong> Hit ratio must exceed sum of squared proportions (p₁² + p₂² + ...)</li>
+        <li><strong>Practical standard:</strong> Hit ratio should exceed the chance criterion by at least 25%</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="Press's Q 統計量" data-en="Press's Q Statistic">Press's Q 統計量</h4>
+  <div class="formula-box">
+    Press's Q = [N - (n &times; k)]&sup2; / [N(k - 1)]
+    <span class="label" data-zh="N = 總樣本數, n = 正確分類數, k = 群組數" data-en="N = total sample size, n = number correctly classified, k = number of groups">N = 總樣本數, n = 正確分類數, k = 群組數</span>
+  </div>
+  <div class="bilingual" style="margin-top:.5rem">
+    <div class="zh"><p>Press's Q 值與自由度為 1 的卡方臨界值（3.84）比較。若 Q > 3.84，表示分類結果顯著優於隨機分類。</p></div>
+    <div class="en"><p>Compare Press's Q to the chi-square critical value with 1 df (3.84). If Q > 3.84, classification is significantly better than chance.</p></div>
+  </div>
+</div>
+
+<div class="bilingual" style="margin-top:1rem">
+  <div class="zh">
+    <p><strong>交叉驗證（Cross-Validation）：</strong>為避免過度樂觀的命中率，應採用留一法（leave-one-out）交叉驗證。將每個觀察值依次留出，用剩餘樣本建立判別函數後分類該觀察值。交叉驗證的命中率通常略低於原始命中率，但更能反映真實的分類能力。若兩者差距過大，可能存在過度配適問題。</p>
+  </div>
+  <div class="en">
+    <p><strong>Cross-Validation:</strong> To avoid overly optimistic hit ratios, use leave-one-out cross-validation. Each observation is classified by the function derived from all other cases. The cross-validated hit ratio is typically slightly lower but reflects true classification ability. A large gap between original and cross-validated rates suggests overfitting.</p>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 5: ASSUMPTIONS                       -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="五、判別分析假設" data-en="5. Assumptions of Discriminant Analysis">五、判別分析假設</h2>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="假設" data-en="Assumption">假設</th>
+        <th data-zh="內容說明" data-en="Description">內容說明</th>
+        <th data-zh="違反後果" data-en="Consequence of Violation">違反後果</th>
+        <th data-zh="檢驗方式" data-en="How to Test">檢驗方式</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-zh="多元常態性" data-en="Multivariate Normality"><strong data-zh="多元常態性" data-en="Multivariate Normality">多元常態性</strong></td>
+        <td data-zh="自變數在各群體內呈多元常態分配" data-en="IVs follow multivariate normal distribution within each group">自變數在各群體內呈多元常態分配</td>
+        <td data-zh="影響統計檢定的準確性" data-en="Affects accuracy of significance tests">影響統計檢定的準確性</td>
+        <td data-zh="單變量常態性檢定、散佈圖" data-en="Univariate normality tests, scatterplots">單變量常態性檢定、散佈圖</td>
+      </tr>
+      <tr>
+        <td data-zh="等共變異數矩陣" data-en="Equal Covariance Matrices"><strong data-zh="等共變異數矩陣" data-en="Equal Covariance Matrices">等共變異數矩陣</strong></td>
+        <td data-zh="各群體的共變異數矩陣相等" data-en="Covariance matrices are equal across groups">各群體的共變異數矩陣相等</td>
+        <td data-zh="分類結果偏向共變異數較大的群體" data-en="Classification biased toward group with larger covariance">分類結果偏向共變異數較大的群體</td>
+        <td data-zh="Box's M 檢定" data-en="Box's M test">Box's M 檢定</td>
+      </tr>
+      <tr>
+        <td data-zh="適當樣本數" data-en="Adequate Sample Size"><strong data-zh="適當樣本數" data-en="Adequate Sample Size">適當樣本數</strong></td>
+        <td data-zh="最小群體的樣本數應超過自變數數量" data-en="Smallest group size should exceed number of IVs">最小群體的樣本數應超過自變數數量</td>
+        <td data-zh="模型不穩定、過度配適" data-en="Unstable model, overfitting">模型不穩定、過度配適</td>
+        <td data-zh="建議每個自變數至少20個觀察值" data-en="At least 20 observations per IV recommended">建議每個自變數至少20個觀察值</td>
+      </tr>
+      <tr>
+        <td data-zh="無多元共線性" data-en="No Multicollinearity"><strong data-zh="無多元共線性" data-en="No Multicollinearity">無多元共線性</strong></td>
+        <td data-zh="自變數之間不應高度相關" data-en="IVs should not be highly correlated">自變數之間不應高度相關</td>
+        <td data-zh="係數不穩定、解釋困難" data-en="Unstable weights, difficult interpretation">係數不穩定、解釋困難</td>
+        <td data-zh="相關矩陣、VIF / Tolerance" data-en="Correlation matrix, VIF / Tolerance">相關矩陣、VIF / Tolerance</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="concept-block danger">
+  <h4 data-zh="Box's M 檢定注意事項" data-en="Box's M Test Caveat">Box's M 檢定注意事項</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p>Box's M 檢定對多元常態性的違反非常敏感。在大樣本中，即使共變異數差異很小也可能顯著。因此應搭配樣本數比例來判斷：若各組樣本數大致相等，即使 Box's M 顯著，判別函數仍具穩健性。</p>
+    </div>
+    <div class="en">
+      <p>Box's M is very sensitive to departures from multivariate normality. In large samples, even trivial differences become significant. Use with group size ratios: if group sizes are roughly equal, the function remains robust even with a significant Box's M.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 6: STEPWISE MDA                      -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="六、逐步判別分析" data-en="6. Stepwise Discriminant Analysis">六、逐步判別分析</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>當自變數眾多時，可採用逐步判別分析來挑選最重要的自變數。逐步法依序選入對分類最有貢獻的變數，直到沒有變數能顯著改善分類為止。</p>
+  </div>
+  <div class="en">
+    <p>When there are many IVs, stepwise MDA selects the most important variables. It sequentially enters variables that contribute most to classification until no variable significantly improves it.</p>
+  </div>
+</div>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="選取準則" data-en="Selection Criterion">選取準則</th>
+        <th data-zh="原理" data-en="Principle">原理</th>
+        <th data-zh="特點" data-en="Characteristics">特點</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Wilks' Lambda</strong></td>
+        <td data-zh="選入使 Lambda 最小化的變數" data-en="Enter variable that minimizes Lambda">選入使 Lambda 最小化的變數</td>
+        <td data-zh="最常用，考慮整體分類效果" data-en="Most common, considers overall discrimination">最常用，考慮整體分類效果</td>
+      </tr>
+      <tr>
+        <td><strong>Mahalanobis D&sup2;</strong></td>
+        <td data-zh="選入使各組間距離最大化的變數" data-en="Enter variable that maximizes between-group distance">選入使各組間距離最大化的變數</td>
+        <td data-zh="著重群體間的距離最大化" data-en="Focuses on maximizing between-group distance">著重群體間的距離最大化</td>
+      </tr>
+      <tr>
+        <td><strong>Rao's V</strong></td>
+        <td data-zh="選入使 V 值增加最多的變數" data-en="Enter variable that increases V the most">選入使 V 值增加最多的變數</td>
+        <td data-zh="考量群體間整體差異性" data-en="Considers overall between-group difference">考量群體間整體差異性</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Comparison: MDA vs. Logistic Regression -->
+<h3 style="margin-top:2rem" data-zh="判別分析 vs. 羅吉斯迴歸" data-en="MDA vs. Logistic Regression">判別分析 vs. 羅吉斯迴歸</h3>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="比較面向" data-en="Comparison">比較面向</th>
+        <th data-zh="判別分析 (MDA)" data-en="Discriminant Analysis (MDA)">判別分析 (MDA)</th>
+        <th data-zh="羅吉斯迴歸" data-en="Logistic Regression">羅吉斯迴歸</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-zh="依變數" data-en="Dependent Variable">依變數</td>
+        <td data-zh="類別（兩組或多組）" data-en="Categorical (2+ groups)">類別（兩組或多組）</td>
+        <td data-zh="類別（通常是二分）" data-en="Categorical (usually binary)">類別（通常是二分）</td>
+      </tr>
+      <tr>
+        <td data-zh="自變數" data-en="Independent Variables">自變數</td>
+        <td data-zh="僅計量變數" data-en="Metric only">僅計量變數</td>
+        <td data-zh="計量與非計量皆可" data-en="Both metric and nonmetric">計量與非計量皆可</td>
+      </tr>
+      <tr>
+        <td data-zh="假設要求" data-en="Assumptions">假設要求</td>
+        <td data-zh="嚴格：常態性、等共變數" data-en="Strict: normality, equal covariance">嚴格：常態性、等共變數</td>
+        <td data-zh="寬鬆：不需常態性假設" data-en="Relaxed: no normality assumption">寬鬆：不需常態性假設</td>
+      </tr>
+      <tr>
+        <td data-zh="估計方法" data-en="Estimation">估計方法</td>
+        <td data-zh="OLS（最小平方法）" data-en="OLS (Least Squares)">OLS（最小平方法）</td>
+        <td data-zh="MLE（最大概似估計法）" data-en="MLE (Maximum Likelihood)">MLE（最大概似估計法）</td>
+      </tr>
+      <tr>
+        <td data-zh="輸出結果" data-en="Output">輸出結果</td>
+        <td data-zh="判別分數、群組歸類" data-en="Discriminant scores, group assignment">判別分數、群組歸類</td>
+        <td data-zh="機率、勝算比" data-en="Probabilities, odds ratios">機率、勝算比</td>
+      </tr>
+      <tr>
+        <td data-zh="適用時機" data-en="When to Use">適用時機</td>
+        <td data-zh="假設成立時分類能力較強" data-en="Better classification when assumptions met">假設成立時分類能力較強</td>
+        <td data-zh="假設違反時更穩健" data-en="More robust when assumptions are violated">假設違反時更穩健</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 7: QUIZ                              -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="七、自我測驗" data-en="7. Self-Assessment Quiz">七、自我測驗</h2>
+
+<div class="quiz">
+  <h3 data-zh="測試你對判別分析的理解" data-en="Test Your Understanding of Discriminant Analysis">測試你對判別分析的理解</h3>
+
+  <div class="quiz-question">
+    <p data-zh="Q1: 判別分析的依變數與自變數各是什麼類型？" data-en="Q1: What types are the DV and IVs in discriminant analysis?">Q1: 判別分析的依變數與自變數各是什麼類型？</p>
+    <div class="quiz-option" data-correct="false" data-zh="依變數：計量，自變數：計量" data-en="DV: metric, IVs: metric">依變數：計量，自變數：計量</div>
+    <div class="quiz-option" data-correct="true" data-zh="依變數：類別（非計量），自變數：計量" data-en="DV: categorical (nonmetric), IVs: metric">依變數：類別（非計量），自變數：計量</div>
+    <div class="quiz-option" data-correct="false" data-zh="依變數：計量，自變數：類別（非計量）" data-en="DV: metric, IVs: categorical (nonmetric)">依變數：計量，自變數：類別（非計量）</div>
+    <div class="quiz-option" data-correct="false" data-zh="依變數與自變數皆為類別" data-en="Both DV and IVs are categorical">依變數與自變數皆為類別</div>
+    <div class="quiz-feedback" data-zh="正確！判別分析的依變數是類別變數（如：購買/不購買），自變數則是計量變數（如：收入、年齡）。這是判別分析與迴歸分析最大的差異。" data-en="Correct! MDA's DV is categorical (e.g., purchase/no purchase) and IVs are metric (e.g., income, age). This is the key distinction from regression analysis.">正確！依變數是類別，自變數是計量。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q2: 若有 4 個群組與 6 個自變數，最多可以萃取幾個判別函數？" data-en="Q2: With 4 groups and 6 IVs, what is the maximum number of discriminant functions?">Q2: 若有 4 個群組與 6 個自變數，最多可以萃取幾個判別函數？</p>
+    <div class="quiz-option" data-correct="true">3</div>
+    <div class="quiz-option" data-correct="false">4</div>
+    <div class="quiz-option" data-correct="false">6</div>
+    <div class="quiz-option" data-correct="false">10</div>
+    <div class="quiz-feedback" data-zh="正確！最大函數數 = min(群組數 - 1, 自變數數) = min(4-1, 6) = min(3, 6) = 3。" data-en="Correct! Max functions = min(groups - 1, IVs) = min(4-1, 6) = min(3, 6) = 3.">正確！min(4-1, 6) = 3。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q3: Wilks' Lambda 的值越接近哪個數字，表示判別函數的分類效果越好？" data-en="Q3: When Wilks' Lambda is closer to which value, the discriminant function is better?">Q3: Wilks' Lambda 的值越接近哪個數字，表示判別函數的分類效果越好？</p>
+    <div class="quiz-option" data-correct="true" data-zh="0（群體完全分離）" data-en="0 (complete separation)">0（群體完全分離）</div>
+    <div class="quiz-option" data-correct="false" data-zh="0.5（中等分離）" data-en="0.5 (moderate separation)">0.5（中等分離）</div>
+    <div class="quiz-option" data-correct="false" data-zh="1（群體完全重疊）" data-en="1 (complete overlap)">1（群體完全重疊）</div>
+    <div class="quiz-option" data-correct="false" data-zh="大於 1" data-en="Greater than 1">大於 1</div>
+    <div class="quiz-feedback" data-zh="正確！Wilks' Lambda 範圍從 0 到 1。0 表示群體間完全沒有重疊（完美區辨），1 表示完全重疊（無法區辨）。" data-en="Correct! Wilks' Lambda ranges from 0 to 1. 0 = complete separation (perfect discrimination), 1 = complete overlap (no discrimination).">正確！Lambda 越小越好。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q4: 相較於羅吉斯迴歸，判別分析的主要限制是什麼？" data-en="Q4: Compared to logistic regression, what is MDA's main limitation?">Q4: 相較於羅吉斯迴歸，判別分析的主要限制是什麼？</p>
+    <div class="quiz-option" data-correct="false" data-zh="無法處理兩組以上的分類" data-en="Cannot handle more than two groups">無法處理兩組以上的分類</div>
+    <div class="quiz-option" data-correct="false" data-zh="無法計算分類準確度" data-en="Cannot compute classification accuracy">無法計算分類準確度</div>
+    <div class="quiz-option" data-correct="true" data-zh="假設要求較嚴格（常態性、等共變數），且自變數僅限計量" data-en="Stricter assumptions (normality, equal covariance) and IVs must be metric">假設要求較嚴格（常態性、等共變數），且自變數僅限計量</div>
+    <div class="quiz-option" data-correct="false" data-zh="只能使用最大概似估計法" data-en="Can only use maximum likelihood estimation">只能使用最大概似估計法</div>
+    <div class="quiz-feedback" data-zh="正確！MDA 要求多元常態性、等共變異數矩陣，且自變數必須是計量變數。當這些假設被違反時，羅吉斯迴歸是更穩健的替代方案。" data-en="Correct! MDA requires multivariate normality, equal covariance matrices, and metric IVs. When these assumptions are violated, logistic regression is the more robust alternative.">正確！MDA 的假設要求較嚴格。</div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- KEY TERMS ACCORDION                          -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="八、關鍵名詞解釋" data-en="8. Key Terms Glossary">八、關鍵名詞解釋</h2>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="判別函數（Discriminant Function）" data-en="Discriminant Function">判別函數（Discriminant Function）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>自變數的線性組合，用來計算「判別分數」，以最大化群體間的差異。每個函數都是正交的，依序解釋遞減的群體間變異量。</p></div>
+      <div class="en"><p>A linear combination of IVs used to compute a "discriminant score" that maximizes between-group differences. Each function is orthogonal and explains decreasing amounts of between-group variance.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="重心（Centroid）" data-en="Centroid">重心（Centroid）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>各群體在判別函數空間中的「平均位置」，即該群體所有成員的判別分數平均值。兩組分析中，分類的切割點即落在兩個重心之間。</p></div>
+      <div class="en"><p>The "average position" of each group in the discriminant function space. In two-group analysis, the classification cutting point falls between the two centroids.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="結構矩陣（Structure Matrix）" data-en="Structure Matrix">結構矩陣（Structure Matrix）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>各自變數與判別函數之間的簡單相關，也稱為「判別負荷量」。相較於標準化判別係數，結構矩陣被認為是解釋各變數區辨貢獻更可靠的方法，因為它不受多元共線性影響。</p></div>
+      <div class="en"><p>Simple correlations between each IV and the discriminant function, also called "discriminant loadings." Considered more reliable than standardized weights for interpreting each variable's discriminating contribution, as it is not affected by multicollinearity.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="混淆矩陣（Confusion Matrix）" data-en="Confusion Matrix">混淆矩陣（Confusion Matrix）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>也稱為分類矩陣，以交叉表的形式呈現實際群組與預測群組的對應關係。對角線上的數字為正確分類數，非對角線為誤分類數。藉此計算命中率與各群組的分類正確率。</p></div>
+      <div class="en"><p>Also called a classification matrix, it shows the cross-tabulation of actual versus predicted group membership. Diagonal values are correct classifications; off-diagonal values are misclassifications. Used to compute hit ratio and per-group accuracy.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="切割分數（Cutting Score）" data-en="Cutting Score">切割分數（Cutting Score）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>在兩組判別分析中，用來決定將觀察值分入哪個群組的門檻值。判別分數高於切割分數分入一組，低於則分入另一組。等樣本時為兩個重心的中點；不等樣本時使用加權公式計算。</p></div>
+      <div class="en"><p>In two-group MDA, the threshold for assigning observations to groups. Scores above the cutting score go to one group; below to the other. For equal groups, it is the midpoint of centroids; for unequal groups, a weighted formula is used.</p></div>
+    </div>
+  </div>
+</div>
+
+
+</div><!-- container -->
+</main>
+
+<!-- Navigation -->
+<div style="padding:2rem 0;background:#f0f3f5">
+  <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+    <a href="../index.html" style="font-weight:600" data-zh="&#8592; 回到首頁" data-en="&#8592; Back to Home">&#8592; 回到首頁</a>
+    <a href="ch8-logistic-regression.html" style="font-weight:600;background:var(--accent);color:#fff;padding:.5rem 1rem;border-radius:4px" data-zh="下一章：羅吉斯迴歸 &#8594;" data-en="Next: Logistic Regression &#8594;">下一章：羅吉斯迴歸 &#8594;</a>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>Hair, J.F., Black, W.C., Babin, B.J., & Anderson, R.E. (2019). <em>Multivariate Data Analysis</em> (8th ed.).</p>
+    <p style="margin-top:.5rem;font-size:.8rem;opacity:.8">&copy; 版權所有 葉欲禾 (Gary Yu-Ho Yeh)</p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

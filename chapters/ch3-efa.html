@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>探索性因素分析 | Exploratory Factor Analysis</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="lang-zh">
+<div class="progress-bar"><div class="fill"></div></div>
+
+<nav class="top-nav">
+  <div class="container">
+    <a href="../index.html" class="brand" data-zh="多變量資料分析" data-en="Multivariate Data Analysis">多變量資料分析</a>
+    <div class="nav-links">
+      <a href="../index.html" data-zh="首頁" data-en="Home">首頁</a>
+      <a href="ch3-reliability-validity.html" data-zh="信效度基礎" data-en="R&V Basics">信效度基礎</a>
+      <a href="ch3-efa.html" class="active" data-zh="EFA" data-en="EFA">EFA</a>
+      <a href="ch4-cluster-analysis.html" data-zh="集群分析" data-en="Cluster">集群分析</a>
+      <button class="lang-toggle">EN</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1 data-zh="Ch.3 探索性因素分析" data-en="Ch.3 Exploratory Factor Analysis">Ch.3 探索性因素分析</h1>
+    <p data-zh="資料縮減與潛在結構辨識" data-en="Data Reduction and Latent Structure Identification">資料縮減與潛在結構辨識</p>
+  </div>
+</header>
+
+<main class="section">
+<div class="container">
+
+<!-- ============================================ -->
+<!-- SECTION 1: INTRODUCTION & PURPOSE            -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="一、EFA 簡介與目的" data-en="1. Introduction & Purpose of EFA">一、EFA 簡介與目的</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p><strong>探索性因素分析（EFA）</strong>是一種多變量統計技術，用於從大量觀察變數中<strong>辨識潛在的因素結構</strong>。其核心目標有二：</p>
+    <ul style="margin-top:.5rem;padding-left:1.5rem">
+      <li><strong>資料縮減（Data Reduction）：</strong>將大量相關變數濃縮為少數具代表性的因素</li>
+      <li><strong>結構探索（Structure Discovery）：</strong>發現變數之間隱含的分群模式</li>
+    </ul>
+    <p style="margin-top:.75rem">EFA 屬於<strong>相依技術（interdependence technique）</strong>，不區分自變數與依變數，而是同時分析所有變數間的關係。</p>
+  </div>
+  <div class="en">
+    <p><strong>Exploratory Factor Analysis (EFA)</strong> is a multivariate technique used to <strong>identify latent factor structures</strong> from a large set of observed variables. Its two core goals are:</p>
+    <ul style="margin-top:.5rem;padding-left:1.5rem">
+      <li><strong>Data Reduction:</strong> Condense many correlated variables into a smaller set of representative factors</li>
+      <li><strong>Structure Discovery:</strong> Uncover hidden grouping patterns among variables</li>
+    </ul>
+    <p style="margin-top:.75rem">EFA is an <strong>interdependence technique</strong> -- it does not distinguish independent from dependent variables but analyzes all interrelationships simultaneously.</p>
+  </div>
+</div>
+
+<div class="concept-block success">
+  <h4 data-zh="白話解釋：EFA 就像整理衣櫃" data-en="Plain Language: EFA Is Like Organizing a Closet">白話解釋：EFA 就像整理衣櫃</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p>想像你有一個凌亂的衣櫃，裡面有 50 件衣物散落各處。EFA 就像是幫你<strong>把衣物分類</strong>：上衣歸一堆、褲子歸一堆、外套歸一堆。</p>
+      <p style="margin-top:.5rem">每一「堆」就是一個<strong>因素（factor）</strong>，而每件衣物屬於哪一堆的程度就是<strong>因素負荷量（factor loading）</strong>。有些衣物（例如可當外套也可當上衣的罩衫）可能同時跟兩堆有關，這就是<strong>交叉負荷（cross-loading）</strong>的情況。</p>
+    </div>
+    <div class="en">
+      <p>Imagine you have a messy closet with 50 items of clothing scattered everywhere. EFA is like <strong>sorting them into categories</strong>: tops in one pile, pants in another, jackets in a third.</p>
+      <p style="margin-top:.5rem">Each "pile" is a <strong>factor</strong>, and how strongly each item belongs to a pile is its <strong>factor loading</strong>. Some items (like a jacket-shirt hybrid) may relate to two piles at once -- that is a <strong>cross-loading</strong> situation.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SVG Diagram: Factor Extraction Concept -->
+<div class="diagram">
+  <svg viewBox="0 0 800 340" xmlns="http://www.w3.org/2000/svg" style="max-width:720px">
+    <defs>
+      <marker id="arrowEFA" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#6c757d"/>
+      </marker>
+    </defs>
+    <!-- Observed Variables -->
+    <text x="80" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Observed Variables</text>
+    <rect x="30" y="35" width="100" height="32" rx="4" fill="#d6eaf8" stroke="#3498db" stroke-width="1.5"/>
+    <text x="80" y="56" text-anchor="middle" font-size="11" fill="#2c3e50">X1</text>
+    <rect x="30" y="75" width="100" height="32" rx="4" fill="#d6eaf8" stroke="#3498db" stroke-width="1.5"/>
+    <text x="80" y="96" text-anchor="middle" font-size="11" fill="#2c3e50">X2</text>
+    <rect x="30" y="115" width="100" height="32" rx="4" fill="#d6eaf8" stroke="#3498db" stroke-width="1.5"/>
+    <text x="80" y="136" text-anchor="middle" font-size="11" fill="#2c3e50">X3</text>
+    <rect x="30" y="165" width="100" height="32" rx="4" fill="#d5f5e3" stroke="#27ae60" stroke-width="1.5"/>
+    <text x="80" y="186" text-anchor="middle" font-size="11" fill="#2c3e50">X4</text>
+    <rect x="30" y="205" width="100" height="32" rx="4" fill="#d5f5e3" stroke="#27ae60" stroke-width="1.5"/>
+    <text x="80" y="226" text-anchor="middle" font-size="11" fill="#2c3e50">X5</text>
+    <rect x="30" y="245" width="100" height="32" rx="4" fill="#fdebd0" stroke="#f39c12" stroke-width="1.5"/>
+    <text x="80" y="266" text-anchor="middle" font-size="11" fill="#2c3e50">X6</text>
+    <rect x="30" y="285" width="100" height="32" rx="4" fill="#fdebd0" stroke="#f39c12" stroke-width="1.5"/>
+    <text x="80" y="306" text-anchor="middle" font-size="11" fill="#2c3e50">X7</text>
+    <!-- EFA Process Box -->
+    <rect x="260" y="110" width="160" height="120" rx="10" fill="#f8f9fa" stroke="#6c757d" stroke-width="2" stroke-dasharray="6,3"/>
+    <text x="340" y="155" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">EFA</text>
+    <text x="340" y="175" text-anchor="middle" font-size="11" fill="#6c757d">Factor Extraction</text>
+    <text x="340" y="195" text-anchor="middle" font-size="11" fill="#6c757d">+ Rotation</text>
+    <!-- Arrows: observed → EFA -->
+    <line x1="130" y1="51" x2="260" y2="145" stroke="#6c757d" stroke-width="1.2" marker-end="url(#arrowEFA)"/>
+    <line x1="130" y1="91" x2="260" y2="155" stroke="#6c757d" stroke-width="1.2" marker-end="url(#arrowEFA)"/>
+    <line x1="130" y1="131" x2="260" y2="165" stroke="#6c757d" stroke-width="1.2" marker-end="url(#arrowEFA)"/>
+    <line x1="130" y1="181" x2="260" y2="175" stroke="#6c757d" stroke-width="1.2" marker-end="url(#arrowEFA)"/>
+    <line x1="130" y1="221" x2="260" y2="185" stroke="#6c757d" stroke-width="1.2" marker-end="url(#arrowEFA)"/>
+    <line x1="130" y1="261" x2="260" y2="195" stroke="#6c757d" stroke-width="1.2" marker-end="url(#arrowEFA)"/>
+    <line x1="130" y1="301" x2="260" y2="205" stroke="#6c757d" stroke-width="1.2" marker-end="url(#arrowEFA)"/>
+    <!-- Latent Factors -->
+    <text x="640" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Latent Factors</text>
+    <ellipse cx="640" cy="75" rx="100" ry="35" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+    <text x="640" y="72" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Factor 1</text>
+    <text x="640" y="88" text-anchor="middle" font-size="10" fill="#6c757d">X1, X2, X3</text>
+    <ellipse cx="640" cy="170" rx="100" ry="35" fill="#d5f5e3" stroke="#27ae60" stroke-width="2"/>
+    <text x="640" y="167" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Factor 2</text>
+    <text x="640" y="183" text-anchor="middle" font-size="10" fill="#6c757d">X4, X5</text>
+    <ellipse cx="640" cy="265" rx="100" ry="35" fill="#fdebd0" stroke="#f39c12" stroke-width="2"/>
+    <text x="640" y="262" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Factor 3</text>
+    <text x="640" y="278" text-anchor="middle" font-size="10" fill="#6c757d">X6, X7</text>
+    <!-- Arrows: EFA → factors -->
+    <line x1="420" y1="145" x2="540" y2="75" stroke="#3498db" stroke-width="1.5" marker-end="url(#arrowEFA)"/>
+    <line x1="420" y1="170" x2="540" y2="170" stroke="#27ae60" stroke-width="1.5" marker-end="url(#arrowEFA)"/>
+    <line x1="420" y1="195" x2="540" y2="265" stroke="#f39c12" stroke-width="1.5" marker-end="url(#arrowEFA)"/>
+  </svg>
+  <p class="caption" data-zh="圖：EFA 將多個觀察變數縮減為少數潛在因素" data-en="Figure: EFA reduces many observed variables into a few latent factors">圖：EFA 將多個觀察變數縮減為少數潛在因素</p>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 2: SUITABILITY TESTS                 -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="二、適合度檢驗" data-en="2. Suitability Tests">二、適合度檢驗</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>在執行 EFA 之前，必須先確認資料是否<strong>適合進行因素分析</strong>。如果變數之間相關太低，就無法萃取有意義的因素。</p>
+  </div>
+  <div class="en">
+    <p>Before running EFA, you must verify that the data is <strong>suitable for factor analysis</strong>. If correlations among variables are too low, meaningful factors cannot be extracted.</p>
+  </div>
+</div>
+
+<div class="card-grid" style="margin-top:1rem">
+  <div class="card">
+    <h3 data-zh="KMO 取樣適切性量數" data-en="KMO Measure of Sampling Adequacy">KMO 取樣適切性量數</h3>
+    <div class="zh-only">
+      <p>KMO 衡量變數之間<strong>偏相關的程度</strong>，值介於 0 到 1 之間。偏相關越小，代表變數間的共同變異越多，越適合因素分析。</p>
+    </div>
+    <div class="en-only">
+      <p>KMO measures the degree of <strong>partial correlations</strong> among variables, ranging from 0 to 1. Smaller partial correlations indicate more shared variance, making the data more suitable.</p>
+    </div>
+  </div>
+  <div class="card">
+    <h3 data-zh="Bartlett 球形檢定" data-en="Bartlett's Test of Sphericity">Bartlett 球形檢定</h3>
+    <div class="zh-only">
+      <p>檢驗相關矩陣是否為<strong>單位矩陣（identity matrix）</strong>。若 p < .05，拒絕虛無假設，表示變數之間存在顯著相關，適合進行因素分析。</p>
+    </div>
+    <div class="en-only">
+      <p>Tests whether the correlation matrix is an <strong>identity matrix</strong>. If p < .05, reject the null hypothesis -- significant correlations exist among variables, making factor analysis appropriate.</p>
+    </div>
+  </div>
+  <div class="card">
+    <h3 data-zh="反映像相關矩陣" data-en="Anti-Image Correlation Matrix">反映像相關矩陣</h3>
+    <div class="zh-only">
+      <p>檢查對角線上的<strong>個別變數 MSA 值</strong>（Measure of Sampling Adequacy）。每個變數的 MSA 應 ≥ .50，若低於此標準，該變數應考慮刪除。</p>
+    </div>
+    <div class="en-only">
+      <p>Examine the <strong>individual variable MSA values</strong> on the diagonal. Each variable's MSA should be ≥ .50; variables below this threshold should be considered for removal.</p>
+    </div>
+  </div>
+</div>
+
+<!-- KMO Table -->
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="KMO 值" data-en="KMO Value">KMO 值</th>
+        <th data-zh="解釋" data-en="Interpretation">解釋</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>0.90+</td><td data-zh="極佳（Marvelous）" data-en="Marvelous">極佳（Marvelous）</td></tr>
+      <tr><td>0.80 - 0.89</td><td data-zh="良好（Meritorious）" data-en="Meritorious">良好（Meritorious）</td></tr>
+      <tr><td>0.70 - 0.79</td><td data-zh="中等（Middling）" data-en="Middling">中等（Middling）</td></tr>
+      <tr><td>0.60 - 0.69</td><td data-zh="平庸（Mediocre）" data-en="Mediocre">平庸（Mediocre）</td></tr>
+      <tr><td>0.50 - 0.59</td><td data-zh="悲慘（Miserable）— 勉強可接受" data-en="Miserable -- barely acceptable">悲慘（Miserable）— 勉強可接受</td></tr>
+      <tr><td class="highlight-cell">&lt; 0.50</td><td class="highlight-cell" data-zh="不可接受（Unacceptable）— 不應進行因素分析" data-en="Unacceptable -- do not proceed with factor analysis">不可接受（Unacceptable）— 不應進行因素分析</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="KMO 公式" data-en="KMO Formula">KMO 公式</h4>
+  <div class="formula-box">
+    KMO = Σ Σ r<sup>2</sup><sub>ij</sub> / (Σ Σ r<sup>2</sup><sub>ij</sub> + Σ Σ a<sup>2</sup><sub>ij</sub>)
+    <span class="label" data-zh="r = 簡單相關係數, a = 偏相關係數 (i ≠ j)" data-en="r = simple correlation, a = partial correlation (i ≠ j)">r = 簡單相關係數, a = 偏相關係數 (i ≠ j)</span>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 3: EXTRACTION METHODS                -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="三、因素萃取方法" data-en="3. Extraction Methods">三、因素萃取方法</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>因素萃取的目的是從相關矩陣中<strong>找出最能代表變數間共同變異的因素</strong>。兩大類萃取方法的核心差異在於所分析的變異來源。</p>
+  </div>
+  <div class="en">
+    <p>The goal of extraction is to <strong>find factors that best represent the shared variance</strong> among variables. The two major approaches differ in which variance they analyze.</p>
+  </div>
+</div>
+
+<div class="tab-container" style="margin-top:1rem">
+  <div class="tab-header">
+    <button class="tab-btn active" data-tab="tab-pca" data-zh="主成分分析 PCA" data-en="PCA">主成分分析 PCA</button>
+    <button class="tab-btn" data-tab="tab-cfa-extract" data-zh="共同因素分析" data-en="Common Factor">共同因素分析</button>
+  </div>
+
+  <div class="tab-panel active" id="tab-pca">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>主成分分析（Principal Component Analysis, PCA）</h4>
+        <p>分析的是<strong>總變異（total variance）</strong>，包含共同變異、獨特變異和誤差變異。對角線上放的是 1。</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>目的：</strong>以最少數量的成分解釋最大比例的總變異</li>
+          <li><strong>適用時機：</strong>主要目標是資料縮減，或想保留所有變異資訊</li>
+          <li><strong>特色：</strong>萃取出的成分是觀察變數的線性組合，不假設潛在因素存在</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>Principal Component Analysis (PCA)</h4>
+        <p>Analyzes <strong>total variance</strong>, including shared, unique, and error variance. Diagonal elements are set to 1.</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>Purpose:</strong> Explain maximum total variance with the fewest components</li>
+          <li><strong>When to use:</strong> Primary goal is data reduction or preserving all variance information</li>
+          <li><strong>Key feature:</strong> Components are linear combinations of observed variables; no latent factor assumption</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-cfa-extract">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>共同因素分析（Common Factor Analysis）</h4>
+        <p>只分析<strong>共同變異（common variance / communality）</strong>，排除獨特變異與誤差。對角線上放的是共同性估計值（communality estimates）。</p>
+        <p style="margin-top:.5rem"><strong>常見方法：</strong></p>
+        <ul style="padding-left:1.2rem">
+          <li><strong>主軸因子法（PAF, Principal Axis Factoring）：</strong>反覆估計共同性直到收斂</li>
+          <li><strong>最大概似法（ML, Maximum Likelihood）：</strong>提供適配度統計量，可進行模型檢定</li>
+        </ul>
+        <p style="margin-top:.5rem"><strong>適用時機：</strong>研究目標是辨識潛在因素結構，且理論上假設存在潛在因素</p>
+      </div>
+      <div class="en">
+        <h4>Common Factor Analysis</h4>
+        <p>Analyzes only <strong>common variance (communality)</strong>, excluding unique and error variance. Diagonal elements use communality estimates.</p>
+        <p style="margin-top:.5rem"><strong>Common methods:</strong></p>
+        <ul style="padding-left:1.2rem">
+          <li><strong>PAF (Principal Axis Factoring):</strong> Iteratively estimates communalities until convergence</li>
+          <li><strong>ML (Maximum Likelihood):</strong> Provides goodness-of-fit statistics for model testing</li>
+        </ul>
+        <p style="margin-top:.5rem"><strong>When to use:</strong> Goal is identifying latent factor structures with a theoretical basis</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="決定因素數量的方法" data-en="Methods for Determining Number of Factors">決定因素數量的方法</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li><strong>特徵值 > 1 準則（Kaiser Criterion）：</strong>保留特徵值大於 1 的因素。最常用但傾向高估因素數量</li>
+        <li><strong>陡坡圖（Scree Plot）：</strong>繪製特徵值遞減曲線，在曲線出現明顯「手肘」彎折處截斷</li>
+        <li><strong>累積解釋變異量：</strong>社會科學通常要求解釋 60% 以上的總變異</li>
+        <li><strong>平行分析（Parallel Analysis）：</strong>比較實際特徵值與隨機資料的特徵值，較為客觀</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li><strong>Eigenvalue > 1 Rule (Kaiser Criterion):</strong> Retain factors with eigenvalues exceeding 1. Most common but tends to overextract</li>
+        <li><strong>Scree Plot:</strong> Plot eigenvalues in descending order; cut off where the curve shows a clear "elbow"</li>
+        <li><strong>Cumulative Variance Explained:</strong> Social sciences typically require 60%+ of total variance explained</li>
+        <li><strong>Parallel Analysis:</strong> Compare actual eigenvalues against those from random data; more objective</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="特徵值（Eigenvalue）的含義" data-en="What an Eigenvalue Means">特徵值（Eigenvalue）的含義</h4>
+  <div class="formula-box">
+    <span data-zh="特徵值 = 該因素所解釋之變異量的總和 = Σ λ²（該因素上所有負荷量的平方和）" data-en="Eigenvalue = total variance explained by the factor = Σ λ² (sum of squared loadings on that factor)">特徵值 = 該因素所解釋之變異量的總和 = Σ λ²（該因素上所有負荷量的平方和）</span>
+    <span class="label" data-zh="特徵值 = 1 代表該因素僅等同於一個變數的資訊量" data-en="Eigenvalue of 1 means the factor explains no more than a single variable">特徵值 = 1 代表該因素僅等同於一個變數的資訊量</span>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 4: FACTOR ROTATION                   -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="四、因素轉軸" data-en="4. Factor Rotation">四、因素轉軸</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>未轉軸的因素解通常難以解釋。<strong>轉軸（rotation）</strong>的目的是使因素負荷量更加極端化（接近 0 或接近 1），從而使每個因素有更清楚的解釋意義。轉軸不會改變整體解釋變異量或共同性，只會重新分配各因素的解釋比例。</p>
+  </div>
+  <div class="en">
+    <p>Unrotated solutions are typically hard to interpret. The purpose of <strong>rotation</strong> is to make factor loadings more extreme (closer to 0 or 1), giving each factor a clearer interpretation. Rotation does not change total variance explained or communalities -- it only redistributes variance across factors.</p>
+  </div>
+</div>
+
+<div class="tab-container" style="margin-top:1rem">
+  <div class="tab-header">
+    <button class="tab-btn active" data-tab="tab-ortho" data-zh="正交轉軸" data-en="Orthogonal">正交轉軸</button>
+    <button class="tab-btn" data-tab="tab-oblique" data-zh="斜交轉軸" data-en="Oblique">斜交轉軸</button>
+  </div>
+
+  <div class="tab-panel active" id="tab-ortho">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>正交轉軸（Orthogonal Rotation）</h4>
+        <p>假設因素之間<strong>互不相關（r = 0）</strong>。轉軸時保持因素軸之間 90 度直角。</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>Varimax：</strong>最常用。最大化每個因素內負荷量的變異，使每個因素有少數高負荷與多數低負荷的變數</li>
+          <li><strong>Quartimax：</strong>最大化每個變數在各因素上負荷量的變異，傾向產生一個大的一般因素</li>
+          <li><strong>Equamax：</strong>Varimax 與 Quartimax 的折衷</li>
+        </ul>
+        <p style="margin-top:.5rem"><strong>適用時機：</strong>理論上認為因素彼此獨立時使用</p>
+      </div>
+      <div class="en">
+        <h4>Orthogonal Rotation</h4>
+        <p>Assumes factors are <strong>uncorrelated (r = 0)</strong>. Maintains 90-degree angles between factor axes.</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>Varimax:</strong> Most common. Maximizes the variance of loadings within each factor, producing a few high and many low loadings per factor</li>
+          <li><strong>Quartimax:</strong> Maximizes variance of loadings across factors for each variable; tends to produce one large general factor</li>
+          <li><strong>Equamax:</strong> A compromise between Varimax and Quartimax</li>
+        </ul>
+        <p style="margin-top:.5rem"><strong>When to use:</strong> When theory suggests factors are independent of each other</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-oblique">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>斜交轉軸（Oblique Rotation）</h4>
+        <p>允許因素之間<strong>存在相關</strong>。在社會科學中，潛在建構之間通常確實有相關，因此斜交轉軸往往更符合現實。</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>Promax：</strong>先進行 Varimax 正交轉軸，再允許因素相關。計算速度快</li>
+          <li><strong>Direct Oblimin：</strong>直接最小化因素之間的交叉乘積。delta 參數控制相關程度</li>
+        </ul>
+        <p style="margin-top:.5rem"><strong>適用時機：</strong>理論上認為因素之間有關聯，或正交轉軸結果顯示因素間確有相關</p>
+        <p style="margin-top:.5rem"><strong>注意：</strong>斜交轉軸會產生兩個矩陣——<strong>模式矩陣（Pattern Matrix）</strong>與<strong>結構矩陣（Structure Matrix）</strong>。解釋時以模式矩陣為主。</p>
+      </div>
+      <div class="en">
+        <h4>Oblique Rotation</h4>
+        <p>Allows factors to be <strong>correlated</strong>. In social sciences, latent constructs are usually correlated, making oblique rotation more realistic.</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>Promax:</strong> Starts with Varimax then allows correlations. Computationally fast</li>
+          <li><strong>Direct Oblimin:</strong> Directly minimizes cross-products between factors. Delta parameter controls correlation degree</li>
+        </ul>
+        <p style="margin-top:.5rem"><strong>When to use:</strong> When theory suggests factors are related, or orthogonal results show interfactor correlations</p>
+        <p style="margin-top:.5rem"><strong>Note:</strong> Oblique rotation produces two matrices -- <strong>Pattern Matrix</strong> and <strong>Structure Matrix</strong>. Interpretation is based on the Pattern Matrix.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="concept-block danger">
+  <h4 data-zh="選擇轉軸法的經驗法則" data-en="Rule of Thumb for Choosing Rotation">選擇轉軸法的經驗法則</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p>Hair et al. 建議：先使用<strong>斜交轉軸</strong>。如果因素間相關低於 .30，則改用正交轉軸（因為兩者結果幾乎相同，而正交解較簡潔）。若相關高於 .30，則使用斜交轉軸結果。</p>
+    </div>
+    <div class="en">
+      <p>Hair et al. suggest: start with <strong>oblique rotation</strong>. If interfactor correlations are below .30, switch to orthogonal (since results will be nearly identical, and orthogonal is simpler). If correlations exceed .30, use the oblique solution.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 5: INTERPRETATION                    -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="五、因素解釋與命名" data-en="5. Factor Interpretation & Naming">五、因素解釋與命名</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>因素解釋的核心工作是檢視<strong>因素負荷量矩陣</strong>，辨識每個因素上有顯著負荷的變數，並據此為因素命名。</p>
+  </div>
+  <div class="en">
+    <p>The core task of interpretation is examining the <strong>factor loading matrix</strong>, identifying variables with significant loadings on each factor, and naming factors accordingly.</p>
+  </div>
+</div>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="指標" data-en="Criterion">指標</th>
+        <th data-zh="門檻值" data-en="Threshold">門檻值</th>
+        <th data-zh="說明" data-en="Notes">說明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-zh="顯著因素負荷量" data-en="Significant Loading">顯著因素負荷量</td>
+        <td class="highlight-cell">|loading| ≥ .40</td>
+        <td data-zh="實務上通常以 .40 為最低標準；n ≥ 350 時 .30 亦可接受" data-en="Practical minimum; .30 may suffice when n ≥ 350">實務上通常以 .40 為最低標準；n ≥ 350 時 .30 亦可接受</td>
+      </tr>
+      <tr>
+        <td data-zh="交叉負荷" data-en="Cross-loading">交叉負荷</td>
+        <td data-zh="差距 ≥ .20" data-en="Gap ≥ .20">差距 ≥ .20</td>
+        <td data-zh="一個變數在兩個因素上的負荷差距應 ≥ .20，否則考慮刪除" data-en="A variable's loadings on two factors should differ by ≥ .20; otherwise consider deletion">一個變數在兩個因素上的負荷差距應 ≥ .20，否則考慮刪除</td>
+      </tr>
+      <tr>
+        <td data-zh="共同性" data-en="Communality">共同性</td>
+        <td class="highlight-cell">h² ≥ .50</td>
+        <td data-zh="共同性低於 .50 的變數可能缺乏足夠的共同變異" data-en="Variables with communality below .50 may lack sufficient shared variance">共同性低於 .50 的變數可能缺乏足夠的共同變異</td>
+      </tr>
+      <tr>
+        <td data-zh="每因素最少變數" data-en="Min. Variables per Factor">每因素最少變數</td>
+        <td>≥ 3</td>
+        <td data-zh="每個因素至少應有 3 個顯著負荷的變數才具穩定性" data-en="Each factor should have at least 3 significantly loading variables for stability">每個因素至少應有 3 個顯著負荷的變數才具穩定性</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="共同性（Communality）公式" data-en="Communality Formula">共同性（Communality）公式</h4>
+  <div class="formula-box">
+    h<sup>2</sup><sub>i</sub> = Σ λ<sup>2</sup><sub>ij</sub>
+    <span class="label" data-zh="h² = 變數 i 在所有保留因素上負荷量的平方和（即被因素解釋的變異比例）" data-en="h² = sum of squared loadings for variable i across all retained factors (proportion of variance explained)">h² = 變數 i 在所有保留因素上負荷量的平方和（即被因素解釋的變異比例）</span>
+  </div>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="因素命名的原則" data-en="Principles of Factor Naming">因素命名的原則</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li>檢視每個因素上負荷量最高的變數，找出它們的<strong>共同主題</strong></li>
+        <li>因素名稱應反映<strong>理論概念</strong>，而非只是列出變數名稱</li>
+        <li>注意負向負荷的變數——它們代表因素概念的<strong>反面</strong></li>
+        <li>負荷量越高的變數對因素命名的影響力越大</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li>Examine the highest loading variables on each factor and identify their <strong>common theme</strong></li>
+        <li>Factor names should reflect <strong>theoretical concepts</strong>, not just list variable names</li>
+        <li>Watch for negatively loaded variables -- they represent the <strong>opposite</strong> of the factor concept</li>
+        <li>Higher loading variables carry more influence on factor naming</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 6: FACTOR SCORES & VALIDATION        -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="六、因素分數與驗證" data-en="6. Factor Scores & Validation">六、因素分數與驗證</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>因素分析完成後，研究者通常需要為每個受試者計算<strong>因素分數（factor scores）</strong>，以便在後續分析中使用。</p>
+  </div>
+  <div class="en">
+    <p>After completing factor analysis, researchers typically need to compute <strong>factor scores</strong> for each respondent for use in subsequent analyses.</p>
+  </div>
+</div>
+
+<div class="card-grid" style="margin-top:1rem">
+  <div class="card">
+    <h3 data-zh="因素分數的計算方式" data-en="Computing Factor Scores">因素分數的計算方式</h3>
+    <div class="zh-only">
+      <ul style="padding-left:1.2rem">
+        <li><strong>總加量表法（Summated Scales）：</strong>將高負荷變數取平均值。最常用且最容易在不同樣本間複製</li>
+        <li><strong>迴歸法（Regression Method）：</strong>以因素負荷量為權重的加權線性組合。精確但難以跨樣本複製</li>
+        <li><strong>Bartlett 法：</strong>以最小化獨特因素的影響為目標，只使用共同變異</li>
+      </ul>
+    </div>
+    <div class="en-only">
+      <ul style="padding-left:1.2rem">
+        <li><strong>Summated Scales:</strong> Average the high-loading variables. Most common and most replicable across samples</li>
+        <li><strong>Regression Method:</strong> Weighted linear combination using factor loadings. Precise but hard to replicate</li>
+        <li><strong>Bartlett Method:</strong> Minimizes unique factor influence; uses only common variance</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card">
+    <h3 data-zh="因素結構的驗證" data-en="Validating Factor Structure">因素結構的驗證</h3>
+    <div class="zh-only">
+      <ul style="padding-left:1.2rem">
+        <li><strong>分半驗證（Split-sample）：</strong>將樣本隨機分成兩半，分別進行 EFA，比較因素結構的一致性</li>
+        <li><strong>交叉驗證（Cross-validation）：</strong>在新的獨立樣本中驗證因素結構</li>
+        <li><strong>CFA 驗證：</strong>使用驗證性因素分析（CFA）正式檢定 EFA 發現的因素結構</li>
+      </ul>
+    </div>
+    <div class="en-only">
+      <ul style="padding-left:1.2rem">
+        <li><strong>Split-sample:</strong> Randomly split the sample in half, run EFA on each, and compare factor structures</li>
+        <li><strong>Cross-validation:</strong> Validate the factor structure on a new independent sample</li>
+        <li><strong>CFA validation:</strong> Use confirmatory factor analysis to formally test the EFA-derived structure</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- INTERACTIVE CALCULATOR                       -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="互動計算器：共同性與解釋變異" data-en="Interactive Calculator: Communality & Variance Explained">互動計算器：共同性與解釋變異</h2>
+
+<div class="calculator">
+  <h3 data-zh="共同性與變異量計算器" data-en="Communality & Variance Calculator">共同性與變異量計算器</h3>
+  <div class="bilingual" style="margin-bottom:1rem">
+    <div class="zh"><p>輸入一個變數在各因素上的因素負荷量（以空格或逗號分隔），計算該變數的共同性（h²）以及各因素的解釋變異量。</p></div>
+    <div class="en"><p>Enter a variable's factor loadings across factors (separated by spaces or commas) to compute communality (h²) and each factor's explained variance.</p></div>
+  </div>
+  <div class="calc-row">
+    <label data-zh="因素負荷量：" data-en="Factor loadings:">因素負荷量：</label>
+    <input type="text" id="efa-loadings" value="0.82, 0.15, 0.08" style="width:220px" placeholder="e.g. 0.82, 0.15, 0.08">
+  </div>
+  <button class="calc-btn" onclick="calcCommunality()" data-zh="計算共同性" data-en="Calculate Communality">計算共同性</button>
+  <div class="calc-result" id="efa-result"></div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 7: QUIZ                              -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="七、自我測驗" data-en="7. Self-Assessment Quiz">七、自我測驗</h2>
+
+<div class="quiz">
+  <h3 data-zh="測試你對 EFA 的理解" data-en="Test Your Understanding of EFA">測試你對 EFA 的理解</h3>
+
+  <div class="quiz-question">
+    <p data-zh="Q1: KMO 取樣適切性量數的最低可接受值為何？" data-en="Q1: What is the minimum acceptable KMO value?">Q1: KMO 取樣適切性量數的最低可接受值為何？</p>
+    <div class="quiz-option" data-correct="false">.30</div>
+    <div class="quiz-option" data-correct="true">.50</div>
+    <div class="quiz-option" data-correct="false">.70</div>
+    <div class="quiz-option" data-correct="false">.90</div>
+    <div class="quiz-feedback" data-zh="正確！KMO < .50 被認為不可接受，不應進行因素分析。.50-.59 為勉強可接受，.80 以上為良好。" data-en="Correct! KMO below .50 is considered unacceptable for factor analysis. .50-.59 is miserable but acceptable; .80+ is meritorious.">正確！KMO < .50 被認為不可接受，不應進行因素分析。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q2: 主成分分析（PCA）與共同因素分析的主要差異為何？" data-en="Q2: What is the primary difference between PCA and Common Factor Analysis?">Q2: 主成分分析（PCA）與共同因素分析的主要差異為何？</p>
+    <div class="quiz-option" data-correct="false" data-zh="PCA 需要較大的樣本量" data-en="PCA requires a larger sample size">PCA 需要較大的樣本量</div>
+    <div class="quiz-option" data-correct="true" data-zh="PCA 分析總變異（含獨特與誤差），共同因素分析只分析共同變異" data-en="PCA analyzes total variance (including unique and error); common factor analysis only analyzes shared variance">PCA 分析總變異（含獨特與誤差），共同因素分析只分析共同變異</div>
+    <div class="quiz-option" data-correct="false" data-zh="PCA 不需要進行轉軸" data-en="PCA does not require rotation">PCA 不需要進行轉軸</div>
+    <div class="quiz-option" data-correct="false" data-zh="共同因素分析的結果總是比 PCA 好" data-en="Common factor analysis always yields better results than PCA">共同因素分析的結果總是比 PCA 好</div>
+    <div class="quiz-feedback" data-zh="正確！PCA 的對角線為 1（分析全部變異），而共同因素分析的對角線為共同性估計值（只分析共同變異）。這是兩者最核心的差異。" data-en="Correct! PCA uses 1s on the diagonal (total variance), while common factor analysis uses communality estimates (shared variance only). This is the core distinction.">正確！PCA 的對角線為 1，共同因素分析的對角線為共同性估計值。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q3: 在什麼情況下應選擇斜交轉軸而非正交轉軸？" data-en="Q3: When should oblique rotation be preferred over orthogonal rotation?">Q3: 在什麼情況下應選擇斜交轉軸而非正交轉軸？</p>
+    <div class="quiz-option" data-correct="false" data-zh="當樣本量很大時" data-en="When the sample size is large">當樣本量很大時</div>
+    <div class="quiz-option" data-correct="false" data-zh="當因素數量超過五個時" data-en="When there are more than five factors">當因素數量超過五個時</div>
+    <div class="quiz-option" data-correct="true" data-zh="當理論上認為因素之間存在相關時" data-en="When theory suggests factors are correlated with each other">當理論上認為因素之間存在相關時</div>
+    <div class="quiz-option" data-correct="false" data-zh="當使用 PCA 而非共同因素分析時" data-en="When using PCA instead of common factor analysis">當使用 PCA 而非共同因素分析時</div>
+    <div class="quiz-feedback" data-zh="正確！斜交轉軸允許因素之間存在相關，更符合社會科學中潛在建構通常有關聯的實際情況。Hair et al. 建議先試斜交轉軸，若因素間相關 < .30 再改用正交。" data-en="Correct! Oblique rotation allows factors to be correlated, which is more realistic in social sciences. Hair et al. suggest trying oblique first; if interfactor correlations are < .30, switch to orthogonal.">正確！斜交轉軸允許因素間有相關，更符合實際。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q4: 一個變數的共同性（communality）h² = 0.35 代表什麼？" data-en="Q4: What does a variable's communality (h²) of 0.35 indicate?">Q4: 一個變數的共同性（communality）h² = 0.35 代表什麼？</p>
+    <div class="quiz-option" data-correct="false" data-zh="該變數在因素中非常重要" data-en="The variable is very important in the factor solution">該變數在因素中非常重要</div>
+    <div class="quiz-option" data-correct="false" data-zh="該變數的因素負荷量為 0.35" data-en="The variable has a factor loading of 0.35">該變數的因素負荷量為 0.35</div>
+    <div class="quiz-option" data-correct="true" data-zh="只有 35% 的變異被因素解釋，可能需要考慮刪除此變數" data-en="Only 35% of its variance is explained by the factors; consider removing this variable">只有 35% 的變異被因素解釋，可能需要考慮刪除此變數</div>
+    <div class="quiz-option" data-correct="false" data-zh="該變數與其他 35% 的變數共享一個因素" data-en="The variable shares a factor with 35% of other variables">該變數與其他 35% 的變數共享一個因素</div>
+    <div class="quiz-feedback" data-zh="正確！共同性 h² 代表該變數被所有保留因素所解釋的變異比例。h² < .50 表示超過一半的變異未被解釋，該變數可能不適合保留在因素解中。" data-en="Correct! Communality h² represents the proportion of variance explained by all retained factors. h² < .50 means over half the variance is unexplained, and the variable may not fit well in the factor solution.">正確！h² < .50 代表因素解釋不到一半的變異，需考慮刪除。</div>
+  </div>
+</div>
+
+
+</div><!-- container -->
+</main>
+
+<!-- Navigation -->
+<div style="padding:2rem 0;background:#f0f3f5">
+  <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+    <a href="ch3-reliability-validity.html" style="font-weight:600" data-zh="← 信效度基礎" data-en="← R&V Basics">← 信效度基礎</a>
+    <a href="ch4-cluster-analysis.html" style="font-weight:600;background:var(--accent);color:#fff;padding:.5rem 1rem;border-radius:4px" data-zh="下一章：集群分析 →" data-en="Next: Cluster Analysis →">下一章：集群分析 →</a>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>Hair, J.F., Black, W.C., Babin, B.J., & Anderson, R.E. (2019). <em>Multivariate Data Analysis</em> (8th ed.).</p>
+    <p style="margin-top:.5rem;font-size:.8rem;opacity:.8">&copy; 版權所有 葉欲禾 (Gary Yu-Ho Yeh)</p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+<script>
+function calcCommunality() {
+  const input = document.getElementById('efa-loadings').value.trim();
+  const loadings = input.split(/[\s,;]+/).map(Number).filter(v => !isNaN(v));
+  if (loadings.length < 1) {
+    showResult('efa-result', 'N/A', 'Enter at least 1 factor loading / 至少輸入 1 個因素負荷量', '');
+    return;
+  }
+  const squared = loadings.map(l => l * l);
+  const h2 = squared.reduce((s, v) => s + v, 0);
+  let cls, msg;
+  if (h2 >= 0.5) {
+    cls = 'good';
+    msg = currentLang === 'zh'
+      ? '共同性充足 (h² ≥ .50)：此變數適合保留'
+      : 'Adequate communality (h² ≥ .50): variable is suitable to retain';
+  } else {
+    cls = 'bad';
+    msg = currentLang === 'zh'
+      ? '共同性不足 (h² < .50)：考慮刪除此變數'
+      : 'Low communality (h² < .50): consider removing this variable';
+  }
+  const details = currentLang === 'zh'
+    ? 'λ² = [' + squared.map(v => v.toFixed(4)).join(', ') + ']'
+    : 'λ² = [' + squared.map(v => v.toFixed(4)).join(', ') + ']';
+  showResult('efa-result', 'h² = ' + h2.toFixed(4), msg + '<br><small>' + details + '</small>', cls);
+}
+</script>
+</body>
+</html>

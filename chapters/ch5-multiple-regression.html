@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多元迴歸分析 | Multiple Regression Analysis</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="lang-zh">
+<div class="progress-bar"><div class="fill"></div></div>
+
+<nav class="top-nav">
+  <div class="container">
+    <a href="../index.html" class="brand" data-zh="多變量資料分析" data-en="Multivariate Data Analysis">多變量資料分析</a>
+    <div class="nav-links">
+      <a href="../index.html" data-zh="首頁" data-en="Home">首頁</a>
+      <button class="lang-toggle">EN</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1 data-zh="多元迴歸分析" data-en="Multiple Regression Analysis">多元迴歸分析</h1>
+    <p data-zh="Ch.5 以多個自變數預測與解釋依變數" data-en="Ch.5 Predicting and Explaining a Dependent Variable with Multiple Independents">Ch.5 以多個自變數預測與解釋依變數</p>
+  </div>
+</header>
+
+<main class="section">
+<div class="container">
+
+<!-- ============================================ -->
+<!-- SECTION 1: OVERVIEW                          -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="一、迴歸分析概述" data-en="1. Overview of Regression Analysis">一、迴歸分析概述</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p><strong>迴歸分析</strong>是最廣泛使用的多變量統計方法之一，用來分析一個<strong>依變數（DV, metric）</strong>與一個或多個<strong>自變數（IVs, metric or nonmetric）</strong>之間的關係。</p>
+    <p style="margin-top:.75rem">根據自變數的數量，可分為：</p>
+    <ul style="margin-top:.5rem;padding-left:1.5rem">
+      <li><strong>簡單迴歸（Simple Regression）：</strong>一個自變數預測一個依變數</li>
+      <li><strong>多元迴歸（Multiple Regression）：</strong>多個自變數同時預測一個依變數</li>
+    </ul>
+    <p style="margin-top:.75rem">迴歸分析的核心原理是<strong>最小平方法（OLS, Ordinary Least Squares）</strong>：找到一組係數，使得預測值與實際觀察值之間的殘差平方和最小。</p>
+  </div>
+  <div class="en">
+    <p><strong>Regression analysis</strong> is one of the most widely used multivariate methods, examining the relationship between a single <strong>dependent variable (DV, metric)</strong> and one or more <strong>independent variables (IVs, metric or nonmetric)</strong>.</p>
+    <p style="margin-top:.75rem">Based on the number of IVs:</p>
+    <ul style="margin-top:.5rem;padding-left:1.5rem">
+      <li><strong>Simple Regression:</strong> One IV predicting one DV</li>
+      <li><strong>Multiple Regression:</strong> Multiple IVs simultaneously predicting one DV</li>
+    </ul>
+    <p style="margin-top:.75rem">The core principle is <strong>Ordinary Least Squares (OLS)</strong>: finding coefficients that minimize the sum of squared residuals between predicted and observed values.</p>
+  </div>
+</div>
+
+<div class="concept-block success">
+  <h4 data-zh="白話解釋" data-en="Plain Language Explanation">白話解釋</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p>迴歸就像找出各因素對結果的<strong>影響力</strong>。例如：學生的考試成績（依變數）受到讀書時間、出席率、智力測驗分數（自變數）的影響。迴歸分析告訴我們每個因素的影響有多大，以及它們合在一起能解釋多少成績的變異。</p>
+    </div>
+    <div class="en">
+      <p>Regression is like finding each factor's <strong>influence</strong> on an outcome. For example: a student's exam score (DV) is influenced by study hours, attendance rate, and aptitude test score (IVs). Regression tells us how much influence each factor has and how much of the score variation they collectively explain.</p>
+    </div>
+  </div>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="預測 vs. 解釋" data-en="Prediction vs. Explanation">預測 vs. 解釋</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li><strong>預測（Prediction）：</strong>目標是最大化 R²，找到最佳預測方程式，不一定需要理論基礎</li>
+        <li><strong>解釋（Explanation）：</strong>目標是理解各自變數對依變數的影響機制，重視標準化係數（β）與理論意義</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li><strong>Prediction:</strong> Goal is to maximize R², find the best predictive equation; theoretical basis not always required</li>
+        <li><strong>Explanation:</strong> Goal is to understand how each IV affects the DV; emphasizes standardized coefficients (β) and theoretical meaning</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SVG Diagram: Multiple Regression Concept -->
+<div class="diagram">
+  <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" style="max-width:600px">
+    <defs>
+      <marker id="arrowReg" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#6c757d"/>
+      </marker>
+    </defs>
+    <!-- X boxes -->
+    <rect x="30" y="20" width="160" height="50" rx="8" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+    <text x="110" y="50" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">X₁ (Study Hours)</text>
+    <rect x="30" y="100" width="160" height="50" rx="8" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+    <text x="110" y="130" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">X₂ (Attendance)</text>
+    <rect x="30" y="180" width="160" height="50" rx="8" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+    <text x="110" y="210" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">X₃ (Aptitude)</text>
+    <rect x="30" y="260" width="160" height="50" rx="8" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+    <text x="110" y="290" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">X₄ (Motivation)</text>
+    <!-- Y box -->
+    <rect x="460" y="120" width="200" height="70" rx="8" fill="#d5f5e3" stroke="#27ae60" stroke-width="2"/>
+    <text x="560" y="152" text-anchor="middle" font-size="15" font-weight="bold" fill="#2c3e50">Y (Exam Score)</text>
+    <text x="560" y="175" text-anchor="middle" font-size="11" fill="#6c757d">Dependent Variable</text>
+    <!-- Arrows with β labels -->
+    <line x1="190" y1="45" x2="455" y2="140" stroke="#3498db" stroke-width="2" marker-end="url(#arrowReg)"/>
+    <text x="320" y="78" text-anchor="middle" font-size="12" fill="#3498db" font-weight="bold">β₁</text>
+    <line x1="190" y1="125" x2="455" y2="148" stroke="#3498db" stroke-width="2" marker-end="url(#arrowReg)"/>
+    <text x="320" y="125" text-anchor="middle" font-size="12" fill="#3498db" font-weight="bold">β₂</text>
+    <line x1="190" y1="205" x2="455" y2="162" stroke="#3498db" stroke-width="2" marker-end="url(#arrowReg)"/>
+    <text x="320" y="178" text-anchor="middle" font-size="12" fill="#3498db" font-weight="bold">β₃</text>
+    <line x1="190" y1="285" x2="455" y2="175" stroke="#3498db" stroke-width="2" marker-end="url(#arrowReg)"/>
+    <text x="320" y="235" text-anchor="middle" font-size="12" fill="#3498db" font-weight="bold">β₄</text>
+  </svg>
+  <p class="caption" data-zh="圖：多元迴歸概念 — 多個自變數（X）同時預測一個依變數（Y）" data-en="Figure: Multiple regression concept — multiple IVs (X) simultaneously predicting one DV (Y)">圖：多元迴歸概念 — 多個自變數（X）同時預測一個依變數（Y）</p>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 2: MODEL BUILDING                    -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="二、模型建構" data-en="2. Model Building">二、模型建構</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>多元迴歸中，研究者必須決定自變數如何<strong>進入</strong>迴歸方程式。三種主要方法各有不同的目的與適用情境。</p>
+  </div>
+  <div class="en">
+    <p>In multiple regression, researchers must decide how IVs <strong>enter</strong> the regression equation. Three main methods serve different purposes and contexts.</p>
+  </div>
+</div>
+
+<!-- Tab Interface: Entry Methods -->
+<div class="tab-container" style="margin-top:1.5rem">
+  <div class="tab-header">
+    <button class="tab-btn active" data-tab="tab-simultaneous" data-zh="同時進入法" data-en="Simultaneous">同時進入法</button>
+    <button class="tab-btn" data-tab="tab-stepwise" data-zh="逐步迴歸法" data-en="Stepwise">逐步迴歸法</button>
+    <button class="tab-btn" data-tab="tab-hierarchical" data-zh="階層迴歸法" data-en="Hierarchical">階層迴歸法</button>
+  </div>
+
+  <div class="tab-panel active" id="tab-simultaneous">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>同時進入法（Simultaneous / Enter / Forced Entry）</h4>
+        <p>所有自變數<strong>同時</strong>進入迴歸方程式，每個自變數依其對預測的貢獻被評估。</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>優點：</strong>最符合理論驅動的分析方式；不受變數進入順序影響</li>
+          <li><strong>缺點：</strong>當自變數過多時，可能稀釋個別效果</li>
+          <li><strong>適用時機：</strong>有明確理論基礎，研究者知道要納入哪些自變數</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>Simultaneous (Enter / Forced Entry)</h4>
+        <p>All IVs enter the equation <strong>at once</strong>; each is assessed for its contribution to prediction.</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>Advantage:</strong> Most theory-driven; not affected by variable entry order</li>
+          <li><strong>Disadvantage:</strong> Individual effects may be diluted with too many IVs</li>
+          <li><strong>When to use:</strong> Clear theoretical basis; researcher knows which IVs to include</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-stepwise">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>逐步迴歸法（Stepwise Methods）</h4>
+        <p>自變數依其統計貢獻<strong>逐一</strong>被加入或移除。包括三種變體：</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>前進選擇法（Forward）：</strong>從無到有，逐一加入最顯著的自變數</li>
+          <li><strong>後退刪除法（Backward）：</strong>從全部開始，逐一移除最不顯著的自變數</li>
+          <li><strong>逐步法（Stepwise）：</strong>結合前進與後退，每加入一個變數後重新評估所有變數</li>
+        </ul>
+        <p style="margin-top:.5rem"><strong>注意：</strong>逐步法僅以統計標準選擇變數，可能產生缺乏理論意義的模型，且容易過度適配樣本資料。</p>
+      </div>
+      <div class="en">
+        <h4>Stepwise Methods</h4>
+        <p>IVs are added or removed <strong>one at a time</strong> based on statistical contribution. Three variants:</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>Forward:</strong> Start empty, add the most significant IV one at a time</li>
+          <li><strong>Backward:</strong> Start with all IVs, remove the least significant one at a time</li>
+          <li><strong>Stepwise:</strong> Combines forward and backward; re-evaluates all variables after each addition</li>
+        </ul>
+        <p style="margin-top:.5rem"><strong>Caution:</strong> Stepwise methods select variables on purely statistical criteria, may produce theoretically meaningless models, and tend to overfit the sample data.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-hierarchical">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>階層迴歸法（Hierarchical / Sequential Entry）</h4>
+        <p>研究者依據<strong>理論順序</strong>將自變數分批（block）進入方程式，檢視每一批自變數的<strong>增量解釋力（ΔR²）</strong>。</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>優點：</strong>可檢驗控制變數的效果；清楚呈現各組變數的增量貢獻</li>
+          <li><strong>適用時機：</strong>需要檢驗特定變數在控制其他變數後的獨特貢獻</li>
+          <li><strong>範例：</strong>第一步放入控制變數（性別、年齡），第二步放入核心自變數，觀察 ΔR² 是否顯著</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>Hierarchical (Sequential Entry)</h4>
+        <p>Researcher enters IVs in <strong>theory-driven blocks</strong>, examining the <strong>incremental explained variance (ΔR²)</strong> of each block.</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>Advantage:</strong> Can test control variable effects; clearly shows each block's incremental contribution</li>
+          <li><strong>When to use:</strong> Need to test a variable's unique contribution after controlling for others</li>
+          <li><strong>Example:</strong> Block 1: control variables (gender, age); Block 2: core IVs; examine whether ΔR² is significant</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Comparison Table -->
+<div class="table-wrap" style="margin-top:1.5rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="方法" data-en="Method">方法</th>
+        <th data-zh="變數選擇依據" data-en="Selection Basis">變數選擇依據</th>
+        <th data-zh="適用目的" data-en="Suitable Purpose">適用目的</th>
+        <th data-zh="主要風險" data-en="Main Risk">主要風險</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-zh="同時進入法" data-en="Simultaneous">同時進入法</td>
+        <td data-zh="理論" data-en="Theory">理論</td>
+        <td data-zh="理論驗證" data-en="Theory testing">理論驗證</td>
+        <td data-zh="需有明確理論基礎" data-en="Requires clear theory">需有明確理論基礎</td>
+      </tr>
+      <tr>
+        <td data-zh="逐步迴歸法" data-en="Stepwise">逐步迴歸法</td>
+        <td data-zh="統計顯著性" data-en="Statistical significance">統計顯著性</td>
+        <td data-zh="探索性分析/預測" data-en="Exploratory / prediction">探索性分析/預測</td>
+        <td data-zh="過度適配、缺乏理論基礎" data-en="Overfitting, lacks theory">過度適配、缺乏理論基礎</td>
+      </tr>
+      <tr>
+        <td data-zh="階層迴歸法" data-en="Hierarchical">階層迴歸法</td>
+        <td data-zh="理論順序" data-en="Theoretical order">理論順序</td>
+        <td data-zh="增量效度檢驗" data-en="Incremental validity test">增量效度檢驗</td>
+        <td data-zh="分組順序影響結果" data-en="Block order affects results">分組順序影響結果</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 3: EQUATION & COEFFICIENTS           -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="三、迴歸方程式與係數" data-en="3. Regression Equation & Coefficients">三、迴歸方程式與係數</h2>
+
+<div class="concept-block warn">
+  <h4 data-zh="多元迴歸方程式" data-en="Multiple Regression Equation">多元迴歸方程式</h4>
+  <div class="formula-box">
+    Y = b₀ + b₁X₁ + b₂X₂ + ... + b<sub>k</sub>X<sub>k</sub> + ε
+    <span class="label" data-zh="b₀ = 截距, bᵢ = 非標準化迴歸係數, ε = 殘差" data-en="b₀ = intercept, bᵢ = unstandardized coefficients, ε = residual">b₀ = 截距, bᵢ = 非標準化迴歸係數, ε = 殘差</span>
+  </div>
+</div>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>迴歸係數有兩種形式，各有不同的用途：</p>
+  </div>
+  <div class="en">
+    <p>Regression coefficients come in two forms, each serving a different purpose:</p>
+  </div>
+</div>
+
+<div class="card-grid" style="margin-top:1rem">
+  <div class="card">
+    <h3 data-zh="非標準化係數 (B)" data-en="Unstandardized Coefficient (B)">非標準化係數 (B)</h3>
+    <div class="zh-only">
+      <p><strong>定義：</strong>當自變數增加一個原始單位時，依變數預期改變的原始單位數。</p>
+      <p><strong>用途：</strong>建立預測方程式；用於實際預測新的觀察值。</p>
+      <p><strong>限制：</strong>受到變數的測量尺度影響，不同自變數的 B 值不能直接比較大小。</p>
+      <p style="margin-top:.5rem;font-size:.85rem;color:var(--text-light)">B reflects the raw-unit change in Y for a one-unit change in X. Used for prediction equations.</p>
+    </div>
+    <div class="en-only">
+      <p><strong>Definition:</strong> The expected raw-unit change in Y for a one-unit increase in X.</p>
+      <p><strong>Use:</strong> Building prediction equations; predicting new observations.</p>
+      <p><strong>Limitation:</strong> Affected by measurement scales; B values of different IVs cannot be directly compared.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 data-zh="標準化係數 (β, Beta)" data-en="Standardized Coefficient (β, Beta)">標準化係數 (β, Beta)</h3>
+    <div class="zh-only">
+      <p><strong>定義：</strong>將所有變數標準化（Z 分數化）後的迴歸係數，消除了測量尺度的影響。</p>
+      <p><strong>用途：</strong>比較不同自變數的<strong>相對重要性</strong>；|β| 越大表示影響力越強。</p>
+      <p><strong>範圍：</strong>通常介於 -1 到 +1 之間。</p>
+      <p style="margin-top:.5rem;font-size:.85rem;color:var(--text-light)">β allows comparison of relative importance across IVs by removing scale effects.</p>
+    </div>
+    <div class="en-only">
+      <p><strong>Definition:</strong> Regression coefficient after standardizing all variables (Z-scores), removing measurement scale effects.</p>
+      <p><strong>Use:</strong> Comparing <strong>relative importance</strong> of different IVs; larger |β| means stronger influence.</p>
+      <p><strong>Range:</strong> Typically between -1 and +1.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 4: MODEL ASSESSMENT                  -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="四、模型評估" data-en="4. Model Assessment">四、模型評估</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>迴歸模型的評估包含<strong>整體模型適配度</strong>與<strong>個別係數顯著性</strong>兩個層面。</p>
+  </div>
+  <div class="en">
+    <p>Regression model assessment involves both <strong>overall model fit</strong> and <strong>individual coefficient significance</strong>.</p>
+  </div>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="核心公式" data-en="Core Formulas">核心公式</h4>
+  <div class="formula-box">
+    R² = SSR / SST
+    <span class="label" data-zh="SSR = 迴歸平方和, SST = 總平方和 (SSR + SSE)" data-en="SSR = regression sum of squares, SST = total sum of squares (SSR + SSE)">SSR = 迴歸平方和, SST = 總平方和 (SSR + SSE)</span>
+  </div>
+  <div class="formula-box" style="margin-top:1rem">
+    Adjusted R² = 1 - (1 - R²) × (n - 1) / (n - k - 1)
+    <span class="label" data-zh="n = 樣本數, k = 自變數個數; 懲罰自變數過多的情形" data-en="n = sample size, k = number of IVs; penalizes for too many IVs">n = 樣本數, k = 自變數個數; 懲罰自變數過多的情形</span>
+  </div>
+  <div class="formula-box" style="margin-top:1rem">
+    F = (R² / k) / ((1 - R²) / (n - k - 1))
+    <span class="label" data-zh="F 檢定：檢驗整體模型是否顯著（所有係數是否同時為零）" data-en="F-test: tests whether the overall model is significant (all coefficients simultaneously zero)">F 檢定：檢驗整體模型是否顯著</span>
+  </div>
+</div>
+
+<div class="table-wrap" style="margin-top:1.5rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="評估指標" data-en="Assessment Metric">評估指標</th>
+        <th data-zh="用途" data-en="Purpose">用途</th>
+        <th data-zh="判斷標準" data-en="Criteria">判斷標準</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>R²</strong></td>
+        <td data-zh="模型解釋力：自變數共同解釋依變數變異的比例" data-en="Model explanatory power: proportion of DV variance explained by IVs">模型解釋力</td>
+        <td data-zh="0 到 1；越高越好，但需考慮研究領域" data-en="0 to 1; higher is better, but consider the research field">0 到 1；越高越好</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="調整後 R²" data-en="Adjusted R²">調整後 R²</strong></td>
+        <td data-zh="修正過度適配；考慮自變數數量的影響" data-en="Corrects for overfitting; accounts for number of IVs">修正過度適配</td>
+        <td data-zh="與 R² 差距大表示模型有冗餘變數" data-en="Large gap with R² suggests redundant variables">與 R² 差距過大需注意</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="F 檢定" data-en="F-test">F 檢定</strong></td>
+        <td data-zh="整體模型顯著性" data-en="Overall model significance">整體模型顯著性</td>
+        <td data-zh="p < .05 表示模型整體顯著" data-en="p < .05 indicates overall significance">p < .05</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="t 檢定" data-en="t-test">t 檢定</strong></td>
+        <td data-zh="個別自變數的顯著性" data-en="Individual IV significance">個別係數顯著性</td>
+        <td data-zh="p < .05 表示該自變數有顯著貢獻" data-en="p < .05 indicates significant contribution">p < .05</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="估計標準誤" data-en="Std. Error of Estimate">估計標準誤</strong></td>
+        <td data-zh="預測誤差的大小" data-en="Magnitude of prediction error">預測誤差大小</td>
+        <td data-zh="越小越好；以依變數的單位衡量" data-en="Smaller is better; in DV units">越小越好</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Interactive R² Calculator -->
+<div class="calculator" style="margin-top:2rem">
+  <h3 data-zh="R² 計算器" data-en="R² Calculator">R² 計算器</h3>
+  <div class="bilingual" style="margin-bottom:1rem">
+    <div class="zh"><p>輸入迴歸平方和（SSR）與總平方和（SST）來計算 R²。</p></div>
+    <div class="en"><p>Enter the regression sum of squares (SSR) and total sum of squares (SST) to compute R².</p></div>
+  </div>
+  <div class="calc-row">
+    <label data-zh="SSR（迴歸平方和）：" data-en="SSR (Regression Sum of Squares):">SSR（迴歸平方和）：</label>
+    <input type="number" id="r2-ssr" value="120" step="0.1" min="0">
+  </div>
+  <div class="calc-row">
+    <label data-zh="SST（總平方和）：" data-en="SST (Total Sum of Squares):">SST（總平方和）：</label>
+    <input type="number" id="r2-sst" value="200" step="0.1" min="0.1">
+  </div>
+  <div class="calc-row">
+    <label data-zh="樣本數 (n)：" data-en="Sample size (n):">樣本數 (n)：</label>
+    <input type="number" id="r2-n" value="100" min="5">
+  </div>
+  <div class="calc-row">
+    <label data-zh="自變數個數 (k)：" data-en="Number of IVs (k):">自變數個數 (k)：</label>
+    <input type="number" id="r2-k" value="3" min="1">
+  </div>
+  <button class="calc-btn" onclick="calcR2()" data-zh="計算 R²" data-en="Calculate R²">計算 R²</button>
+  <div class="calc-result" id="r2-result"></div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 5: ASSUMPTIONS & DIAGNOSTICS         -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="五、迴歸假設與診斷" data-en="5. Assumptions & Diagnostics">五、迴歸假設與診斷</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>迴歸分析的結果是否可信，取決於以下<strong>基本假設</strong>是否被滿足。違反假設可能導致係數偏誤、標準誤不正確，或推論無效。</p>
+  </div>
+  <div class="en">
+    <p>The trustworthiness of regression results depends on whether these <strong>fundamental assumptions</strong> are met. Violations can lead to biased coefficients, incorrect standard errors, or invalid inferences.</p>
+  </div>
+</div>
+
+<div class="card-grid" style="margin-top:1rem">
+  <div class="card">
+    <h3 data-zh="1. 線性關係" data-en="1. Linearity">1. 線性關係</h3>
+    <div class="zh-only">
+      <p>自變數與依變數之間必須呈<strong>線性關係</strong>。</p>
+      <p><strong>診斷：</strong>散佈圖（殘差 vs. 預測值）應無明顯的曲線模式。</p>
+      <p><strong>補救：</strong>變數轉換（取對數、平方根等）或加入多項式項。</p>
+    </div>
+    <div class="en-only">
+      <p>The relationship between IVs and DV must be <strong>linear</strong>.</p>
+      <p><strong>Diagnostic:</strong> Residual vs. predicted value plot should show no curvilinear pattern.</p>
+      <p><strong>Remedy:</strong> Variable transformation (log, square root) or polynomial terms.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 data-zh="2. 殘差常態性" data-en="2. Normality of Residuals">2. 殘差常態性</h3>
+    <div class="zh-only">
+      <p>迴歸<strong>殘差</strong>（非自變數本身）應呈常態分布。</p>
+      <p><strong>診斷：</strong>常態機率圖（Normal P-P Plot）；殘差直方圖。</p>
+      <p><strong>影響：</strong>大樣本（n > 200）時此假設較不重要（中央極限定理）。</p>
+    </div>
+    <div class="en-only">
+      <p>The <strong>residuals</strong> (not the IVs themselves) should be normally distributed.</p>
+      <p><strong>Diagnostic:</strong> Normal P-P Plot; residual histogram.</p>
+      <p><strong>Impact:</strong> Less critical with large samples (n > 200) due to the Central Limit Theorem.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 data-zh="3. 變異數同質性" data-en="3. Homoscedasticity">3. 變異數同質性</h3>
+    <div class="zh-only">
+      <p>殘差的變異數在依變數的所有預測值水準上應該<strong>相同</strong>。</p>
+      <p><strong>診斷：</strong>殘差 vs. 預測值散佈圖應呈「隨機散布」，不應有「喇叭形」或「漏斗形」。</p>
+      <p><strong>違反後果：</strong>係數仍無偏但標準誤不正確，影響 t 檢定。</p>
+    </div>
+    <div class="en-only">
+      <p>Residual variance should be <strong>constant</strong> across all levels of predicted values.</p>
+      <p><strong>Diagnostic:</strong> Residual vs. predicted plot should show random scatter, no "funnel" or "trumpet" shape.</p>
+      <p><strong>Consequence:</strong> Coefficients remain unbiased but standard errors become incorrect, affecting t-tests.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 data-zh="4. 殘差獨立性" data-en="4. Independence of Residuals">4. 殘差獨立性</h3>
+    <div class="zh-only">
+      <p>各觀察值的殘差之間應該<strong>彼此獨立</strong>，不應有自相關。</p>
+      <p><strong>診斷：</strong>Durbin-Watson 統計量；範圍 0-4，接近 2 表示無自相關。</p>
+      <p><strong>適用場景：</strong>特別重要於時間序列資料或重複量測設計。</p>
+    </div>
+    <div class="en-only">
+      <p>Residuals should be <strong>independent</strong> of each other — no autocorrelation.</p>
+      <p><strong>Diagnostic:</strong> Durbin-Watson statistic; range 0-4, values near 2 indicate no autocorrelation.</p>
+      <p><strong>Context:</strong> Especially important in time-series data or repeated measures designs.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Multicollinearity: VIF/Tolerance -->
+<h3 style="margin-top:2rem" data-zh="多元共線性（Multicollinearity）" data-en="Multicollinearity">多元共線性（Multicollinearity）</h3>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>當自變數之間存在<strong>高度相關</strong>時，會產生多元共線性問題，導致迴歸係數不穩定、標準誤膨脹，甚至係數符號反轉。</p>
+  </div>
+  <div class="en">
+    <p>When IVs are <strong>highly correlated</strong> with each other, multicollinearity occurs — causing unstable coefficients, inflated standard errors, and even reversed signs.</p>
+  </div>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="VIF 與 Tolerance 公式" data-en="VIF & Tolerance Formulas">VIF 與 Tolerance 公式</h4>
+  <div class="formula-box">
+    VIF = 1 / (1 - R<sub>i</sub>²)
+    <span class="label" data-zh="R²ᵢ = 第 i 個自變數被其他自變數迴歸的 R²" data-en="R²ᵢ = R² of the ith IV regressed on all other IVs">R²ᵢ = 第 i 個自變數被其他自變數迴歸的 R²</span>
+  </div>
+  <div class="formula-box" style="margin-top:.5rem">
+    Tolerance = 1 - R<sub>i</sub>² = 1 / VIF
+    <span class="label" data-zh="Tolerance 越低，共線性越嚴重" data-en="Lower tolerance = more severe collinearity">Tolerance 越低，共線性越嚴重</span>
+  </div>
+</div>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th>VIF</th>
+        <th>Tolerance</th>
+        <th data-zh="共線性程度" data-en="Collinearity Level">共線性程度</th>
+        <th data-zh="建議" data-en="Recommendation">建議</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>1.00</td>
+        <td data-zh="無共線性" data-en="No collinearity">無共線性</td>
+        <td data-zh="理想狀態" data-en="Ideal">理想狀態</td>
+      </tr>
+      <tr>
+        <td>1 - 5</td>
+        <td>0.20 - 1.00</td>
+        <td data-zh="低度至中度" data-en="Low to moderate">低度至中度</td>
+        <td data-zh="通常可接受" data-en="Generally acceptable">通常可接受</td>
+      </tr>
+      <tr>
+        <td>5 - 10</td>
+        <td>0.10 - 0.20</td>
+        <td data-zh="中度至高度" data-en="Moderate to high">中度至高度</td>
+        <td data-zh="需要注意；考慮移除或合併變數" data-en="Caution needed; consider removing or combining variables">需要注意</td>
+      </tr>
+      <tr>
+        <td>> 10</td>
+        <td>< 0.10</td>
+        <td data-zh="嚴重共線性" data-en="Severe collinearity">嚴重共線性</td>
+        <td data-zh="必須處理：移除變數、主成分迴歸或嶺迴歸" data-en="Must address: remove variables, PCA regression, or ridge regression">必須處理</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Assumption Diagnostic Checklist -->
+<h3 style="margin-top:2rem" data-zh="假設診斷檢核表" data-en="Assumption Diagnostic Checklist">假設診斷檢核表</h3>
+
+<div class="concept-block">
+  <div class="bilingual">
+    <div class="zh">
+      <ol style="padding-left:1.5rem">
+        <li><strong>檢查殘差散佈圖</strong>（residuals vs. predicted）— 確認線性與變異數同質性</li>
+        <li><strong>檢查常態機率圖</strong>（Normal P-P Plot）— 確認殘差常態性</li>
+        <li><strong>計算 Durbin-Watson</strong> — 確認殘差獨立性（接近 2 為佳）</li>
+        <li><strong>檢查 VIF / Tolerance</strong> — 確認無嚴重多元共線性（VIF < 10）</li>
+        <li><strong>檢查離群值</strong> — 標準化殘差 > |3| 的觀察值需特別注意</li>
+        <li><strong>檢查影響力觀察值</strong> — Cook's Distance > 1 表示有高影響力的觀察值</li>
+      </ol>
+    </div>
+    <div class="en">
+      <ol style="padding-left:1.5rem">
+        <li><strong>Check residual scatter plot</strong> (residuals vs. predicted) — confirm linearity and homoscedasticity</li>
+        <li><strong>Check Normal P-P Plot</strong> — confirm normality of residuals</li>
+        <li><strong>Compute Durbin-Watson</strong> — confirm independence (close to 2 is ideal)</li>
+        <li><strong>Check VIF / Tolerance</strong> — confirm no severe multicollinearity (VIF < 10)</li>
+        <li><strong>Check outliers</strong> — standardized residuals > |3| require attention</li>
+        <li><strong>Check influential observations</strong> — Cook's Distance > 1 indicates high-influence cases</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 6: DUMMY VARIABLES & INTERACTIONS    -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="六、虛擬變數與交互作用" data-en="6. Dummy Variables & Interactions">六、虛擬變數與交互作用</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>迴歸分析中經常需要處理<strong>類別型自變數</strong>以及變數之間的<strong>交互效果</strong>。</p>
+  </div>
+  <div class="en">
+    <p>Regression frequently involves handling <strong>categorical IVs</strong> and <strong>interaction effects</strong> between variables.</p>
+  </div>
+</div>
+
+<h3 style="margin-top:1.5rem" data-zh="虛擬變數（Dummy Variables）" data-en="Dummy Variables">虛擬變數（Dummy Variables）</h3>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>將類別變數轉換為迴歸可使用的數值變數。規則：<strong>k 個類別需要 k-1 個虛擬變數</strong>，未被編碼的類別作為<strong>參照組（reference group）</strong>。</p>
+  </div>
+  <div class="en">
+    <p>Converting categorical variables into numeric variables for regression. Rule: <strong>k categories require k-1 dummy variables</strong>; the uncoded category serves as the <strong>reference group</strong>.</p>
+  </div>
+</div>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="教育程度" data-en="Education Level">教育程度</th>
+        <th>D₁ (Bachelor's)</th>
+        <th>D₂ (Master's)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-zh="高中（參照組）" data-en="High School (reference)">高中（參照組）</td>
+        <td>0</td>
+        <td>0</td>
+      </tr>
+      <tr>
+        <td data-zh="學士" data-en="Bachelor's">學士</td>
+        <td>1</td>
+        <td>0</td>
+      </tr>
+      <tr>
+        <td data-zh="碩士" data-en="Master's">碩士</td>
+        <td>0</td>
+        <td>1</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h3 style="margin-top:2rem" data-zh="交互作用（Interaction Terms）" data-en="Interaction Terms">交互作用（Interaction Terms）</h3>
+
+<div class="bilingual">
+  <div class="zh">
+    <p><strong>交互作用</strong>表示一個自變數對依變數的影響會隨另一個自變數的水準而改變。在迴歸中，透過建立兩個自變數的<strong>乘積項</strong>來檢驗交互效果。</p>
+    <p style="margin-top:.5rem"><strong>中心化（Centering）：</strong>在建立交互作用項之前，建議先將自變數中心化（減去平均數），以降低交互項與主效果之間的多元共線性。</p>
+  </div>
+  <div class="en">
+    <p><strong>Interaction</strong> means one IV's effect on the DV changes depending on the level of another IV. In regression, interaction is tested by creating a <strong>product term</strong> of two IVs.</p>
+    <p style="margin-top:.5rem"><strong>Centering:</strong> Before creating interaction terms, centering IVs (subtracting the mean) is recommended to reduce multicollinearity between the interaction term and main effects.</p>
+  </div>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="交互作用方程式" data-en="Interaction Equation">交互作用方程式</h4>
+  <div class="formula-box">
+    Y = b₀ + b₁X₁ + b₂X₂ + b₃(X₁ × X₂) + ε
+    <span class="label" data-zh="b₃ 顯著 → X₁ 對 Y 的效果隨 X₂ 水準而不同" data-en="Significant b₃ → X₁'s effect on Y varies across levels of X₂">b₃ 顯著 → X₁ 對 Y 的效果隨 X₂ 水準而不同</span>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 7: QUIZ                              -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="七、自我測驗" data-en="7. Self-Assessment Quiz">七、自我測驗</h2>
+
+<div class="quiz">
+  <h3 data-zh="測試你對多元迴歸的理解" data-en="Test Your Understanding of Multiple Regression">測試你對多元迴歸的理解</h3>
+
+  <div class="quiz-question">
+    <p data-zh="Q1: 標準化迴歸係數（β）的主要用途是什麼？" data-en="Q1: What is the main purpose of the standardized regression coefficient (β)?">Q1: 標準化迴歸係數（β）的主要用途是什麼？</p>
+    <div class="quiz-option" data-correct="false" data-zh="預測依變數的實際值" data-en="Predict the actual value of the DV">預測依變數的實際值</div>
+    <div class="quiz-option" data-correct="true" data-zh="比較不同自變數對依變數的相對重要性" data-en="Compare the relative importance of different IVs on the DV">比較不同自變數對依變數的相對重要性</div>
+    <div class="quiz-option" data-correct="false" data-zh="檢驗殘差是否為常態分布" data-en="Test whether residuals are normally distributed">檢驗殘差是否為常態分布</div>
+    <div class="quiz-option" data-correct="false" data-zh="計算多元共線性的嚴重程度" data-en="Calculate the severity of multicollinearity">計算多元共線性的嚴重程度</div>
+    <div class="quiz-feedback" data-zh="正確！標準化迴歸係數消除了測量尺度的影響，使得不同自變數的效果可以直接比較。|β| 越大表示該自變數對依變數的相對影響力越強。" data-en="Correct! Standardized coefficients remove measurement scale effects, allowing direct comparison of IV effects. Larger |β| indicates stronger relative influence on the DV.">正確！標準化迴歸係數消除了測量尺度的影響，使得不同自變數的效果可以直接比較。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q2: 當 VIF = 8 時，表示什麼？" data-en="Q2: What does a VIF of 8 indicate?">Q2: 當 VIF = 8 時，表示什麼？</p>
+    <div class="quiz-option" data-correct="false" data-zh="模型完全沒有共線性問題" data-en="The model has no collinearity issues">模型完全沒有共線性問題</div>
+    <div class="quiz-option" data-correct="false" data-zh="該自變數不顯著" data-en="The IV is not significant">該自變數不顯著</div>
+    <div class="quiz-option" data-correct="true" data-zh="該自變數與其他自變數有中度至高度的共線性，需要注意" data-en="The IV has moderate to high collinearity with other IVs, requires attention">該自變數與其他自變數有中度至高度的共線性，需要注意</div>
+    <div class="quiz-option" data-correct="false" data-zh="殘差不符合常態分布" data-en="Residuals are not normally distributed">殘差不符合常態分布</div>
+    <div class="quiz-feedback" data-zh="正確！VIF 介於 5-10 之間表示中度至高度的共線性。VIF = 8 意味著該自變數的變異有 87.5%（1 - 1/8）可被其他自變數解釋。應考慮移除或合併高度相關的自變數。" data-en="Correct! VIF between 5-10 indicates moderate to high collinearity. VIF = 8 means 87.5% (1 - 1/8) of that IV's variance is explained by other IVs. Consider removing or combining highly correlated IVs.">正確！VIF 介於 5-10 之間表示中度至高度的共線性。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q3: 調整後 R²（Adjusted R²）與 R² 的主要差異是什麼？" data-en="Q3: What is the key difference between Adjusted R² and R²?">Q3: 調整後 R²（Adjusted R²）與 R² 的主要差異是什麼？</p>
+    <div class="quiz-option" data-correct="false" data-zh="調整後 R² 一定大於 R²" data-en="Adjusted R² is always greater than R²">調整後 R² 一定大於 R²</div>
+    <div class="quiz-option" data-correct="false" data-zh="調整後 R² 只考慮顯著的自變數" data-en="Adjusted R² only considers significant IVs">調整後 R² 只考慮顯著的自變數</div>
+    <div class="quiz-option" data-correct="true" data-zh="調整後 R² 會對增加自變數進行懲罰，防止過度適配" data-en="Adjusted R² penalizes adding more IVs to prevent overfitting">調整後 R² 會對增加自變數進行懲罰，防止過度適配</div>
+    <div class="quiz-option" data-correct="false" data-zh="兩者在所有情況下數值相同" data-en="They are always identical">兩者在所有情況下數值相同</div>
+    <div class="quiz-feedback" data-zh="正確！R² 會隨著自變數的增加而永遠不會下降（即使新變數無意義），而調整後 R² 考慮了自變數數量的影響，只有當新變數確實改善模型時才會上升。當 R² 與調整後 R² 差距過大時，表示模型可能包含冗餘的自變數。" data-en="Correct! R² never decreases when adding IVs (even meaningless ones), while Adjusted R² accounts for the number of IVs and only increases when a new variable genuinely improves the model. A large gap between R² and Adjusted R² suggests redundant IVs in the model.">正確！調整後 R² 考慮了自變數數量的影響，防止過度適配。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q4: 一個有 4 個類別的自變數（如：北/中/南/東部）需要幾個虛擬變數？" data-en="Q4: How many dummy variables are needed for an IV with 4 categories (e.g., North/Central/South/East)?">Q4: 一個有 4 個類別的自變數需要幾個虛擬變數？</p>
+    <div class="quiz-option" data-correct="false">4</div>
+    <div class="quiz-option" data-correct="true">3</div>
+    <div class="quiz-option" data-correct="false">2</div>
+    <div class="quiz-option" data-correct="false">5</div>
+    <div class="quiz-feedback" data-zh="正確！k 個類別需要 k-1 個虛擬變數。4 個類別（北/中/南/東部）需要 3 個虛擬變數，未被編碼的類別（例如北部）作為參照組。如果使用 4 個虛擬變數會產生完全共線性（dummy variable trap）。" data-en="Correct! k categories require k-1 dummy variables. 4 categories (North/Central/South/East) need 3 dummy variables, with the uncoded category (e.g., North) as the reference group. Using 4 dummies would create perfect collinearity (dummy variable trap).">正確！k 個類別需要 k-1 = 3 個虛擬變數。</div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- KEY TERMS ACCORDION                          -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="關鍵名詞解釋" data-en="Key Terms Glossary">關鍵名詞解釋</h2>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="最小平方法 OLS（Ordinary Least Squares）" data-en="Ordinary Least Squares (OLS)">最小平方法 OLS（Ordinary Least Squares）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>迴歸分析的核心估計方法。OLS 找到一組係數使得殘差平方和（Σe²）最小化。當迴歸假設成立時，OLS 估計量是最佳線性不偏估計量（BLUE, Best Linear Unbiased Estimator）。</p></div>
+      <div class="en"><p>The core estimation method in regression. OLS finds coefficients that minimize the sum of squared residuals (Σe²). When regression assumptions hold, OLS estimators are BLUE (Best Linear Unbiased Estimators).</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="判定係數 R²（Coefficient of Determination）" data-en="Coefficient of Determination (R²)">判定係數 R²（Coefficient of Determination）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>自變數共同解釋依變數總變異的比例。R² = 0.65 表示自變數共同解釋了 65% 的依變數變異，剩餘 35% 為未解釋的變異（殘差）。R² 永遠介於 0 和 1 之間，且隨著自變數增加而不會下降。</p></div>
+      <div class="en"><p>The proportion of total variance in the DV explained by the IVs. R² = 0.65 means IVs collectively explain 65% of the DV's variance, with 35% remaining unexplained (residual). R² ranges from 0 to 1 and never decreases when adding IVs.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="多元共線性（Multicollinearity）" data-en="Multicollinearity">多元共線性（Multicollinearity）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>自變數之間存在高度相關的情形。後果包括：迴歸係數變得不穩定（小樣本變化即導致大幅波動）、標準誤膨脹使得原本顯著的變數變不顯著、係數符號可能與預期方向相反。診斷工具：VIF（> 10 為嚴重）與 Tolerance（< 0.10 為嚴重）。</p></div>
+      <div class="en"><p>When IVs are highly correlated with each other. Consequences: unstable coefficients (small sample changes cause large fluctuations), inflated standard errors making significant variables appear non-significant, and coefficient signs may reverse from expected direction. Diagnostics: VIF (> 10 is severe) and Tolerance (< 0.10 is severe).</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="虛擬變數陷阱（Dummy Variable Trap）" data-en="Dummy Variable Trap">虛擬變數陷阱（Dummy Variable Trap）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>如果一個有 k 個類別的變數使用了 k 個虛擬變數（而非 k-1 個），會導致虛擬變數之間的完全共線性（因為它們的總和永遠等於 1）。這使得迴歸方程式無法求解。解決方法是省略一個類別作為參照組。</p></div>
+      <div class="en"><p>If a variable with k categories uses k (rather than k-1) dummy variables, it creates perfect collinearity (since they always sum to 1). This makes the regression equation unsolvable. The solution is to omit one category as the reference group.</p></div>
+    </div>
+  </div>
+</div>
+
+
+</div><!-- container -->
+</main>
+
+<!-- Navigation -->
+<div style="padding:2rem 0;background:#f0f3f5">
+  <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+    <a href="../index.html" style="font-weight:600" data-zh="← 回到首頁" data-en="← Back to Home">← 回到首頁</a>
+    <a href="ch6-manova.html" style="font-weight:600;background:var(--accent);color:#fff;padding:.5rem 1rem;border-radius:4px" data-zh="下一章：MANOVA →" data-en="Next: MANOVA →">下一章：MANOVA →</a>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>Hair, J.F., Black, W.C., Babin, B.J., & Anderson, R.E. (2019). <em>Multivariate Data Analysis</em> (8th ed.).</p>
+    <p style="margin-top:.5rem;font-size:.8rem;opacity:.8">© 版權所有 葉欲禾 (Gary Yu-Ho Yeh)</p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+<script>
+function calcR2() {
+  var ssr = parseFloat(document.getElementById('r2-ssr').value);
+  var sst = parseFloat(document.getElementById('r2-sst').value);
+  var n = parseInt(document.getElementById('r2-n').value);
+  var k = parseInt(document.getElementById('r2-k').value);
+  if (isNaN(ssr) || isNaN(sst) || isNaN(n) || isNaN(k) || sst <= 0 || ssr < 0 || n <= k + 1) {
+    showResult('r2-result', 'N/A', 'Please enter valid values / 請輸入有效值', '');
+    return;
+  }
+  var r2 = ssr / sst;
+  var adjR2 = 1 - (1 - r2) * (n - 1) / (n - k - 1);
+  var fStat = (r2 / k) / ((1 - r2) / (n - k - 1));
+  var cls = r2 >= 0.5 ? 'good' : (r2 >= 0.25 ? 'warn' : 'bad');
+  var msg = currentLang === 'zh'
+    ? 'R² = ' + r2.toFixed(4) + '（模型解釋了 ' + (r2 * 100).toFixed(1) + '% 的變異）<br>Adjusted R² = ' + adjR2.toFixed(4) + '<br>F = ' + fStat.toFixed(3)
+    : 'R² = ' + r2.toFixed(4) + ' (model explains ' + (r2 * 100).toFixed(1) + '% of variance)<br>Adjusted R² = ' + adjR2.toFixed(4) + '<br>F = ' + fStat.toFixed(3);
+  showResult('r2-result', r2.toFixed(4), msg, cls);
+}
+</script>
+</body>
+</html>

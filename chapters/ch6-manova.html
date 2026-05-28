@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多變量變異數分析 | MANOVA</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="lang-zh">
+<div class="progress-bar"><div class="fill"></div></div>
+
+<nav class="top-nav">
+  <div class="container">
+    <a href="../index.html" class="brand" data-zh="多變量資料分析" data-en="Multivariate Data Analysis">多變量資料分析</a>
+    <div class="nav-links">
+      <a href="../index.html" data-zh="首頁" data-en="Home">首頁</a>
+      <button class="lang-toggle">EN</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1 data-zh="多變量變異數分析 (MANOVA)" data-en="Multivariate Analysis of Variance (MANOVA)">多變量變異數分析 (MANOVA)</h1>
+    <p data-zh="Ch.6 同時比較多個依變數的組間差異" data-en="Ch.6 Simultaneously Comparing Group Differences Across Multiple DVs">Ch.6 同時比較多個依變數的組間差異</p>
+  </div>
+</header>
+
+<main class="section">
+<div class="container">
+
+<!-- ============================================ -->
+<!-- SECTION 1: FROM ANOVA TO MANOVA              -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="一、從 ANOVA 到 MANOVA" data-en="1. From ANOVA to MANOVA">一、從 ANOVA 到 MANOVA</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p><strong>ANOVA（變異數分析）</strong>是檢驗<strong>一個</strong>依變數（metric）在不同組別（nonmetric 自變數）之間是否有顯著差異的方法。但當研究涉及<strong>多個依變數</strong>時，需要使用 MANOVA。</p>
+    <p style="margin-top:.75rem">為什麼不對每個依變數分別做 ANOVA？</p>
+    <ul style="margin-top:.5rem;padding-left:1.5rem">
+      <li><strong>型一錯誤膨脹：</strong>對 p 個依變數分別做 ANOVA，實際犯錯機率遠大於 α = .05</li>
+      <li><strong>忽略依變數間的相關：</strong>分別分析會遺失依變數之間的共變關係資訊</li>
+      <li><strong>多變量效果：</strong>MANOVA 可以偵測到個別 ANOVA 無法發現的組間差異模式</li>
+    </ul>
+  </div>
+  <div class="en">
+    <p><strong>ANOVA</strong> tests whether <strong>one</strong> dependent variable (metric) differs significantly across groups (nonmetric IVs). When research involves <strong>multiple DVs</strong>, MANOVA is needed.</p>
+    <p style="margin-top:.75rem">Why not run separate ANOVAs for each DV?</p>
+    <ul style="margin-top:.5rem;padding-left:1.5rem">
+      <li><strong>Inflated Type I error:</strong> Running p separate ANOVAs raises the actual error rate well above α = .05</li>
+      <li><strong>Ignores DV correlations:</strong> Separate analyses lose information about covariance between DVs</li>
+      <li><strong>Multivariate effects:</strong> MANOVA can detect group difference patterns that individual ANOVAs miss</li>
+    </ul>
+  </div>
+</div>
+
+<div class="concept-block success">
+  <h4 data-zh="白話解釋" data-en="Plain Language Explanation">白話解釋</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p>ANOVA 就像看<strong>一個</strong>成績（例如數學）在不同班級之間是否有差異。MANOVA 則是<strong>同時看多個</strong>成績（數學、英文、自然）在不同班級之間是否有差異，而且還考慮了這些成績之間的關聯性。就像老師不只看單科成績，而是綜合評估學生的整體表現。</p>
+    </div>
+    <div class="en">
+      <p>ANOVA is like checking whether <strong>one</strong> grade (e.g., math) differs across classes. MANOVA <strong>simultaneously checks multiple</strong> grades (math, English, science) across classes while considering how these grades relate to each other. It is like a teacher evaluating overall student performance rather than just one subject.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SVG Diagram: ANOVA vs MANOVA -->
+<div class="diagram">
+  <svg viewBox="0 0 800 380" xmlns="http://www.w3.org/2000/svg" style="max-width:700px">
+    <defs>
+      <marker id="arrowM" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#6c757d"/>
+      </marker>
+    </defs>
+    <!-- Title: ANOVA side -->
+    <text x="200" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#2c3e50">ANOVA</text>
+    <rect x="100" y="40" width="200" height="45" rx="8" fill="#fdebd0" stroke="#f39c12" stroke-width="2"/>
+    <text x="200" y="67" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">IV: Group (A, B, C)</text>
+    <line x1="200" y1="85" x2="200" y2="120" stroke="#f39c12" stroke-width="2" marker-end="url(#arrowM)"/>
+    <rect x="120" y="120" width="160" height="45" rx="8" fill="#d5f5e3" stroke="#27ae60" stroke-width="2"/>
+    <text x="200" y="147" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">DV: Y₁ only</text>
+    <text x="200" y="190" text-anchor="middle" font-size="12" fill="#6c757d" font-style="italic">One DV at a time</text>
+
+    <!-- Divider -->
+    <line x1="400" y1="10" x2="400" y2="370" stroke="#ccc" stroke-width="1" stroke-dasharray="6,4"/>
+
+    <!-- Title: MANOVA side -->
+    <text x="600" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#2c3e50">MANOVA</text>
+    <rect x="500" y="40" width="200" height="45" rx="8" fill="#fdebd0" stroke="#f39c12" stroke-width="2"/>
+    <text x="600" y="67" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">IV: Group (A, B, C)</text>
+    <!-- Arrow to multiple DVs -->
+    <line x1="600" y1="85" x2="520" y2="125" stroke="#3498db" stroke-width="2" marker-end="url(#arrowM)"/>
+    <line x1="600" y1="85" x2="600" y2="125" stroke="#3498db" stroke-width="2" marker-end="url(#arrowM)"/>
+    <line x1="600" y1="85" x2="680" y2="125" stroke="#3498db" stroke-width="2" marker-end="url(#arrowM)"/>
+    <!-- DV boxes -->
+    <rect x="460" y="125" width="120" height="40" rx="6" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+    <text x="520" y="150" text-anchor="middle" font-size="12" font-weight="bold" fill="#2c3e50">DV: Y₁</text>
+    <rect x="540" y="125" width="120" height="40" rx="6" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+    <text x="600" y="150" text-anchor="middle" font-size="12" font-weight="bold" fill="#2c3e50">DV: Y₂</text>
+    <rect x="620" y="125" width="120" height="40" rx="6" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+    <text x="680" y="150" text-anchor="middle" font-size="12" font-weight="bold" fill="#2c3e50">DV: Y₃</text>
+    <!-- Correlation arcs -->
+    <path d="M 540 170 Q 560 200 580 170" fill="none" stroke="#e74c3c" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <path d="M 620 170 Q 640 200 660 170" fill="none" stroke="#e74c3c" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <path d="M 540 175 Q 600 215 660 175" fill="none" stroke="#e74c3c" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="600" y="230" text-anchor="middle" font-size="11" fill="#e74c3c" font-style="italic">DVs correlated</text>
+    <text x="600" y="250" text-anchor="middle" font-size="12" fill="#6c757d" font-style="italic">Multiple DVs simultaneously</text>
+
+    <!-- Bottom summary boxes -->
+    <rect x="80" y="280" width="240" height="70" rx="8" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1"/>
+    <text x="200" y="305" text-anchor="middle" font-size="12" fill="#2c3e50">H₀: μ₁ = μ₂ = μ₃</text>
+    <text x="200" y="325" text-anchor="middle" font-size="11" fill="#6c757d">(one DV)</text>
+    <text x="200" y="342" text-anchor="middle" font-size="11" fill="#6c757d">F-test</text>
+
+    <rect x="480" y="280" width="240" height="70" rx="8" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1"/>
+    <text x="600" y="305" text-anchor="middle" font-size="12" fill="#2c3e50">H₀: μ₁ = μ₂ = μ₃</text>
+    <text x="600" y="325" text-anchor="middle" font-size="11" fill="#6c757d">(vector of DVs)</text>
+    <text x="600" y="342" text-anchor="middle" font-size="11" fill="#6c757d">Wilks' Λ, Pillai's Trace, etc.</text>
+  </svg>
+  <p class="caption" data-zh="圖：ANOVA（一個依變數）vs. MANOVA（多個依變數同時分析，考慮相關性）" data-en="Figure: ANOVA (one DV) vs. MANOVA (multiple DVs analyzed simultaneously, accounting for correlations)">圖：ANOVA（一個依變數）vs. MANOVA（多個依變數同時分析，考慮相關性）</p>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 2: STATISTICAL PRINCIPLES            -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="二、MANOVA 的統計原理" data-en="2. Statistical Principles of MANOVA">二、MANOVA 的統計原理</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>MANOVA 的核心邏輯與 ANOVA 相同：比較<strong>組間變異</strong>與<strong>組內變異</strong>的比率。差異在於 MANOVA 處理的是<strong>矩陣</strong>而非單一數值。</p>
+  </div>
+  <div class="en">
+    <p>MANOVA's core logic mirrors ANOVA: comparing the ratio of <strong>between-group variance</strong> to <strong>within-group variance</strong>. The difference is that MANOVA works with <strong>matrices</strong> rather than single values.</p>
+  </div>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="虛無假設" data-en="Null Hypothesis">虛無假設</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p><strong>ANOVA 的 H₀：</strong>μ₁ = μ₂ = ... = μ<sub>g</sub>（各組在單一依變數上的平均數相等）</p>
+      <p style="margin-top:.5rem"><strong>MANOVA 的 H₀：</strong>各組的<strong>平均數向量</strong>（mean vectors）相等，即所有依變數的聯合分布在各組之間沒有差異。</p>
+    </div>
+    <div class="en">
+      <p><strong>ANOVA H₀:</strong> μ₁ = μ₂ = ... = μ<sub>g</sub> (group means on a single DV are equal)</p>
+      <p style="margin-top:.5rem"><strong>MANOVA H₀:</strong> The <strong>mean vectors</strong> are equal across groups — the joint distribution of all DVs does not differ between groups.</p>
+    </div>
+  </div>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="組間 vs. 組內變異矩陣" data-en="Between-Group vs. Within-Group Variance Matrices">組間 vs. 組內變異矩陣</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li><strong>組間變異-共變數矩陣（B）：</strong>反映各組平均值的差異程度（類似 ANOVA 的 SSB）</li>
+        <li><strong>組內變異-共變數矩陣（W）：</strong>反映各組內部的變異程度（類似 ANOVA 的 SSW）</li>
+        <li>MANOVA 檢定統計量基於 <strong>B</strong> 與 <strong>W</strong> 的某種比率函數</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li><strong>Between-group variance-covariance matrix (B):</strong> Reflects group mean differences (analogous to ANOVA's SSB)</li>
+        <li><strong>Within-group variance-covariance matrix (W):</strong> Reflects within-group variability (analogous to ANOVA's SSW)</li>
+        <li>MANOVA test statistics are based on some function of the <strong>B</strong> to <strong>W</strong> ratio</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 3: TEST STATISTICS                   -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="三、多變量檢定統計量" data-en="3. Multivariate Test Statistics">三、多變量檢定統計量</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>MANOVA 提供四種常用的檢定統計量，各有不同的特性與適用情境。所有統計量都可以轉換為近似 F 值來做顯著性檢定。</p>
+  </div>
+  <div class="en">
+    <p>MANOVA offers four common test statistics, each with different properties and contexts. All can be converted to approximate F-values for significance testing.</p>
+  </div>
+</div>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="統計量" data-en="Statistic">統計量</th>
+        <th data-zh="計算原理" data-en="Calculation Principle">計算原理</th>
+        <th data-zh="穩健性" data-en="Robustness">穩健性</th>
+        <th data-zh="適用時機" data-en="When to Use">適用時機</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Wilks' Lambda (Λ)</strong></td>
+        <td data-zh="未被解釋的變異比例；值越小 → 效果越大" data-en="Proportion of unexplained variance; smaller → larger effect">未被解釋的變異比例</td>
+        <td data-zh="中等；最常被使用與報告" data-en="Moderate; most commonly used and reported">中等；最常用</td>
+        <td data-zh="一般情況下的首選" data-en="Default choice in general">一般情況首選</td>
+      </tr>
+      <tr>
+        <td><strong>Pillai's Trace</strong></td>
+        <td data-zh="已解釋變異的加總；值越大 → 效果越大" data-en="Sum of explained variance; larger → larger effect">已解釋變異的加總</td>
+        <td data-zh="最穩健；對假設違反最不敏感" data-en="Most robust; least sensitive to assumption violations">最穩健</td>
+        <td data-zh="樣本小、假設可能被違反、組別大小不等" data-en="Small samples, possible violations, unequal group sizes">假設違反時</td>
+      </tr>
+      <tr>
+        <td><strong>Hotelling's Trace</strong></td>
+        <td data-zh="所有特徵值的加總" data-en="Sum of all eigenvalues">特徵值的加總</td>
+        <td data-zh="統計檢力較高，但對假設違反敏感" data-en="Higher power, but sensitive to violations">對假設敏感</td>
+        <td data-zh="假設完全成立、兩組比較" data-en="Assumptions fully met, two-group comparison">兩組比較</td>
+      </tr>
+      <tr>
+        <td><strong>Roy's Largest Root</strong></td>
+        <td data-zh="僅考慮最大特徵值" data-en="Considers only the largest eigenvalue">僅最大特徵值</td>
+        <td data-zh="最不穩健；但在特定條件下檢力最高" data-en="Least robust; but highest power under specific conditions">最不穩健</td>
+        <td data-zh="組間差異集中在單一維度時" data-en="When group differences concentrate on a single dimension">差異集中時</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="Wilks' Lambda 公式" data-en="Wilks' Lambda Formula">Wilks' Lambda 公式</h4>
+  <div class="formula-box">
+    Λ = |W| / |B + W|
+    <span class="label" data-zh="|W| = 組內矩陣的行列式, |B+W| = 總變異矩陣的行列式" data-en="|W| = determinant of within-group matrix, |B+W| = determinant of total matrix">|W| = 組內矩陣行列式, |B+W| = 總變異矩陣行列式</span>
+  </div>
+  <div class="bilingual" style="margin-top:.75rem">
+    <div class="zh"><p>Λ 的範圍為 0 到 1。Λ = 1 表示完全沒有組間差異，Λ 越接近 0 表示組間差異越大。</p></div>
+    <div class="en"><p>Λ ranges from 0 to 1. Λ = 1 means no group differences; Λ closer to 0 indicates larger group differences.</p></div>
+  </div>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="如何選擇統計量？" data-en="How to Choose a Test Statistic?">如何選擇統計量？</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li>一般報告首選：<strong>Wilks' Lambda</strong>（最常用、期刊接受度最高）</li>
+        <li>樣本小或假設有疑慮：<strong>Pillai's Trace</strong>（最穩健）</li>
+        <li>四種統計量結論一致：通常可安心報告任一種</li>
+        <li>四種統計量結論不一致：深入檢查假設是否被違反，傾向採用 Pillai's Trace</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li>Default reporting: <strong>Wilks' Lambda</strong> (most common, widely accepted in journals)</li>
+        <li>Small samples or assumption concerns: <strong>Pillai's Trace</strong> (most robust)</li>
+        <li>All four statistics agree: safe to report any one</li>
+        <li>Statistics disagree: investigate assumption violations; prefer Pillai's Trace</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 4: TESTING PROCEDURE                 -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="四、假設檢驗流程" data-en="4. Testing Procedure">四、假設檢驗流程</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>MANOVA 的假設檢驗遵循一個<strong>從整體到個別</strong>的邏輯順序。必須先通過整體檢定，才能進一步探查個別依變數的差異。</p>
+  </div>
+  <div class="en">
+    <p>MANOVA hypothesis testing follows a <strong>general-to-specific</strong> logical sequence. The omnibus test must be significant before probing individual DV differences.</p>
+  </div>
+</div>
+
+<div class="diagram">
+  <svg viewBox="0 0 800 440" xmlns="http://www.w3.org/2000/svg" style="max-width:700px">
+    <defs>
+      <marker id="arrowP" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#6c757d"/>
+      </marker>
+    </defs>
+    <!-- Step 1 -->
+    <rect x="200" y="10" width="400" height="55" rx="8" fill="#fadbd8" stroke="#e74c3c" stroke-width="2"/>
+    <text x="400" y="33" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Step 1: Check Assumptions</text>
+    <text x="400" y="52" text-anchor="middle" font-size="11" fill="#6c757d">檢查假設：常態性、共變數矩陣同質性、樣本大小</text>
+    <line x1="400" y1="65" x2="400" y2="95" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowP)"/>
+    <!-- Step 2 -->
+    <rect x="200" y="95" width="400" height="55" rx="8" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+    <text x="400" y="118" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Step 2: Omnibus MANOVA Test</text>
+    <text x="400" y="137" text-anchor="middle" font-size="11" fill="#6c757d">整體檢定：Wilks' Λ / Pillai's Trace（顯著才繼續）</text>
+    <line x1="400" y1="150" x2="400" y2="180" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowP)"/>
+    <!-- Step 3 -->
+    <rect x="200" y="180" width="400" height="55" rx="8" fill="#d5f5e3" stroke="#27ae60" stroke-width="2"/>
+    <text x="400" y="203" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Step 3: Univariate F-tests (ANOVAs)</text>
+    <text x="400" y="222" text-anchor="middle" font-size="11" fill="#6c757d">個別 ANOVA：哪些依變數有顯著的組間差異？</text>
+    <line x1="400" y1="235" x2="400" y2="265" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowP)"/>
+    <!-- Step 4 -->
+    <rect x="200" y="265" width="400" height="55" rx="8" fill="#fdebd0" stroke="#f39c12" stroke-width="2"/>
+    <text x="400" y="288" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Step 4: Post-hoc Comparisons</text>
+    <text x="400" y="307" text-anchor="middle" font-size="11" fill="#6c757d">事後比較：具體哪些組別之間有差異？</text>
+    <line x1="400" y1="320" x2="400" y2="350" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowP)"/>
+    <!-- Step 5 -->
+    <rect x="200" y="350" width="400" height="55" rx="8" fill="#e8daef" stroke="#8e44ad" stroke-width="2"/>
+    <text x="400" y="373" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Step 5: Effect Size & Interpretation</text>
+    <text x="400" y="392" text-anchor="middle" font-size="11" fill="#6c757d">效果量：partial η² → 實質意義解釋</text>
+  </svg>
+  <p class="caption" data-zh="圖：MANOVA 假設檢驗流程 — 從整體到個別的階層式分析" data-en="Figure: MANOVA testing procedure — hierarchical analysis from general to specific">圖：MANOVA 假設檢驗流程 — 從整體到個別的階層式分析</p>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="各步驟詳細說明" data-en="Step Details">各步驟詳細說明</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ol style="padding-left:1.5rem">
+        <li><strong>假設檢查：</strong>多變量常態性、Box's M 檢定（共變數矩陣同質性）、充足的樣本大小</li>
+        <li><strong>整體 MANOVA 檢定：</strong>若 Wilks' Λ 顯著（p < .05），表示至少有一個依變數在組間有差異</li>
+        <li><strong>個別 ANOVA（Univariate F-tests）：</strong>對每個依變數分別進行 F 檢定，找出哪些依變數有顯著差異。建議使用 Bonferroni 修正（α/p）控制型一錯誤</li>
+        <li><strong>事後比較（Post-hoc）：</strong>對顯著的依變數進行成對組別比較（如 Tukey HSD、Bonferroni），找出具體差異所在</li>
+        <li><strong>效果量計算：</strong>使用 partial η² 衡量效果的實質大小</li>
+      </ol>
+    </div>
+    <div class="en">
+      <ol style="padding-left:1.5rem">
+        <li><strong>Assumption checks:</strong> Multivariate normality, Box's M test (homogeneity of covariance matrices), adequate sample size</li>
+        <li><strong>Omnibus MANOVA test:</strong> If Wilks' Λ is significant (p < .05), at least one DV differs across groups</li>
+        <li><strong>Univariate F-tests:</strong> Separate F-test for each DV to identify which have significant group differences. Use Bonferroni correction (α/p) to control Type I error</li>
+        <li><strong>Post-hoc comparisons:</strong> Pairwise group comparisons (e.g., Tukey HSD, Bonferroni) on significant DVs to locate specific differences</li>
+        <li><strong>Effect size:</strong> Use partial η² to assess practical significance</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 5: EFFECT SIZE                       -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="五、效果量" data-en="5. Effect Size">五、效果量</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>統計顯著性（p 值）只告訴我們效果是否「存在」，但不告訴我們效果有多「大」。<strong>效果量（effect size）</strong>提供了實質意義的衡量標準。</p>
+  </div>
+  <div class="en">
+    <p>Statistical significance (p-value) only tells us whether an effect "exists," not how "large" it is. <strong>Effect size</strong> provides a measure of practical significance.</p>
+  </div>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="Partial η²（偏 Eta 平方）" data-en="Partial η² (Partial Eta Squared)">Partial η²（偏 Eta 平方）</h4>
+  <div class="formula-box">
+    partial η² = SS<sub>effect</sub> / (SS<sub>effect</sub> + SS<sub>error</sub>)
+    <span class="label" data-zh="該效果所解釋的變異占（效果 + 誤差）的比例" data-en="Proportion of variance explained by the effect relative to (effect + error)">該效果解釋的變異占（效果 + 誤差）的比例</span>
+  </div>
+</div>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th>Partial η²</th>
+        <th data-zh="效果大小" data-en="Effect Size">效果大小</th>
+        <th data-zh="解釋" data-en="Interpretation">解釋</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="highlight-cell">.01</td>
+        <td data-zh="小效果" data-en="Small effect">小效果</td>
+        <td data-zh="自變數解釋了約 1% 的依變數變異" data-en="IV explains about 1% of DV variance">約 1% 變異</td>
+      </tr>
+      <tr>
+        <td class="highlight-cell">.06</td>
+        <td data-zh="中效果" data-en="Medium effect">中效果</td>
+        <td data-zh="自變數解釋了約 6% 的依變數變異" data-en="IV explains about 6% of DV variance">約 6% 變異</td>
+      </tr>
+      <tr>
+        <td class="highlight-cell">.14</td>
+        <td data-zh="大效果" data-en="Large effect">大效果</td>
+        <td data-zh="自變數解釋了約 14% 或更多的依變數變異" data-en="IV explains about 14% or more of DV variance">約 14%+ 變異</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="效果量的重要性" data-en="Why Effect Size Matters">效果量的重要性</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li>大樣本中，即使微不足道的差異也可能統計顯著（p < .05），但效果量可能極小（η² < .01）</li>
+        <li>APA 規範要求報告效果量，不能僅報告 p 值</li>
+        <li>partial η² 與 η² 的差異：partial η² 控制了其他效果的影響，在多因子設計中更為適切</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li>With large samples, even trivial differences can be statistically significant (p < .05), while effect size may be negligible (η² < .01)</li>
+        <li>APA guidelines require reporting effect sizes, not just p-values</li>
+        <li>Partial η² vs. η²: partial η² controls for other effects, more appropriate in multi-factor designs</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 6: ASSUMPTIONS                       -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="六、MANOVA 的假設" data-en="6. MANOVA Assumptions">六、MANOVA 的假設</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>MANOVA 的假設比 ANOVA 更為嚴格，因為涉及多個依變數。違反假設可能導致結果不可靠。</p>
+  </div>
+  <div class="en">
+    <p>MANOVA assumptions are stricter than ANOVA's because of the multiple DVs involved. Violations may lead to unreliable results.</p>
+  </div>
+</div>
+
+<div class="card-grid" style="margin-top:1rem">
+  <div class="card">
+    <h3 data-zh="1. 多變量常態性" data-en="1. Multivariate Normality">1. 多變量常態性</h3>
+    <div class="zh-only">
+      <p>依變數的<strong>聯合分布</strong>應呈多變量常態分布（不僅僅是每個依變數個別常態）。</p>
+      <p><strong>檢驗方式：</strong>Mardia's test、多變量 Q-Q plot。</p>
+      <p><strong>穩健性：</strong>大樣本（每組 ≥ 20-30）時對輕微違反具有穩健性。偏態比峰度的影響更大。</p>
+    </div>
+    <div class="en-only">
+      <p>The <strong>joint distribution</strong> of DVs should be multivariate normal (not just individually normal).</p>
+      <p><strong>Test:</strong> Mardia's test, multivariate Q-Q plot.</p>
+      <p><strong>Robustness:</strong> Robust to mild violations with large samples (≥ 20-30 per group). Skewness has more impact than kurtosis.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 data-zh="2. 共變數矩陣同質性" data-en="2. Homogeneity of Covariance Matrices">2. 共變數矩陣同質性</h3>
+    <div class="zh-only">
+      <p>各組的<strong>變異數-共變數矩陣</strong>應該相等（類似 ANOVA 的變異數同質性假設的多變量版本）。</p>
+      <p><strong>檢驗方式：</strong>Box's M 檢定。</p>
+      <p><strong>注意：</strong>Box's M 對常態性非常敏感，大樣本時容易顯著。一般建議若 p < .001 才視為嚴重違反。</p>
+      <p><strong>違反時的對策：</strong>使用 Pillai's Trace（最穩健）；確保各組樣本大小相等。</p>
+    </div>
+    <div class="en-only">
+      <p>The <strong>variance-covariance matrices</strong> should be equal across groups (multivariate extension of ANOVA's homogeneity of variance).</p>
+      <p><strong>Test:</strong> Box's M test.</p>
+      <p><strong>Note:</strong> Box's M is very sensitive to normality and easily significant with large samples. Generally treat p < .001 as a serious violation.</p>
+      <p><strong>If violated:</strong> Use Pillai's Trace (most robust); ensure equal group sizes.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 data-zh="3. 樣本大小" data-en="3. Sample Size">3. 樣本大小</h3>
+    <div class="zh-only">
+      <p>充足的樣本大小是 MANOVA 統計檢力的關鍵。</p>
+      <p><strong>基本要求：</strong></p>
+      <ul style="padding-left:1.2rem">
+        <li>每組的觀察值數目必須<strong>大於</strong>依變數的數目</li>
+        <li>建議：每個 cell 至少 20 個觀察值</li>
+        <li>各組樣本大小盡量相等（平衡設計更穩健）</li>
+      </ul>
+    </div>
+    <div class="en-only">
+      <p>Adequate sample size is critical for MANOVA's statistical power.</p>
+      <p><strong>Requirements:</strong></p>
+      <ul style="padding-left:1.2rem">
+        <li>Number of observations per group must <strong>exceed</strong> the number of DVs</li>
+        <li>Recommended: at least 20 observations per cell</li>
+        <li>Equal group sizes preferred (balanced designs are more robust)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 data-zh="4. 依變數之間的相關" data-en="4. Correlations Among DVs">4. 依變數之間的相關</h3>
+    <div class="zh-only">
+      <p>依變數之間應有<strong>適度的相關</strong>（通常 .2 到 .6），MANOVA 才有意義。</p>
+      <p><strong>太低（< .2）：</strong>使用 MANOVA 沒有優勢，不如分別做 ANOVA</p>
+      <p><strong>太高（> .9）：</strong>依變數幾乎是同一個概念，具有多元共線性問題</p>
+    </div>
+    <div class="en-only">
+      <p>DVs should be <strong>moderately correlated</strong> (typically .2 to .6) for MANOVA to be meaningful.</p>
+      <p><strong>Too low (< .2):</strong> No advantage over separate ANOVAs</p>
+      <p><strong>Too high (> .9):</strong> DVs are nearly the same concept; multicollinearity issues</p>
+    </div>
+  </div>
+</div>
+
+<!-- Box's M interpretation -->
+<div class="concept-block warn" style="margin-top:1.5rem">
+  <h4 data-zh="Box's M 檢定的解讀指南" data-en="Box's M Test Interpretation Guide">Box's M 檢定的解讀指南</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li>Box's M <strong>不顯著</strong>（p > .001）：假設成立，繼續進行 MANOVA</li>
+        <li>Box's M <strong>顯著</strong>但各組樣本大小相等：對結果影響較小，可使用 Pillai's Trace</li>
+        <li>Box's M <strong>顯著</strong>且各組樣本不等：需謹慎解釋結果；考慮使用非參數替代方法</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li>Box's M <strong>not significant</strong> (p > .001): Assumption met, proceed with MANOVA</li>
+        <li>Box's M <strong>significant</strong> but equal group sizes: Minimal impact; use Pillai's Trace</li>
+        <li>Box's M <strong>significant</strong> with unequal groups: Interpret cautiously; consider nonparametric alternatives</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- TAB: ANOVA vs MANOVA vs RM                   -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="方法比較" data-en="Method Comparison">方法比較</h2>
+
+<div class="tab-container" style="margin-top:1rem">
+  <div class="tab-header">
+    <button class="tab-btn active" data-tab="tab-anova" data-zh="ANOVA" data-en="ANOVA">ANOVA</button>
+    <button class="tab-btn" data-tab="tab-manova" data-zh="MANOVA" data-en="MANOVA">MANOVA</button>
+    <button class="tab-btn" data-tab="tab-rm" data-zh="重複量測" data-en="Repeated Measures">重複量測</button>
+  </div>
+
+  <div class="tab-panel active" id="tab-anova">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>ANOVA（變異數分析）</h4>
+        <ul style="padding-left:1.2rem">
+          <li><strong>依變數：</strong>1 個（metric）</li>
+          <li><strong>自變數：</strong>1 個或多個（nonmetric / categorical）</li>
+          <li><strong>檢定統計量：</strong>F-test</li>
+          <li><strong>假設：</strong>常態性、變異數同質性（Levene's test）</li>
+          <li><strong>適用時機：</strong>比較各組在單一結果變數上的差異</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>ANOVA (Analysis of Variance)</h4>
+        <ul style="padding-left:1.2rem">
+          <li><strong>DV:</strong> 1 (metric)</li>
+          <li><strong>IV:</strong> 1 or more (nonmetric / categorical)</li>
+          <li><strong>Test statistic:</strong> F-test</li>
+          <li><strong>Assumptions:</strong> Normality, homogeneity of variance (Levene's test)</li>
+          <li><strong>When to use:</strong> Comparing groups on a single outcome variable</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-manova">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>MANOVA（多變量變異數分析）</h4>
+        <ul style="padding-left:1.2rem">
+          <li><strong>依變數：</strong>2 個或以上（metric）</li>
+          <li><strong>自變數：</strong>1 個或多個（nonmetric / categorical）</li>
+          <li><strong>檢定統計量：</strong>Wilks' Λ, Pillai's Trace, Hotelling's Trace, Roy's Largest Root</li>
+          <li><strong>假設：</strong>多變量常態性、共變數矩陣同質性（Box's M）</li>
+          <li><strong>適用時機：</strong>同時比較各組在多個相關結果變數上的差異</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>MANOVA (Multivariate Analysis of Variance)</h4>
+        <ul style="padding-left:1.2rem">
+          <li><strong>DVs:</strong> 2 or more (metric)</li>
+          <li><strong>IV:</strong> 1 or more (nonmetric / categorical)</li>
+          <li><strong>Test statistics:</strong> Wilks' Λ, Pillai's Trace, Hotelling's Trace, Roy's Largest Root</li>
+          <li><strong>Assumptions:</strong> Multivariate normality, homogeneity of covariance matrices (Box's M)</li>
+          <li><strong>When to use:</strong> Simultaneously comparing groups on multiple related outcome variables</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-rm">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>重複量測 ANOVA / MANOVA</h4>
+        <ul style="padding-left:1.2rem">
+          <li><strong>特點：</strong>同一受試者在不同時間點或條件下被重複測量</li>
+          <li><strong>額外假設：</strong>球形性假設（Sphericity，Mauchly's test）— 適用於重複量測 ANOVA</li>
+          <li><strong>替代方案：</strong>若球形性被違反，可使用多變量方法（將時間點視為多個依變數）或 Greenhouse-Geisser / Huynh-Feldt 修正</li>
+          <li><strong>適用時機：</strong>前測-後測設計、縱貫性研究、受試者內設計</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>Repeated Measures ANOVA / MANOVA</h4>
+        <ul style="padding-left:1.2rem">
+          <li><strong>Feature:</strong> Same subjects measured repeatedly across time points or conditions</li>
+          <li><strong>Additional assumption:</strong> Sphericity (Mauchly's test) — applies to RM-ANOVA</li>
+          <li><strong>Alternative:</strong> If sphericity is violated, use multivariate approach (time points as multiple DVs) or Greenhouse-Geisser / Huynh-Feldt corrections</li>
+          <li><strong>When to use:</strong> Pre-post designs, longitudinal studies, within-subjects designs</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 7: QUIZ                              -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="七、自我測驗" data-en="7. Self-Assessment Quiz">七、自我測驗</h2>
+
+<div class="quiz">
+  <h3 data-zh="測試你對 MANOVA 的理解" data-en="Test Your Understanding of MANOVA">測試你對 MANOVA 的理解</h3>
+
+  <div class="quiz-question">
+    <p data-zh="Q1: 為什麼不對多個依變數分別做 ANOVA，而要使用 MANOVA？" data-en="Q1: Why use MANOVA instead of running separate ANOVAs for each DV?">Q1: 為什麼不對多個依變數分別做 ANOVA，而要使用 MANOVA？</p>
+    <div class="quiz-option" data-correct="false" data-zh="MANOVA 的計算比較簡單" data-en="MANOVA is computationally simpler">MANOVA 的計算比較簡單</div>
+    <div class="quiz-option" data-correct="false" data-zh="ANOVA 無法處理類別型自變數" data-en="ANOVA cannot handle categorical IVs">ANOVA 無法處理類別型自變數</div>
+    <div class="quiz-option" data-correct="true" data-zh="MANOVA 控制型一錯誤膨脹，並考慮依變數之間的相關" data-en="MANOVA controls inflated Type I error and considers correlations among DVs">MANOVA 控制型一錯誤膨脹，並考慮依變數之間的相關</div>
+    <div class="quiz-option" data-correct="false" data-zh="MANOVA 不需要檢查假設" data-en="MANOVA does not require assumption checks">MANOVA 不需要檢查假設</div>
+    <div class="quiz-feedback" data-zh="正確！對 p 個依變數分別做 ANOVA 會使型一錯誤從 .05 膨脹到接近 1-(1-.05)ᵖ。MANOVA 透過單一的多變量檢定控制整體型一錯誤率，並且考慮了依變數之間的相關結構，能偵測到個別 ANOVA 遺漏的模式。" data-en="Correct! Running p separate ANOVAs inflates Type I error from .05 to nearly 1-(1-.05)ᵖ. MANOVA controls the overall Type I error through a single multivariate test and accounts for the correlation structure among DVs, detecting patterns individual ANOVAs may miss.">正確！MANOVA 控制整體型一錯誤率，並考慮依變數的相關結構。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q2: 當假設可能被違反且各組樣本大小不相等時，應優先報告哪個統計量？" data-en="Q2: Which test statistic should be preferred when assumptions may be violated and group sizes are unequal?">Q2: 當假設可能被違反且各組樣本大小不相等時，應優先報告哪個統計量？</p>
+    <div class="quiz-option" data-correct="false">Wilks' Lambda</div>
+    <div class="quiz-option" data-correct="true">Pillai's Trace</div>
+    <div class="quiz-option" data-correct="false">Roy's Largest Root</div>
+    <div class="quiz-option" data-correct="false">Hotelling's Trace</div>
+    <div class="quiz-feedback" data-zh="正確！Pillai's Trace 是四種統計量中最穩健的，對假設違反（特別是共變數矩陣不同質和樣本大小不等）最不敏感。Roy's Largest Root 是最不穩健的。" data-en="Correct! Pillai's Trace is the most robust of the four statistics, least sensitive to assumption violations (especially unequal covariance matrices and unequal group sizes). Roy's Largest Root is the least robust.">正確！Pillai's Trace 是最穩健的統計量，對假設違反最不敏感。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q3: Partial η² = .08 代表什麼意思？" data-en="Q3: What does partial η² = .08 mean?">Q3: Partial η² = .08 代表什麼意思？</p>
+    <div class="quiz-option" data-correct="false" data-zh="小效果（解釋約 1% 變異）" data-en="Small effect (about 1% variance explained)">小效果（約 1% 變異）</div>
+    <div class="quiz-option" data-correct="true" data-zh="中效果（解釋約 8% 變異）" data-en="Medium effect (about 8% variance explained)">中效果（約 8% 變異）</div>
+    <div class="quiz-option" data-correct="false" data-zh="大效果（解釋約 14%+ 變異）" data-en="Large effect (about 14%+ variance explained)">大效果（約 14%+ 變異）</div>
+    <div class="quiz-option" data-correct="false" data-zh="效果量不足，結果無意義" data-en="Insufficient effect, results meaningless">效果量不足</div>
+    <div class="quiz-feedback" data-zh="正確！根據 Cohen 的基準，partial η² = .01 為小效果、.06 為中效果、.14 為大效果。η² = .08 落在中效果的範圍內（.06 到 .14 之間），表示自變數解釋了約 8% 的依變數變異。" data-en="Correct! According to Cohen's benchmarks, partial η² = .01 is small, .06 is medium, .14 is large. η² = .08 falls in the medium range (.06 to .14), meaning the IV explains about 8% of the DV's variance.">正確！η² = .08 屬於中效果（介於 .06 和 .14 之間）。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q4: Box's M 檢定的目的是什麼？" data-en="Q4: What is the purpose of Box's M test?">Q4: Box's M 檢定的目的是什麼？</p>
+    <div class="quiz-option" data-correct="false" data-zh="檢驗依變數是否為常態分布" data-en="Test whether DVs are normally distributed">檢驗常態分布</div>
+    <div class="quiz-option" data-correct="false" data-zh="檢驗各組平均數是否相等" data-en="Test whether group means are equal">檢驗平均數相等</div>
+    <div class="quiz-option" data-correct="true" data-zh="檢驗各組的變異數-共變數矩陣是否相等" data-en="Test whether variance-covariance matrices are equal across groups">檢驗各組的變異數-共變數矩陣是否相等</div>
+    <div class="quiz-option" data-correct="false" data-zh="檢驗依變數之間是否有相關" data-en="Test whether DVs are correlated">檢驗依變數間的相關</div>
+    <div class="quiz-feedback" data-zh="正確！Box's M 檢定檢驗 MANOVA 的共變數矩陣同質性假設。由於此檢定對常態性非常敏感，且大樣本下幾乎總是顯著，一般建議以 p < .001（而非 .05）作為判斷標準。若違反此假設，建議使用 Pillai's Trace 並確保組別大小相等。" data-en="Correct! Box's M tests the homogeneity of covariance matrices assumption for MANOVA. Since it is very sensitive to non-normality and almost always significant with large samples, p < .001 (rather than .05) is typically used as the threshold. If violated, use Pillai's Trace and ensure equal group sizes.">正確！Box's M 檢驗共變數矩陣同質性，建議以 p < .001 為判斷標準。</div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- KEY TERMS ACCORDION                          -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="關鍵名詞解釋" data-en="Key Terms Glossary">關鍵名詞解釋</h2>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="平均數向量（Mean Vector / Centroid）" data-en="Mean Vector (Centroid)">平均數向量（Mean Vector / Centroid）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>一組的所有依變數平均值所組成的向量。在 ANOVA 中我們比較各組的平均數（一個數值），在 MANOVA 中我們比較的是各組的平均數向量（一組數值）。MANOVA 的虛無假設就是所有組的平均數向量（centroid）相等。</p></div>
+      <div class="en"><p>A vector composed of a group's means on all DVs. In ANOVA we compare group means (a single number); in MANOVA we compare group mean vectors (a set of numbers). MANOVA's null hypothesis is that all group centroids are equal.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="型一錯誤膨脹（Inflated Type I Error）" data-en="Inflated Type I Error">型一錯誤膨脹（Inflated Type I Error）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>當對多個依變數分別進行假設檢定時，即使每次檢定的顯著水準為 α = .05，整體犯型一錯誤的機率會遠大於 .05。例如：對 5 個依變數分別做 ANOVA，整體型一錯誤率約為 1-(1-.05)⁵ ≈ .23，即有 23% 的機率至少犯一次型一錯誤。MANOVA 透過單一多變量檢定避免了此問題。</p></div>
+      <div class="en"><p>When conducting separate tests on multiple DVs, even if each test uses α = .05, the overall Type I error probability far exceeds .05. For example: 5 separate ANOVAs yield an overall rate of about 1-(1-.05)⁵ ≈ .23, a 23% chance of at least one Type I error. MANOVA avoids this by using a single multivariate test.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="Wilks' Lambda (Λ)" data-en="Wilks' Lambda (Λ)">Wilks' Lambda (Λ)</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>MANOVA 最常用的檢定統計量。Λ 衡量的是「組間差異未能解釋的變異比例」。Λ = 1 表示各組完全沒有差異，Λ 越小（接近 0）表示組間差異越大。Λ 可以轉換為近似 F 值進行顯著性檢定。在穩健性方面處於中等水準。</p></div>
+      <div class="en"><p>MANOVA's most commonly used test statistic. Λ measures the proportion of variance not explained by group differences. Λ = 1 means no group differences; smaller Λ (approaching 0) indicates larger group differences. Λ can be converted to an approximate F-value for significance testing. It has moderate robustness.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="共變數矩陣同質性（Homogeneity of Covariance Matrices）" data-en="Homogeneity of Covariance Matrices">共變數矩陣同質性（Homogeneity of Covariance Matrices）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>MANOVA 的重要假設之一，要求各組的變異數-共變數矩陣相等。這是 ANOVA 中變異數同質性假設（Levene's test）的多變量推廣。透過 Box's M 檢定來評估。由於 Box's M 對非常態性非常敏感，通常以 p < .001 作為判斷門檻。</p></div>
+      <div class="en"><p>A key MANOVA assumption requiring that variance-covariance matrices are equal across groups. This is the multivariate extension of ANOVA's homogeneity of variance assumption (Levene's test). Assessed via Box's M test. Since Box's M is very sensitive to non-normality, p < .001 is typically used as the threshold.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="特徵值（Eigenvalue）" data-en="Eigenvalue">特徵值（Eigenvalue）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>在 MANOVA 中，特徵值來自 W⁻¹B 矩陣（組內矩陣的逆矩陣乘以組間矩陣）。特徵值代表在各個正交維度上，組間差異相對於組內變異的比率。特徵值越大，表示該維度上的組間差異越明顯。Hotelling's Trace 是所有特徵值的加總，Roy's Largest Root 僅考慮最大特徵值。</p></div>
+      <div class="en"><p>In MANOVA, eigenvalues come from the W⁻¹B matrix (inverse of within-group matrix times between-group matrix). They represent the ratio of between-group to within-group variance on each orthogonal dimension. Larger eigenvalues indicate more pronounced group differences on that dimension. Hotelling's Trace sums all eigenvalues; Roy's Largest Root uses only the largest.</p></div>
+    </div>
+  </div>
+</div>
+
+
+</div><!-- container -->
+</main>
+
+<!-- Navigation -->
+<div style="padding:2rem 0;background:#f0f3f5">
+  <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+    <a href="ch5-multiple-regression.html" style="font-weight:600" data-zh="← 上一章：多元迴歸" data-en="← Previous: Multiple Regression">← 上一章：多元迴歸</a>
+    <a href="../index.html" style="font-weight:600" data-zh="回到首頁" data-en="Back to Home">回到首頁</a>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>Hair, J.F., Black, W.C., Babin, B.J., & Anderson, R.E. (2019). <em>Multivariate Data Analysis</em> (8th ed.).</p>
+    <p style="margin-top:.5rem;font-size:.8rem;opacity:.8">© 版權所有 葉欲禾 (Gary Yu-Ho Yeh)</p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ch.2 檢視你的資料 | Examining Your Data</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="lang-zh">
+<div class="progress-bar"><div class="fill"></div></div>
+
+<nav class="top-nav">
+  <div class="container">
+    <a href="../index.html" class="brand" data-zh="多變量資料分析" data-en="Multivariate Data Analysis">多變量資料分析</a>
+    <div class="nav-links">
+      <a href="../index.html" data-zh="首頁" data-en="Home">首頁</a>
+      <button class="lang-toggle">EN</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1 data-zh="Ch.2 檢視你的資料" data-en="Ch.2 Examining Your Data">Ch.2 檢視你的資料</h1>
+    <p data-zh="遺漏值、離群值、常態性與資料轉換" data-en="Missing data, outliers, normality, and data transformations">遺漏值、離群值、常態性與資料轉換</p>
+  </div>
+</header>
+
+<main class="section">
+<div class="container">
+
+<!-- ============================================ -->
+<!-- SECTION 1: MISSING DATA                      -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="一、遺漏值（Missing Data）" data-en="1. Missing Data">一、遺漏值（Missing Data）</h2>
+
+<div class="concept-block success">
+  <h4 data-zh="白話解釋：為什麼遺漏值重要？" data-en="Plain Language: Why Does Missing Data Matter?">白話解釋：為什麼遺漏值重要？</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p>想像你做了一份100人的問卷調查，但其中30人跳過了「收入」這題。如果你直接忽略這些人，你的分析結果可能只代表「願意回答收入問題的人」，而不是全部受訪者。更糟的是——如果高收入者更傾向跳過這題（怕被知道），你的資料就會<strong>系統性地偏離真實情況</strong>。</p>
+    </div>
+    <div class="en">
+      <p>Imagine you conducted a 100-person survey, but 30 people skipped the "income" question. If you simply ignore them, your results may only represent "people willing to answer about income," not all respondents. Worse — if high-income people tend to skip this question (to avoid disclosure), your data <strong>systematically deviates from reality</strong>.</p>
+    </div>
+  </div>
+</div>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>遺漏值的處理是分析前最重要的步驟之一。遺漏值不只會<strong>縮小樣本量</strong>，更可能導致<strong>偏誤的統計推論</strong>。處理遺漏值的第一步是了解其「遺漏的機制」。</p>
+  </div>
+  <div class="en">
+    <p>Handling missing data is one of the most critical pre-analysis steps. Missing data not only <strong>reduces sample size</strong> but can also lead to <strong>biased statistical inference</strong>. The first step is understanding the "mechanism" of missingness.</p>
+  </div>
+</div>
+
+<!-- Missing Data Types -->
+<h3 style="margin-top:1.5rem" data-zh="遺漏值的三種類型" data-en="Three Types of Missing Data">遺漏值的三種類型</h3>
+
+<div class="card-grid" style="margin-top:1rem">
+  <div class="card">
+    <h3 data-zh="MCAR：完全隨機遺漏" data-en="MCAR: Missing Completely at Random">MCAR：完全隨機遺漏</h3>
+    <div class="zh-only">
+      <p><strong>定義：</strong>遺漏的發生與任何變數（包含自身）都完全無關。</p>
+      <p><strong>例子：</strong>問卷被風吹走、資料輸入時不小心跳過。</p>
+      <p><strong>影響：</strong>最理想的情況——不會產生偏誤，只損失統計檢力。</p>
+      <p style="margin-top:.5rem;font-size:.85rem;color:var(--text-light)">MCAR is the ideal case — missingness is completely unrelated to any variable.</p>
+    </div>
+    <div class="en-only">
+      <p><strong>Definition:</strong> Missingness is completely unrelated to any variable, including itself.</p>
+      <p><strong>Example:</strong> Survey blown away by wind, data entry accidentally skipped.</p>
+      <p><strong>Impact:</strong> Best case — no bias, only loss of statistical power.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 data-zh="MAR：隨機遺漏" data-en="MAR: Missing at Random">MAR：隨機遺漏</h3>
+    <div class="zh-only">
+      <p><strong>定義：</strong>遺漏的發生與<strong>其他觀察到的變數</strong>有關，但與遺漏值本身無關。</p>
+      <p><strong>例子：</strong>女性較傾向不回答收入問題（遺漏與「性別」有關，但與收入本身無關）。</p>
+      <p><strong>影響：</strong>可以透過適當的插補方法處理。</p>
+      <p style="margin-top:.5rem;font-size:.85rem;color:var(--text-light)">MAR means missingness depends on other observed variables but not the missing value itself.</p>
+    </div>
+    <div class="en-only">
+      <p><strong>Definition:</strong> Missingness is related to <strong>other observed variables</strong> but not to the missing value itself.</p>
+      <p><strong>Example:</strong> Women may be less likely to report income (missingness relates to "gender" but not to income itself).</p>
+      <p><strong>Impact:</strong> Can be handled with appropriate imputation methods.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 data-zh="MNAR：非隨機遺漏" data-en="MNAR: Missing Not at Random">MNAR：非隨機遺漏</h3>
+    <div class="zh-only">
+      <p><strong>定義：</strong>遺漏的發生與<strong>遺漏值本身</strong>有關。</p>
+      <p><strong>例子：</strong>高收入者不回答收入問題（正是因為收入高才不回答）。</p>
+      <p><strong>影響：</strong>最棘手的情況——無論用什麼方法都可能產生偏誤，需要特殊建模處理。</p>
+      <p style="margin-top:.5rem;font-size:.85rem;color:var(--text-light)">MNAR is the most problematic — missingness depends on the unobserved value itself.</p>
+    </div>
+    <div class="en-only">
+      <p><strong>Definition:</strong> Missingness is related to <strong>the missing value itself</strong>.</p>
+      <p><strong>Example:</strong> High-income individuals not reporting income (they skip precisely because income is high).</p>
+      <p><strong>Impact:</strong> Most problematic — any method may produce bias; requires special modeling.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Missing Data Handling Methods -->
+<h3 style="margin-top:1.5rem" data-zh="遺漏值處理方法" data-en="Missing Data Handling Methods">遺漏值處理方法</h3>
+
+<div class="tab-container" style="margin-top:1rem">
+  <div class="tab-header">
+    <button class="tab-btn active" data-tab="tab-listwise" data-zh="完整刪除法" data-en="Listwise Deletion">完整刪除法</button>
+    <button class="tab-btn" data-tab="tab-pairwise" data-zh="配對刪除法" data-en="Pairwise Deletion">配對刪除法</button>
+    <button class="tab-btn" data-tab="tab-imputation" data-zh="插補法" data-en="Imputation">插補法</button>
+  </div>
+
+  <div class="tab-panel active" id="tab-listwise">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>完整刪除法（Listwise Deletion / Complete Case Analysis）</h4>
+        <p>只保留<strong>所有變數都有完整資料的個案</strong>，任何一個變數有遺漏就整筆刪除。</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>優點：</strong>操作最簡單、最常用；在 MCAR 條件下不會產生偏誤</li>
+          <li><strong>缺點：</strong>可能大幅損失樣本量；若非 MCAR 則產生偏誤</li>
+          <li><strong>適用時機：</strong>遺漏比例低（< 5%）且符合 MCAR</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>Listwise Deletion (Complete Case Analysis)</h4>
+        <p>Keep only cases with <strong>complete data on all variables</strong>; delete any case with any missing value.</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>Pros:</strong> Simplest, most common; unbiased under MCAR</li>
+          <li><strong>Cons:</strong> Can drastically reduce sample size; biased if not MCAR</li>
+          <li><strong>When to use:</strong> Low missing rate (< 5%) and MCAR holds</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-pairwise">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>配對刪除法（Pairwise Deletion / Available Case Analysis）</h4>
+        <p>計算每一對變數的統計量時，使用該對變數上都有完整資料的所有個案。</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>優點：</strong>保留更多資料，每個統計量使用最大可用樣本</li>
+          <li><strong>缺點：</strong>不同統計量的樣本大小不一致；可能產生不正定的相關矩陣</li>
+          <li><strong>適用時機：</strong>以相關或共變異數為基礎的分析</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>Pairwise Deletion (Available Case Analysis)</h4>
+        <p>For each pair of variables, use all cases with complete data on both variables.</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>Pros:</strong> Retains more data; each statistic uses maximum available sample</li>
+          <li><strong>Cons:</strong> Different sample sizes for different statistics; may produce non-positive-definite correlation matrices</li>
+          <li><strong>When to use:</strong> Correlation or covariance-based analyses</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-imputation">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>插補法（Imputation Methods）</h4>
+        <p>用估計值來取代遺漏值，保留完整的樣本大小。</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>平均數插補：</strong>用該變數的平均數取代遺漏值。簡單但會低估變異數</li>
+          <li><strong>迴歸插補：</strong>用其他變數預測遺漏值。較精確但仍低估標準誤</li>
+          <li><strong>多重插補（MI）：</strong>產生多組插補資料集，各自分析後合併結果。最推薦的方法</li>
+          <li><strong>EM演算法：</strong>Maximum Likelihood 基礎的迭代方法，適用於 MAR</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>Imputation Methods</h4>
+        <p>Replace missing values with estimated values to retain full sample size.</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>Mean substitution:</strong> Replace with the variable mean. Simple but underestimates variance</li>
+          <li><strong>Regression imputation:</strong> Predict missing values from other variables. More accurate but still underestimates SE</li>
+          <li><strong>Multiple imputation (MI):</strong> Generate multiple imputed datasets, analyze each, then pool results. Most recommended</li>
+          <li><strong>EM algorithm:</strong> Maximum Likelihood iterative method, appropriate for MAR</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="經驗法則：遺漏值處理" data-en="Rules of Thumb: Missing Data">經驗法則：遺漏值處理</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li>遺漏比例 < 5%：通常可安全使用完整刪除法</li>
+        <li>5%-15%：需要進一步診斷遺漏機制，考慮插補</li>
+        <li>> 15%：必須認真處理，多重插補或 EM 方法為佳</li>
+        <li>單一變數遺漏 > 50%：考慮直接刪除該變數</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li>Missing < 5%: Generally safe to use listwise deletion</li>
+        <li>5%-15%: Need to diagnose the missing mechanism; consider imputation</li>
+        <li>> 15%: Must be handled seriously; MI or EM methods preferred</li>
+        <li>Single variable > 50% missing: Consider dropping that variable entirely</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 2: OUTLIERS                          -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="二、離群值（Outliers）" data-en="2. Outliers">二、離群值（Outliers）</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>離群值是指與其他觀察值有<strong>顯著差異</strong>的極端值。離群值可能是資料輸入錯誤，也可能是真實但罕見的觀察。關鍵問題是：這些極端值會<strong>扭曲統計結果</strong>。</p>
+  </div>
+  <div class="en">
+    <p>Outliers are observations that are <strong>markedly different</strong> from other cases. They may be data entry errors or genuine but rare observations. The key issue: extreme values can <strong>distort statistical results</strong>.</p>
+  </div>
+</div>
+
+<div class="card-grid" style="margin-top:1rem">
+  <div class="card">
+    <h3 data-zh="單變量離群值偵測" data-en="Univariate Outlier Detection">單變量離群值偵測</h3>
+    <div class="zh-only">
+      <p><strong>Z-score 方法：</strong>將每個值標準化，檢查是否超出門檻。</p>
+      <div class="formula-box" style="margin:.75rem 0">
+        z = (X - X&#772;) / s
+        <span class="label">X&#772; = 平均數, s = 標準差</span>
+      </div>
+      <p><strong>判斷門檻：</strong></p>
+      <ul style="padding-left:1.2rem">
+        <li>小樣本 (n < 80)：|z| > 2.5 為離群值</li>
+        <li>大樣本 (n ≥ 80)：|z| > 3.0 或 4.0</li>
+      </ul>
+      <p style="margin-top:.5rem"><strong>箱型圖法：</strong>超出 Q1 - 1.5*IQR 或 Q3 + 1.5*IQR 為離群值。</p>
+      <p style="font-size:.85rem;color:var(--text-light)">Z-score standardizes each value; box plot uses interquartile range (IQR).</p>
+    </div>
+    <div class="en-only">
+      <p><strong>Z-score method:</strong> Standardize each value and check against thresholds.</p>
+      <div class="formula-box" style="margin:.75rem 0">
+        z = (X - X&#772;) / s
+        <span class="label">X&#772; = mean, s = standard deviation</span>
+      </div>
+      <p><strong>Thresholds:</strong></p>
+      <ul style="padding-left:1.2rem">
+        <li>Small samples (n < 80): |z| > 2.5 is an outlier</li>
+        <li>Large samples (n &ge; 80): |z| > 3.0 or 4.0</li>
+      </ul>
+      <p style="margin-top:.5rem"><strong>Box plot method:</strong> Values beyond Q1 - 1.5*IQR or Q3 + 1.5*IQR are outliers.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 data-zh="多變量離群值偵測" data-en="Multivariate Outlier Detection">多變量離群值偵測</h3>
+    <div class="zh-only">
+      <p><strong>Mahalanobis D² 距離：</strong>衡量每個觀察值與所有變數<strong>聯合中心（centroid）</strong>的距離，同時考慮變數間的相關性。</p>
+      <div class="formula-box" style="margin:.75rem 0">
+        D² = (x - x&#772;)' S<sup>-1</sup> (x - x&#772;)
+        <span class="label">S<sup>-1</sup> = 共變異數矩陣的反矩陣</span>
+      </div>
+      <p><strong>判斷方式：</strong>以卡方分佈檢定 D² 值，自由度 = 變數數，通常以 p < .001 為門檻。</p>
+      <p style="font-size:.85rem;color:var(--text-light)">Mahalanobis D² measures distance from the centroid, accounting for variable correlations.</p>
+    </div>
+    <div class="en-only">
+      <p><strong>Mahalanobis D² distance:</strong> Measures each observation's distance from the <strong>centroid</strong> of all variables, accounting for correlations between them.</p>
+      <div class="formula-box" style="margin:.75rem 0">
+        D² = (x - x&#772;)' S<sup>-1</sup> (x - x&#772;)
+        <span class="label">S<sup>-1</sup> = inverse of the covariance matrix</span>
+      </div>
+      <p><strong>Assessment:</strong> Test D² against chi-square distribution with df = number of variables; typically p < .001 threshold.</p>
+    </div>
+  </div>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="離群值的處理策略" data-en="Strategies for Handling Outliers">離群值的處理策略</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li><strong>保留：</strong>如果離群值代表真實的極端情況（如罕見疾病、超高收入者），且研究目的就是了解這種現象</li>
+        <li><strong>刪除：</strong>如果確認是資料輸入錯誤，或該觀察明顯不屬於目標母群</li>
+        <li><strong>修正（Winsorize）：</strong>將極端值替換為較接近但仍處於極端的值（如替換為第95百分位數的值）</li>
+        <li><strong>分開分析：</strong>分別對有/無離群值的資料進行分析，比較結果是否一致</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li><strong>Retain:</strong> If the outlier represents a genuine extreme case (rare disease, ultra-high income) relevant to the research purpose</li>
+        <li><strong>Delete:</strong> If confirmed as a data entry error, or the case clearly does not belong to the target population</li>
+        <li><strong>Winsorize:</strong> Replace extreme values with less extreme but still high/low values (e.g., 95th percentile value)</li>
+        <li><strong>Run separate analyses:</strong> Analyze with and without outliers to compare if results are consistent</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Z-score Calculator -->
+<div class="calculator">
+  <h3 data-zh="Z-score 離群值偵測計算器" data-en="Z-score Outlier Detection Calculator">Z-score 離群值偵測計算器</h3>
+  <div class="bilingual" style="margin-bottom:1rem">
+    <div class="zh"><p>輸入觀察值、平均數和標準差來計算z-score，並判斷是否為離群值。</p></div>
+    <div class="en"><p>Enter the observed value, mean, and standard deviation to compute the z-score and determine if it is an outlier.</p></div>
+  </div>
+  <div class="calc-row">
+    <label data-zh="觀察值 (X)：" data-en="Observed value (X):">觀察值 (X)：</label>
+    <input type="number" id="zscore-x" value="95" step="0.1">
+  </div>
+  <div class="calc-row">
+    <label data-zh="平均數 (X&#772;)：" data-en="Mean (X&#772;):">平均數 (X&#772;)：</label>
+    <input type="number" id="zscore-mean" value="50" step="0.1" style="width:100px">
+  </div>
+  <div class="calc-row">
+    <label data-zh="標準差 (s)：" data-en="Standard deviation (s):">標準差 (s)：</label>
+    <input type="number" id="zscore-sd" value="10" step="0.1" style="width:100px">
+  </div>
+  <button class="calc-btn" onclick="calcZscore()" data-zh="計算 z-score" data-en="Calculate z-score">計算 z-score</button>
+  <div class="calc-result" id="zscore-result"></div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 3: NORMALITY TESTING                 -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="三、常態性檢驗（Normality Testing）" data-en="3. Normality Testing">三、常態性檢驗（Normality Testing）</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>大多數多變量統計方法都假設資料服從<strong>常態分佈</strong>。違反常態性假設會影響統計檢定的結果，尤其在小樣本中更為嚴重。常態性可從兩個面向來檢驗：<strong>偏態</strong>和<strong>峰度</strong>。</p>
+  </div>
+  <div class="en">
+    <p>Most multivariate methods assume data follow a <strong>normal distribution</strong>. Violating normality affects statistical test results, especially severely in small samples. Normality is assessed along two dimensions: <strong>skewness</strong> and <strong>kurtosis</strong>.</p>
+  </div>
+</div>
+
+<div class="card-grid" style="margin-top:1rem">
+  <div class="card">
+    <h3 data-zh="偏態（Skewness）" data-en="Skewness">偏態（Skewness）</h3>
+    <div class="zh-only">
+      <p>衡量分佈的<strong>對稱性</strong>。偏態 = 0 為完美對稱。</p>
+      <div class="formula-box" style="margin:.75rem 0">
+        Skewness = [n / (n-1)(n-2)] &times; &Sigma;[(X<sub>i</sub> - X&#772;) / s]&sup3;
+        <span class="label">正偏 = 右尾較長 | 負偏 = 左尾較長</span>
+      </div>
+      <p style="font-size:.85rem;color:var(--text-light)">Positive skew: right tail is longer; Negative skew: left tail is longer.</p>
+    </div>
+    <div class="en-only">
+      <p>Measures the <strong>symmetry</strong> of a distribution. Skewness = 0 is perfectly symmetric.</p>
+      <div class="formula-box" style="margin:.75rem 0">
+        Skewness = [n / (n-1)(n-2)] &times; &Sigma;[(X<sub>i</sub> - X&#772;) / s]&sup3;
+        <span class="label">Positive = right tail longer | Negative = left tail longer</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 data-zh="峰度（Kurtosis）" data-en="Kurtosis">峰度（Kurtosis）</h3>
+    <div class="zh-only">
+      <p>衡量分佈的<strong>尖峭程度</strong>。峰度 = 0 （超額峰度）為正常。</p>
+      <div class="formula-box" style="margin:.75rem 0">
+        Kurtosis = {[n(n+1) / (n-1)(n-2)(n-3)] &times; &Sigma;[(X<sub>i</sub> - X&#772;) / s]&sup4;} - [3(n-1)&sup2; / (n-2)(n-3)]
+        <span class="label">正峰度 = 尖峭、重尾 | 負峰度 = 平坦、輕尾</span>
+      </div>
+      <p style="font-size:.85rem;color:var(--text-light)">Positive kurtosis (leptokurtic): peaked, heavy tails; Negative (platykurtic): flat, light tails.</p>
+    </div>
+    <div class="en-only">
+      <p>Measures the <strong>peakedness</strong> of a distribution. Excess kurtosis = 0 for a normal distribution.</p>
+      <div class="formula-box" style="margin:.75rem 0">
+        Kurtosis = {[n(n+1) / (n-1)(n-2)(n-3)] &times; &Sigma;[(X<sub>i</sub> - X&#772;) / s]&sup4;} - [3(n-1)&sup2; / (n-2)(n-3)]
+        <span class="label">Positive (leptokurtic): peaked, heavy tails | Negative (platykurtic): flat, light tails</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Normality Thresholds Table -->
+<h3 style="margin-top:1.5rem" data-zh="常態性判斷標準" data-en="Normality Assessment Thresholds">常態性判斷標準</h3>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="指標" data-en="Metric">指標</th>
+        <th data-zh="可接受範圍（小樣本）" data-en="Acceptable Range (small n)">可接受範圍（小樣本）</th>
+        <th data-zh="可接受範圍（大樣本）" data-en="Acceptable Range (large n)">可接受範圍（大樣本）</th>
+        <th data-zh="說明" data-en="Notes">說明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong data-zh="偏態 Skewness" data-en="Skewness">偏態 Skewness</strong></td>
+        <td class="highlight-cell">&plusmn; 1.0</td>
+        <td class="highlight-cell">&plusmn; 2.0</td>
+        <td data-zh="絕對值越接近0越好" data-en="Closer to 0 is better">絕對值越接近0越好</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="峰度 Kurtosis" data-en="Kurtosis">峰度 Kurtosis</strong></td>
+        <td class="highlight-cell">&plusmn; 3.0</td>
+        <td class="highlight-cell">&plusmn; 7.0</td>
+        <td data-zh="峰度對常態性的影響比偏態更嚴重" data-en="Kurtosis has more severe impact than skewness">峰度對常態性的影響比偏態更嚴重</td>
+      </tr>
+      <tr>
+        <td><strong>Shapiro-Wilk</strong></td>
+        <td colspan="2" data-zh="p > .05 表示未顯著偏離常態" data-en="p > .05 indicates no significant deviation">p > .05 表示未顯著偏離常態</td>
+        <td data-zh="適用於 n < 2000；大樣本幾乎總是顯著" data-en="Best for n < 2000; large samples almost always significant">適用於 n < 2000</td>
+      </tr>
+      <tr>
+        <td><strong>Kolmogorov-Smirnov</strong></td>
+        <td colspan="2" data-zh="p > .05 表示未顯著偏離常態" data-en="p > .05 indicates no significant deviation">p > .05 表示未顯著偏離常態</td>
+        <td data-zh="較保守；大樣本下統計檢力過強" data-en="More conservative; overpowered in large samples">較保守</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="視覺化檢驗：Q-Q圖" data-en="Visual Test: Q-Q Plot">視覺化檢驗：Q-Q圖</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p><strong>Q-Q圖（Quantile-Quantile Plot）</strong>是比較觀察資料分位數與理論常態分佈分位數的散佈圖。如果資料服從常態分佈，點應該大致落在<strong>45度對角線</strong>上。系統性偏離對角線表示非常態。</p>
+      <ul style="padding-left:1.2rem;margin-top:.5rem">
+        <li>點在兩端彎曲向上 → 正偏態（右偏）</li>
+        <li>點在兩端彎曲向下 → 負偏態（左偏）</li>
+        <li>S形彎曲 → 峰度問題</li>
+      </ul>
+    </div>
+    <div class="en">
+      <p>A <strong>Q-Q plot (Quantile-Quantile Plot)</strong> compares observed data quantiles with theoretical normal distribution quantiles. If data are normally distributed, points should fall approximately along the <strong>45-degree diagonal line</strong>. Systematic departures indicate non-normality.</p>
+      <ul style="padding-left:1.2rem;margin-top:.5rem">
+        <li>Points curve upward at both ends → positive skew</li>
+        <li>Points curve downward at both ends → negative skew</li>
+        <li>S-shaped curve → kurtosis issues</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 4: LINEARITY & HOMOSCEDASTICITY      -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="四、線性與同質性" data-en="4. Linearity & Homoscedasticity">四、線性與同質性</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>除了常態性，多變量分析還有兩個重要假設：<strong>線性關係（linearity）</strong>和<strong>同變異數性/等分散性（homoscedasticity）</strong>。</p>
+  </div>
+  <div class="en">
+    <p>Beyond normality, multivariate analysis has two other important assumptions: <strong>linearity</strong> and <strong>homoscedasticity</strong>.</p>
+  </div>
+</div>
+
+<div class="card-grid" style="margin-top:1rem">
+  <div class="card">
+    <h3 data-zh="線性（Linearity）" data-en="Linearity">線性（Linearity）</h3>
+    <div class="zh-only">
+      <p>迴歸模型假設依變數和自變數之間存在<strong>直線關係</strong>。如果真實關係是曲線的，線性模型會<strong>低估</strong>真正的關聯程度。</p>
+      <p style="margin-top:.5rem"><strong>檢驗方式：</strong></p>
+      <ul style="padding-left:1.2rem">
+        <li>檢查殘差圖（residual plots）——殘差應隨機分佈</li>
+        <li>偏迴歸圖（partial regression plots）——應呈現直線</li>
+        <li>加入二次項或交互項並檢驗其顯著性</li>
+      </ul>
+      <p style="font-size:.85rem;color:var(--text-light)">Linearity: check residual plots for random scatter; non-random patterns suggest nonlinearity.</p>
+    </div>
+    <div class="en-only">
+      <p>Regression models assume a <strong>straight-line relationship</strong> between DV and IVs. If the true relationship is curvilinear, linear models will <strong>underestimate</strong> the actual association.</p>
+      <p style="margin-top:.5rem"><strong>Testing:</strong></p>
+      <ul style="padding-left:1.2rem">
+        <li>Examine residual plots — residuals should scatter randomly</li>
+        <li>Partial regression plots — should show linear trend</li>
+        <li>Add quadratic or interaction terms and test significance</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 data-zh="同變異數性（Homoscedasticity）" data-en="Homoscedasticity">同變異數性（Homoscedasticity）</h3>
+    <div class="zh-only">
+      <p>依變數的變異程度在自變數的所有水準上<strong>大致相等</strong>。違反時稱為<strong>異質性（heteroscedasticity）</strong>。</p>
+      <p style="margin-top:.5rem"><strong>檢驗方式：</strong></p>
+      <ul style="padding-left:1.2rem">
+        <li>殘差圖：殘差的散佈幅度不應隨預測值增大而改變（不應呈扇形）</li>
+        <li><strong>Levene's test：</strong>檢驗各組變異數是否相等（p > .05 → 同質）</li>
+        <li>Breusch-Pagan test（迴歸中使用）</li>
+      </ul>
+      <p style="font-size:.85rem;color:var(--text-light)">Homoscedasticity: equal variance of DV across all levels of IVs; Levene's test checks this.</p>
+    </div>
+    <div class="en-only">
+      <p>The DV exhibits <strong>equal levels of variance</strong> across all levels of the IV. Violation is called <strong>heteroscedasticity</strong>.</p>
+      <p style="margin-top:.5rem"><strong>Testing:</strong></p>
+      <ul style="padding-left:1.2rem">
+        <li>Residual plots: spread of residuals should not change with predicted values (no fan shape)</li>
+        <li><strong>Levene's test:</strong> Tests equality of variances across groups (p > .05 → homogeneous)</li>
+        <li>Breusch-Pagan test (for regression)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="concept-block danger">
+  <h4 data-zh="違反假設的後果" data-en="Consequences of Assumption Violations">違反假設的後果</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li><strong>非常態：</strong>標準誤估計不準確 → 統計檢定（p值）不可靠</li>
+        <li><strong>非線性：</strong>低估真實的變數關聯程度 → 模型解釋力不足</li>
+        <li><strong>異質性：</strong>迴歸的標準誤偏誤 → 信賴區間不準確</li>
+        <li><strong>好消息：</strong>當樣本量夠大（n > 200），由中央極限定理，違反常態性的影響會大幅降低</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li><strong>Non-normality:</strong> Inaccurate SE estimates → unreliable statistical tests (p-values)</li>
+        <li><strong>Non-linearity:</strong> Underestimate true variable associations → insufficient model explanatory power</li>
+        <li><strong>Heteroscedasticity:</strong> Biased regression SEs → inaccurate confidence intervals</li>
+        <li><strong>Good news:</strong> With large samples (n > 200), the Central Limit Theorem substantially reduces the impact of non-normality</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 5: DATA TRANSFORMATIONS              -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="五、資料轉換（Data Transformations）" data-en="5. Data Transformations">五、資料轉換（Data Transformations）</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>當資料違反常態性或同質性假設時，可以透過<strong>數學轉換</strong>來改善資料的分佈形狀。轉換後的變數取代原始變數進行分析。</p>
+  </div>
+  <div class="en">
+    <p>When data violate normality or homoscedasticity assumptions, <strong>mathematical transformations</strong> can improve the distribution shape. Transformed variables replace originals in the analysis.</p>
+  </div>
+</div>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="轉換方法" data-en="Transformation">轉換方法</th>
+        <th data-zh="公式" data-en="Formula">公式</th>
+        <th data-zh="適用情況" data-en="When to Use">適用情況</th>
+        <th data-zh="效果" data-en="Effect">效果</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong data-zh="對數轉換" data-en="Log Transform">對數轉換</strong></td>
+        <td>X' = log(X) or ln(X)</td>
+        <td data-zh="正偏態（中度到重度）" data-en="Positive skew (moderate to severe)">正偏態（中度到重度）</td>
+        <td data-zh="壓縮右尾，最常用的轉換" data-en="Compresses right tail; most commonly used">壓縮右尾，最常用</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="平方根轉換" data-en="Square Root">平方根轉換</strong></td>
+        <td>X' = &radic;X</td>
+        <td data-zh="正偏態（輕度到中度）" data-en="Positive skew (mild to moderate)">正偏態（輕度到中度）</td>
+        <td data-zh="效果比對數溫和" data-en="Milder effect than log">效果比對數溫和</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="倒數轉換" data-en="Inverse">倒數轉換</strong></td>
+        <td>X' = 1/X</td>
+        <td data-zh="正偏態（極度嚴重）" data-en="Positive skew (extreme)">正偏態（極度嚴重）</td>
+        <td data-zh="最強的壓縮效果；注意零值" data-en="Strongest compression; watch for zeros">最強的壓縮效果</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="平方轉換" data-en="Square">平方轉換</strong></td>
+        <td>X' = X&sup2;</td>
+        <td data-zh="負偏態" data-en="Negative skew">負偏態</td>
+        <td data-zh="擴展右尾以修正左偏" data-en="Expands right tail to fix left skew">擴展右尾以修正左偏</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="Box-Cox 轉換" data-en="Box-Cox">Box-Cox 轉換</strong></td>
+        <td>X' = (X<sup>&lambda;</sup> - 1) / &lambda;</td>
+        <td data-zh="自動找最佳 &lambda; 值" data-en="Automatically finds optimal &lambda;">自動找最佳 &lambda; 值</td>
+        <td data-zh="包含以上所有轉換的通用族" data-en="General family including all above">通用族</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="轉換的注意事項" data-en="Transformation Caveats">轉換的注意事項</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li>轉換會改變變數的解釋方式——例如對數轉換後的迴歸係數代表「百分比變化」而非「單位變化」</li>
+        <li>包含零或負值的變數需先加常數（如 log(X + 1)）</li>
+        <li>倒數轉換會反轉排序方向</li>
+        <li>先嘗試較溫和的轉換（平方根），再考慮較強的轉換（對數、倒數）</li>
+        <li>轉換不是萬能的——有時候應考慮使用無母數方法或穩健估計</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li>Transformations change variable interpretation — e.g., log-transformed regression coefficients represent "percentage change" not "unit change"</li>
+        <li>Variables with zeros or negatives need a constant added first (e.g., log(X + 1))</li>
+        <li>Inverse transformation reverses the rank order</li>
+        <li>Try milder transformations (square root) before stronger ones (log, inverse)</li>
+        <li>Transformations are not always the answer — consider nonparametric methods or robust estimation</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 6: QUIZ                              -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="六、自我測驗" data-en="6. Self-Assessment Quiz">六、自我測驗</h2>
+
+<div class="quiz">
+  <h3 data-zh="測試你對資料檢驗的理解" data-en="Test Your Understanding of Data Examination">測試你對資料檢驗的理解</h3>
+
+  <div class="quiz-question">
+    <p data-zh="Q1: 下列哪一種遺漏類型最難處理？" data-en="Q1: Which type of missing data is the most difficult to handle?">Q1: 下列哪一種遺漏類型最難處理？</p>
+    <div class="quiz-option" data-correct="false" data-zh="MCAR（完全隨機遺漏）" data-en="MCAR (Missing Completely at Random)">MCAR（完全隨機遺漏）</div>
+    <div class="quiz-option" data-correct="false" data-zh="MAR（隨機遺漏）" data-en="MAR (Missing at Random)">MAR（隨機遺漏）</div>
+    <div class="quiz-option" data-correct="true" data-zh="MNAR（非隨機遺漏）" data-en="MNAR (Missing Not at Random)">MNAR（非隨機遺漏）</div>
+    <div class="quiz-option" data-correct="false" data-zh="三者處理難度相同" data-en="All three are equally difficult">三者處理難度相同</div>
+    <div class="quiz-feedback" data-zh="正確！MNAR 是最棘手的情況——因為遺漏的原因與遺漏值本身有關（例如高收入者不回答收入問題），無論使用什麼插補方法都可能產生偏誤。需要特殊建模方法（如 Heckman 選擇模型）來處理。" data-en="Correct! MNAR is the most problematic — because missingness is related to the missing value itself (e.g., high-income people not reporting income), any imputation method may produce bias. Special modeling approaches (e.g., Heckman selection model) are needed.">正確！MNAR 最棘手，因為遺漏原因與遺漏值本身有關。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q2: Mahalanobis D² 距離與 z-score 的主要差異是什麼？" data-en="Q2: What is the key difference between Mahalanobis D² and z-score?">Q2: Mahalanobis D² 距離與 z-score 的主要差異是什麼？</p>
+    <div class="quiz-option" data-correct="false" data-zh="兩者完全相同，只是名稱不同" data-en="They are identical, just named differently">兩者完全相同，只是名稱不同</div>
+    <div class="quiz-option" data-correct="false" data-zh="z-score 用於多變量，D² 用於單變量" data-en="z-score is for multivariate, D² is for univariate">z-score 用於多變量，D² 用於單變量</div>
+    <div class="quiz-option" data-correct="true" data-zh="z-score 一次檢查一個變數，D² 同時考慮多個變數及其相關性" data-en="z-score checks one variable at a time; D² considers multiple variables and their correlations simultaneously">z-score 一次檢查一個變數，D² 同時考慮多個變數及其相關性</div>
+    <div class="quiz-option" data-correct="false" data-zh="D² 只能用於名目尺度的變數" data-en="D² can only be used with nominal variables">D² 只能用於名目尺度的變數</div>
+    <div class="quiz-feedback" data-zh="正確！z-score 是單變量的離群值偵測方法，一次只看一個變數。而 Mahalanobis D² 是多變量方法，它同時考慮所有變數的值以及變數之間的相關性，因此可以偵測到在單一變數上看起來正常，但多個變數的組合模式異常的個案。" data-en="Correct! Z-score is a univariate outlier detection method examining one variable at a time. Mahalanobis D² is multivariate, simultaneously considering all variable values and their correlations, thus detecting cases that appear normal on individual variables but show unusual combination patterns.">正確！z-score 一次只看一個變數，D² 同時考慮多個變數的組合。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q3: 根據 Hair et al.，大樣本中偏態的可接受範圍為何？" data-en="Q3: According to Hair et al., what is the acceptable range for skewness in large samples?">Q3: 根據 Hair et al.，大樣本中偏態的可接受範圍為何？</p>
+    <div class="quiz-option" data-correct="false" data-zh="&plusmn; 0.5" data-en="&plusmn; 0.5">&plusmn; 0.5</div>
+    <div class="quiz-option" data-correct="false" data-zh="&plusmn; 1.0" data-en="&plusmn; 1.0">&plusmn; 1.0</div>
+    <div class="quiz-option" data-correct="true" data-zh="&plusmn; 2.0" data-en="&plusmn; 2.0">&plusmn; 2.0</div>
+    <div class="quiz-option" data-correct="false" data-zh="&plusmn; 7.0" data-en="&plusmn; 7.0">&plusmn; 7.0</div>
+    <div class="quiz-feedback" data-zh="正確！大樣本中偏態 &plusmn; 2.0 為可接受範圍。&plusmn; 7.0 是大樣本中峰度的可接受範圍，不要混淆。在小樣本中，偏態的可接受門檻更嚴格（&plusmn; 1.0），峰度為 &plusmn; 3.0。" data-en="Correct! For large samples, skewness &plusmn; 2.0 is acceptable. &plusmn; 7.0 is the kurtosis threshold for large samples — don't confuse the two. For small samples, the skewness threshold is stricter (&plusmn; 1.0) and kurtosis is &plusmn; 3.0.">正確！大樣本偏態 &plusmn; 2.0 可接受。&plusmn; 7.0 是峰度的門檻。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q4: 當資料呈現正偏態（右偏），最常使用哪種轉換方法？" data-en="Q4: When data are positively skewed (right-skewed), which transformation is most commonly used?">Q4: 當資料呈現正偏態（右偏），最常使用哪種轉換方法？</p>
+    <div class="quiz-option" data-correct="false" data-zh="平方轉換 (X²)" data-en="Square transformation (X²)">平方轉換 (X²)</div>
+    <div class="quiz-option" data-correct="true" data-zh="對數轉換 (log X)" data-en="Log transformation (log X)">對數轉換 (log X)</div>
+    <div class="quiz-option" data-correct="false" data-zh="不需要轉換" data-en="No transformation needed">不需要轉換</div>
+    <div class="quiz-option" data-correct="false" data-zh="標準化 (z-score)" data-en="Standardization (z-score)">標準化 (z-score)</div>
+    <div class="quiz-feedback" data-zh="正確！對數轉換是處理正偏態最常用的方法——它壓縮較大的值（右尾），使分佈更接近常態。平方轉換用於負偏態。標準化（z-score）不改變分佈形狀，只改變中心和尺度。" data-en="Correct! Log transformation is the most common method for positive skew — it compresses larger values (right tail), making the distribution more normal. Square transformation is for negative skew. Standardization (z-score) doesn't change the distribution shape, only the center and scale.">正確！對數轉換壓縮右尾，是處理正偏態最常用的方法。</div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- KEY TERMS ACCORDION                          -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="七、關鍵名詞解釋" data-en="7. Key Terms Glossary">七、關鍵名詞解釋</h2>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="MCAR / MAR / MNAR" data-en="MCAR / MAR / MNAR">MCAR / MAR / MNAR</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p><strong>MCAR</strong>（Missing Completely At Random）：遺漏完全隨機，與任何變數無關。<strong>MAR</strong>（Missing At Random）：遺漏與其他已觀察到的變數有關。<strong>MNAR</strong>（Missing Not At Random）：遺漏與未觀察到的值（即遺漏值本身）有關。這三個概念決定了適合使用的遺漏值處理方法。</p></div>
+      <div class="en"><p><strong>MCAR</strong>: Missingness is completely unrelated to any variable. <strong>MAR</strong>: Missingness is related to other observed variables. <strong>MNAR</strong>: Missingness is related to the unobserved (missing) value itself. These three concepts determine the appropriate missing data handling method.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="Mahalanobis D² 距離" data-en="Mahalanobis D² Distance">Mahalanobis D² 距離</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>衡量某個觀察值在多變量空間中與所有觀察值中心（centroid）的距離。不同於歐式距離，D² 會考慮變數之間的共變異數（相關性），因此可以偵測到多變量的異常組合模式。以卡方分佈進行顯著性檢定，自由度等於變數個數。</p></div>
+      <div class="en"><p>Measures the distance of an observation from the centroid of all observations in multivariate space. Unlike Euclidean distance, D² accounts for covariance (correlations) between variables, enabling detection of unusual multivariate combination patterns. Tested for significance using the chi-square distribution with df = number of variables.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="多重插補（Multiple Imputation）" data-en="Multiple Imputation (MI)">多重插補（Multiple Imputation）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>處理遺漏值最推薦的方法。流程：(1) 產生 m 組（通常5-20組）包含不同插補值的完整資料集；(2) 分別對每組資料進行分析；(3) 使用 Rubin's rules 合併結果。優於單一插補的原因：它反映了插補值的不確定性，產生更準確的標準誤和信賴區間。</p></div>
+      <div class="en"><p>The most recommended method for handling missing data. Process: (1) Generate m (typically 5-20) complete datasets with different imputed values; (2) Analyze each dataset separately; (3) Pool results using Rubin's rules. Superior to single imputation because it reflects the uncertainty of imputed values, producing more accurate SEs and confidence intervals.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="同變異數性（Homoscedasticity）" data-en="Homoscedasticity">同變異數性（Homoscedasticity）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>依變數的變異程度在自變數的所有水準上大致相等的假設。違反（稱為異質性 heteroscedasticity）會導致迴歸係數的標準誤估計偏誤，使得假設檢定和信賴區間不可靠。檢驗方式包括殘差圖目視檢查和 Levene's test。</p></div>
+      <div class="en"><p>The assumption that the DV exhibits equal levels of variance across all levels of the IV. Violation (heteroscedasticity) biases standard error estimates for regression coefficients, making hypothesis tests and confidence intervals unreliable. Tested via visual inspection of residual plots and Levene's test.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="Box-Cox 轉換" data-en="Box-Cox Transformation">Box-Cox 轉換</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>一種通用的冪次轉換族，透過最大概似估計法自動尋找最佳的 &lambda; 參數值。特殊情況：&lambda; = 1 表示不需要轉換；&lambda; = 0.5 相當於平方根轉換；&lambda; = 0 相當於對數轉換；&lambda; = -1 相當於倒數轉換。適用於正值的連續變數。</p></div>
+      <div class="en"><p>A general family of power transformations that uses maximum likelihood to automatically find the optimal &lambda; parameter. Special cases: &lambda; = 1 means no transformation needed; &lambda; = 0.5 equals square root; &lambda; = 0 equals log; &lambda; = -1 equals inverse. Applicable to positive continuous variables.</p></div>
+    </div>
+  </div>
+</div>
+
+
+</div><!-- container -->
+</main>
+
+<!-- Navigation -->
+<div style="padding:2rem 0;background:#f0f3f5">
+  <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+    <a href="ch1-overview.html" style="font-weight:600" data-zh="← 上一章：多變量方法概述" data-en="← Previous: Overview of Multivariate Methods">← 上一章：多變量方法概述</a>
+    <a href="ch3-reliability-validity.html" style="font-weight:600;background:var(--accent);color:#fff;padding:.5rem 1rem;border-radius:4px" data-zh="下一章：信度與效度 →" data-en="Next: Reliability & Validity →">下一章：信度與效度 →</a>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>Hair, J.F., Black, W.C., Babin, B.J., & Anderson, R.E. (2019). <em>Multivariate Data Analysis</em> (8th ed.).</p>
+    <p style="margin-top:.5rem;font-size:.8rem;opacity:.8">© 版權所有 葉欲禾 (Gary Yu-Ho Yeh)</p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+<script>
+/* Z-score Calculator */
+function calcZscore() {
+  const x = parseFloat(document.getElementById('zscore-x').value);
+  const mean = parseFloat(document.getElementById('zscore-mean').value);
+  const sd = parseFloat(document.getElementById('zscore-sd').value);
+  if (isNaN(x) || isNaN(mean) || isNaN(sd) || sd <= 0) {
+    showResult('zscore-result', 'N/A', 'Please enter valid values / 請輸入有效值', '');
+    return;
+  }
+  const z = (x - mean) / sd;
+  const absZ = Math.abs(z);
+  let cls, msg;
+  if (absZ > 3.0) {
+    cls = 'bad';
+    msg = currentLang === 'zh'
+      ? '離群值（|z| > 3.0）——此觀察值偏離平均數超過 3 個標準差'
+      : 'Outlier (|z| > 3.0) — this observation is more than 3 SDs from the mean';
+  } else if (absZ > 2.5) {
+    cls = 'warn';
+    msg = currentLang === 'zh'
+      ? '可能為離群值（|z| > 2.5）——在小樣本中建議視為離群值'
+      : 'Potential outlier (|z| > 2.5) — considered outlier in small samples';
+  } else {
+    cls = 'good';
+    msg = currentLang === 'zh'
+      ? '在正常範圍內（|z| ≤ 2.5）——不是離群值'
+      : 'Within normal range (|z| ≤ 2.5) — not an outlier';
+  }
+  showResult('zscore-result', z.toFixed(4), msg, cls);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ch.11 結構方程模型檢驗 | Testing Structural Equation Models</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="lang-zh">
+<div class="progress-bar"><div class="fill"></div></div>
+
+<nav class="top-nav">
+  <div class="container">
+    <a href="../index.html" class="brand" data-zh="多變量資料分析" data-en="Multivariate Data Analysis">多變量資料分析</a>
+    <div class="nav-links">
+      <a href="../index.html" data-zh="首頁" data-en="Home">首頁</a>
+      <a href="ch11-structural-models.html" class="active" data-zh="結構模型" data-en="Structural">結構模型</a>
+      <a href="ch12-advanced-sem.html" data-zh="進階SEM" data-en="Adv SEM">進階SEM</a>
+      <a href="ch13-pls-sem.html" data-zh="PLS-SEM" data-en="PLS-SEM">PLS-SEM</a>
+      <button class="lang-toggle">EN</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1 data-zh="Ch.11 結構方程模型檢驗" data-en="Ch.11 Testing Structural Equation Models">Ch.11 結構方程模型檢驗</h1>
+    <p data-zh="從測量模型到結構模型：檢驗理論假說的完整流程" data-en="From measurement to structural models: the complete process of testing theoretical hypotheses">從測量模型到結構模型：檢驗理論假說的完整流程</p>
+  </div>
+</header>
+
+<!-- ========== Section 1: From Measurement to Structural ========== -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title" data-zh="1. 從測量模型到結構模型" data-en="1. From Measurement to Structural Model">1. 從測量模型到結構模型</h2>
+
+    <div class="concept-block success">
+      <h4 data-zh="白話解釋" data-en="Plain-Language Explanation">白話解釋</h4>
+      <p data-zh="測量模型確認工具可靠，結構模型檢驗理論假設。就像蓋房子：測量模型是檢查建材（磚頭、鋼筋）品質是否合格；結構模型是檢驗房子的設計圖（哪根柱子撐哪面牆）是否正確。先確認工具沒問題，才能放心用它來驗證你的理論。" data-en="The measurement model confirms your tools are reliable; the structural model tests your theoretical hypotheses. Like building a house: the measurement model checks whether building materials (bricks, steel) meet quality standards; the structural model verifies whether the architectural blueprint (which pillar supports which wall) is correct. First confirm the tools work, then use them to test your theory.">測量模型確認工具可靠，結構模型檢驗理論假設。就像蓋房子：測量模型是檢查建材（磚頭、鋼筋）品質是否合格；結構模型是檢驗房子的設計圖（哪根柱子撐哪面牆）是否正確。先確認工具沒問題，才能放心用它來驗證你的理論。</p>
+    </div>
+
+    <div class="card" style="margin-top:1.5rem">
+      <h3 data-zh="兩階段法 (Anderson & Gerbing, 1988)" data-en="Two-Step Approach (Anderson & Gerbing, 1988)">兩階段法 (Anderson & Gerbing, 1988)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-zh="階段" data-en="Stage">階段</th>
+              <th data-zh="目的" data-en="Purpose">目的</th>
+              <th data-zh="檢驗內容" data-en="What to Examine">檢驗內容</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-zh="第一階段：測量模型 (CFA)" data-en="Stage 1: Measurement Model (CFA)">第一階段：測量模型 (CFA)</td>
+              <td data-zh="確認測量工具的信效度" data-en="Confirm reliability and validity of measures">確認測量工具的信效度</td>
+              <td data-zh="因素負荷量、CR、AVE、區辨效度" data-en="Factor loadings, CR, AVE, discriminant validity">因素負荷量、CR、AVE、區辨效度</td>
+            </tr>
+            <tr>
+              <td data-zh="第二階段：結構模型" data-en="Stage 2: Structural Model">第二階段：結構模型</td>
+              <td data-zh="檢驗變數間的因果關係" data-en="Test causal relationships between variables">檢驗變數間的因果關係</td>
+              <td data-zh="路徑係數、顯著性、R²、模型適配" data-en="Path coefficients, significance, R², model fit">路徑係數、顯著性、R²、模型適配</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="diagram" style="margin-top:1.5rem">
+      <svg viewBox="0 0 700 340" width="100%">
+        <defs>
+          <marker id="arrowS" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2c3e50"/></marker>
+          <marker id="arrowB" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#3498db"/></marker>
+        </defs>
+        <!-- Measurement part label -->
+        <rect x="10" y="5" width="320" height="330" rx="10" fill="#eaf4fc" stroke="#3498db" stroke-width="1.5" stroke-dasharray="6,3"/>
+        <text x="170" y="28" text-anchor="middle" font-size="13" font-weight="bold" fill="#3498db">Measurement Model</text>
+        <!-- Structural part label -->
+        <rect x="340" y="5" width="350" height="330" rx="10" fill="#fef9e7" stroke="#f39c12" stroke-width="1.5" stroke-dasharray="6,3"/>
+        <text x="515" y="28" text-anchor="middle" font-size="13" font-weight="bold" fill="#f39c12">Structural Model</text>
+        <!-- X1 construct + indicators -->
+        <ellipse cx="170" cy="120" rx="55" ry="28" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+        <text x="170" y="125" text-anchor="middle" font-size="11" font-weight="bold" fill="#2c3e50">X1</text>
+        <rect x="30" y="65" width="45" height="22" rx="3" fill="#eaf4fc" stroke="#3498db" stroke-width="1"/>
+        <text x="52" y="80" text-anchor="middle" font-size="9" fill="#2c3e50">x1</text>
+        <rect x="85" y="55" width="45" height="22" rx="3" fill="#eaf4fc" stroke="#3498db" stroke-width="1"/>
+        <text x="107" y="70" text-anchor="middle" font-size="9" fill="#2c3e50">x2</text>
+        <rect x="140" y="50" width="45" height="22" rx="3" fill="#eaf4fc" stroke="#3498db" stroke-width="1"/>
+        <text x="162" y="65" text-anchor="middle" font-size="9" fill="#2c3e50">x3</text>
+        <line x1="145" y1="95" x2="60" y2="82" stroke="#3498db" stroke-width="1" marker-end="url(#arrowB)"/>
+        <line x1="155" y1="94" x2="112" y2="77" stroke="#3498db" stroke-width="1" marker-end="url(#arrowB)"/>
+        <line x1="165" y1="93" x2="162" y2="72" stroke="#3498db" stroke-width="1" marker-end="url(#arrowB)"/>
+        <!-- X2 construct + indicators -->
+        <ellipse cx="170" cy="250" rx="55" ry="28" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+        <text x="170" y="255" text-anchor="middle" font-size="11" font-weight="bold" fill="#2c3e50">X2</text>
+        <rect x="30" y="280" width="45" height="22" rx="3" fill="#eaf4fc" stroke="#3498db" stroke-width="1"/>
+        <text x="52" y="295" text-anchor="middle" font-size="9" fill="#2c3e50">x4</text>
+        <rect x="85" y="290" width="45" height="22" rx="3" fill="#eaf4fc" stroke="#3498db" stroke-width="1"/>
+        <text x="107" y="305" text-anchor="middle" font-size="9" fill="#2c3e50">x5</text>
+        <rect x="140" y="295" width="45" height="22" rx="3" fill="#eaf4fc" stroke="#3498db" stroke-width="1"/>
+        <text x="162" y="310" text-anchor="middle" font-size="9" fill="#2c3e50">x6</text>
+        <line x1="145" y1="275" x2="60" y2="285" stroke="#3498db" stroke-width="1" marker-end="url(#arrowB)"/>
+        <line x1="155" y1="276" x2="112" y2="290" stroke="#3498db" stroke-width="1" marker-end="url(#arrowB)"/>
+        <line x1="165" y1="278" x2="162" y2="295" stroke="#3498db" stroke-width="1" marker-end="url(#arrowB)"/>
+        <!-- Y construct + indicators -->
+        <ellipse cx="540" cy="185" rx="55" ry="28" fill="#d4edda" stroke="#27ae60" stroke-width="2"/>
+        <text x="540" y="183" text-anchor="middle" font-size="11" font-weight="bold" fill="#2c3e50">Y</text>
+        <text x="540" y="198" text-anchor="middle" font-size="9" fill="#27ae60">R²</text>
+        <rect x="625" y="130" width="45" height="22" rx="3" fill="#e8f5e9" stroke="#27ae60" stroke-width="1"/>
+        <text x="647" y="145" text-anchor="middle" font-size="9" fill="#2c3e50">y1</text>
+        <rect x="635" y="165" width="45" height="22" rx="3" fill="#e8f5e9" stroke="#27ae60" stroke-width="1"/>
+        <text x="657" y="180" text-anchor="middle" font-size="9" fill="#2c3e50">y2</text>
+        <rect x="625" y="200" width="45" height="22" rx="3" fill="#e8f5e9" stroke="#27ae60" stroke-width="1"/>
+        <text x="647" y="215" text-anchor="middle" font-size="9" fill="#2c3e50">y3</text>
+        <line x1="593" y1="175" x2="625" y2="145" stroke="#27ae60" stroke-width="1" marker-end="url(#arrowB)"/>
+        <line x1="595" y1="183" x2="635" y2="178" stroke="#27ae60" stroke-width="1" marker-end="url(#arrowB)"/>
+        <line x1="593" y1="195" x2="625" y2="208" stroke="#27ae60" stroke-width="1" marker-end="url(#arrowB)"/>
+        <!-- Structural paths -->
+        <line x1="225" y1="115" x2="485" y2="178" stroke="#2c3e50" stroke-width="2.5" marker-end="url(#arrowS)"/>
+        <text x="360" y="135" text-anchor="middle" font-size="11" fill="#8e44ad" font-weight="bold">&beta;1</text>
+        <line x1="225" y1="248" x2="485" y2="192" stroke="#2c3e50" stroke-width="2.5" marker-end="url(#arrowS)"/>
+        <text x="360" y="240" text-anchor="middle" font-size="11" fill="#8e44ad" font-weight="bold">&beta;2</text>
+      </svg>
+      <div class="caption" data-zh="SEM 包含兩個部分：測量模型（藍色區域）確認指標與建構的關係；結構模型（黃色區域）檢驗建構之間的路徑假說" data-en="SEM contains two parts: measurement model (blue area) confirms indicator-construct relationships; structural model (yellow area) tests path hypotheses between constructs">SEM 包含兩個部分：測量模型（藍色區域）確認指標與建構的關係；結構模型（黃色區域）檢驗建構之間的路徑假說</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Section 2: Structural Model Specification ========== -->
+<section class="section" style="background:#fff">
+  <div class="container">
+    <h2 class="section-title" data-zh="2. 結構模型設定" data-en="2. Structural Model Specification">2. 結構模型設定</h2>
+
+    <div class="concept-block">
+      <h4 data-zh="模型設定的三個關鍵要素" data-en="Three Key Elements of Model Specification">模型設定的三個關鍵要素</h4>
+      <ul>
+        <li data-zh="假說路徑 (Hypothesized Paths)：根據理論決定哪些建構之間存在因果關係" data-en="Hypothesized Paths: determine which constructs have causal relationships based on theory">假說路徑 (Hypothesized Paths)：根據理論決定哪些建構之間存在因果關係</li>
+        <li data-zh="路徑方向 (Path Direction)：箭頭從自變數指向依變數" data-en="Path Direction: arrows point from independent to dependent variables">路徑方向 (Path Direction)：箭頭從自變數指向依變數</li>
+        <li data-zh="限制條件 (Constraints)：某些路徑可設定為零（即不存在影響）" data-en="Constraints: some paths can be fixed to zero (no effect)">限制條件 (Constraints)：某些路徑可設定為零（即不存在影響）</li>
+      </ul>
+    </div>
+
+    <div class="concept-block danger">
+      <h4 data-zh="等價模型問題" data-en="Equivalent Models Problem">等價模型問題</h4>
+      <p data-zh="一組資料可能可以被多個不同的結構模型同樣良好地解釋（等價模型）。例如 A→B 和 B→A 可能產生完全相同的適配度指標。因此，SEM 不能「證明」因果關係，只能說「資料與理論模型一致」。研究者必須根據理論而非僅靠統計來決定路徑方向。" data-en="A dataset may be equally well explained by multiple different structural models (equivalent models). For example, A to B and B to A may produce identical fit indices. Therefore, SEM cannot 'prove' causation -- it can only show 'data is consistent with the theoretical model'. Researchers must rely on theory, not just statistics, to determine path directions.">一組資料可能可以被多個不同的結構模型同樣良好地解釋（等價模型）。例如 A&rarr;B 和 B&rarr;A 可能產生完全相同的適配度指標。因此，SEM 不能「證明」因果關係，只能說「資料與理論模型一致」。研究者必須根據理論而非僅靠統計來決定路徑方向。</p>
+    </div>
+
+    <div class="card" style="margin-top:1.5rem">
+      <h3 data-zh="外生 vs 內生建構" data-en="Exogenous vs Endogenous Constructs">外生 vs 內生建構</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-zh="類型" data-en="Type">類型</th>
+              <th data-zh="角色" data-en="Role">角色</th>
+              <th data-zh="特徵" data-en="Characteristics">特徵</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-zh="外生建構 (Exogenous)" data-en="Exogenous Construct">外生建構 (Exogenous)</td>
+              <td data-zh="只有箭頭「射出」" data-en="Only has outgoing arrows">只有箭頭「射出」</td>
+              <td data-zh="類似迴歸的自變數，不被模型中其他變數解釋" data-en="Like regression's independent variable, not explained by other variables in the model">類似迴歸的自變數，不被模型中其他變數解釋</td>
+            </tr>
+            <tr>
+              <td data-zh="內生建構 (Endogenous)" data-en="Endogenous Construct">內生建構 (Endogenous)</td>
+              <td data-zh="有箭頭「射入」" data-en="Has incoming arrows">有箭頭「射入」</td>
+              <td data-zh="類似迴歸的依變數，有對應的 R² 值" data-en="Like regression's dependent variable, has a corresponding R² value">類似迴歸的依變數，有對應的 R² 值</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Section 3: Model Assessment ========== -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title" data-zh="3. 結構模型評估" data-en="3. Structural Model Assessment">3. 結構模型評估</h2>
+
+    <p data-zh="結構模型的評估主要關注三個面向：路徑係數的大小與方向、路徑是否統計顯著、以及模型整體的解釋力。" data-en="Structural model assessment focuses on three aspects: magnitude and direction of path coefficients, statistical significance of paths, and overall model explanatory power.">結構模型的評估主要關注三個面向：路徑係數的大小與方向、路徑是否統計顯著、以及模型整體的解釋力。</p>
+
+    <div class="card" style="margin-top:1.5rem">
+      <h3 data-zh="路徑係數 (&beta;) 與顯著性檢定" data-en="Path Coefficients (&beta;) & Significance Testing">路徑係數 (&beta;) 與顯著性檢定</h3>
+      <div class="concept-block success">
+        <h4 data-zh="白話解釋" data-en="Plain-Language Explanation">白話解釋</h4>
+        <p data-zh="路徑係數就像迴歸的標準化係數 (beta)，告訴你「當自變數增加一個標準差，依變數會變化幾個標準差」。&beta; = 0.45 代表自變數每增加一個標準差，依變數平均增加 0.45 個標準差。而 t 值或 z 值則告訴你這個影響是「真的」還是「偶然的」。" data-en="Path coefficients are like standardized regression coefficients (beta), telling you 'when the independent variable increases by one standard deviation, how many standard deviations does the dependent variable change'. Beta = 0.45 means each standard deviation increase in the IV leads to a 0.45 SD increase in the DV. The t or z value tells you whether this effect is 'real' or 'accidental'.">路徑係數就像迴歸的標準化係數 (beta)，告訴你「當自變數增加一個標準差，依變數會變化幾個標準差」。&beta; = 0.45 代表自變數每增加一個標準差，依變數平均增加 0.45 個標準差。而 t 值或 z 值則告訴你這個影響是「真的」還是「偶然的」。</p>
+      </div>
+      <div class="table-wrap" style="margin-top:1rem">
+        <table>
+          <thead>
+            <tr>
+              <th data-zh="指標" data-en="Metric">指標</th>
+              <th data-zh="門檻" data-en="Threshold">門檻</th>
+              <th data-zh="意義" data-en="Meaning">意義</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-zh="路徑係數 (&beta;)" data-en="Path Coefficient (&beta;)">&beta;</td>
+              <td data-zh="介於 -1 到 +1" data-en="Between -1 and +1">-1 ~ +1</td>
+              <td data-zh="標準化影響強度與方向" data-en="Standardized effect strength and direction">標準化影響強度與方向</td>
+            </tr>
+            <tr>
+              <td data-zh="t 值 (|t|)" data-en="t-value (|t|)">|t|</td>
+              <td>&gt; 1.96 (p &lt; .05)</td>
+              <td data-zh="雙尾檢定 95% 信心水準" data-en="Two-tailed test at 95% confidence">雙尾檢定 95% 信心水準</td>
+            </tr>
+            <tr>
+              <td data-zh="p 值" data-en="p-value">p</td>
+              <td>&lt; 0.05</td>
+              <td data-zh="路徑係數統計上顯著" data-en="Path coefficient is statistically significant">路徑係數統計上顯著</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:1.5rem">
+      <h3 data-zh="R&sup2; 判斷準則" data-en="R&sup2; Interpretation Guidelines">R&sup2; 判斷準則</h3>
+      <p data-zh="R&sup2; 代表內生建構被所有自變數共同解釋的變異比例。" data-en="R&sup2; represents the proportion of variance in the endogenous construct explained by all predictors.">R&sup2; 代表內生建構被所有自變數共同解釋的變異比例。</p>
+      <div class="formula-box">
+        R&sup2; = 1 - (SS<sub>residual</sub> / SS<sub>total</sub>)
+        <span class="label" data-zh="0.75 = 強、0.50 = 中等、0.25 = 弱 (Hair et al., 2019)" data-en="0.75 = substantial, 0.50 = moderate, 0.25 = weak (Hair et al., 2019)">0.75 = 強、0.50 = 中等、0.25 = 弱 (Hair et al., 2019)</span>
+      </div>
+      <div class="concept-block">
+        <p data-zh="注意：R&sup2; 的解釋取決於研究領域。在消費者行為研究中，R&sup2; = 0.20 可能就已算合理；在工程研究中可能需要 R&sup2; > 0.90。" data-en="Note: R&sup2; interpretation depends on the research domain. In consumer behavior research, R&sup2; = 0.20 may be reasonable; in engineering, R&sup2; > 0.90 may be expected.">注意：R&sup2; 的解釋取決於研究領域。在消費者行為研究中，R&sup2; = 0.20 可能就已算合理；在工程研究中可能需要 R&sup2; > 0.90。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Section 4: Model Comparison ========== -->
+<section class="section" style="background:#fff">
+  <div class="container">
+    <h2 class="section-title" data-zh="4. 模型比較" data-en="4. Model Comparison">4. 模型比較</h2>
+
+    <div class="tab-container">
+      <div class="tab-header">
+        <button class="tab-btn active" data-tab="nested" data-zh="巢套模型比較" data-en="Nested Model Comparison">巢套模型比較</button>
+        <button class="tab-btn" data-tab="nonnested" data-zh="非巢套模型比較" data-en="Non-Nested Comparison">非巢套模型比較</button>
+        <button class="tab-btn" data-tab="competing" data-zh="競爭模型" data-en="Competing Models">競爭模型</button>
+      </div>
+
+      <div class="tab-panel active" id="nested">
+        <div class="card">
+          <h3 data-zh="巢套模型的 &Delta;&chi;&sup2; 差異檢定" data-en="Nested Model &Delta;&chi;&sup2; Difference Test">巢套模型的 &Delta;&chi;&sup2; 差異檢定</h3>
+          <p data-zh="當兩個模型存在巢套關係（一個是另一個的特例，增加或移除限制條件），可用卡方差異檢定來比較。" data-en="When two models are nested (one is a special case of the other with added or removed constraints), use the chi-square difference test to compare them.">當兩個模型存在巢套關係（一個是另一個的特例，增加或移除限制條件），可用卡方差異檢定來比較。</p>
+          <div class="formula-box">
+            &Delta;&chi;&sup2; = &chi;&sup2;<sub>constrained</sub> - &chi;&sup2;<sub>free</sub>
+            <span class="label">&Delta;df = df<sub>constrained</sub> - df<sub>free</sub></span>
+          </div>
+          <div class="concept-block success">
+            <h4 data-zh="白話解釋" data-en="Plain-Language Explanation">白話解釋</h4>
+            <p data-zh="限制模型就是「綁手綁腳」的模型（多了限制條件），自由模型就是「自由發揮」的模型。如果綁手綁腳後適配度顯著變差（&Delta;&chi;&sup2; 顯著），代表那個被限制的路徑確實重要，不應該移除。" data-en="The constrained model is 'tied up' (more constraints), the free model has 'free rein'. If fit significantly worsens after adding constraints (significant delta chi-square), the constrained path is indeed important and should not be removed.">限制模型就是「綁手綁腳」的模型（多了限制條件），自由模型就是「自由發揮」的模型。如果綁手綁腳後適配度顯著變差（&Delta;&chi;&sup2; 顯著），代表那個被限制的路徑確實重要，不應該移除。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="nonnested">
+        <div class="card">
+          <h3 data-zh="非巢套模型比較：AIC / BIC" data-en="Non-Nested Comparison: AIC / BIC">非巢套模型比較：AIC / BIC</h3>
+          <p data-zh="當兩個模型不存在巢套關係時，不能使用 &Delta;&chi;&sup2;，改用資訊準則來比較。" data-en="When models are not nested, the chi-square difference test is not applicable. Use information criteria instead.">當兩個模型不存在巢套關係時，不能使用 &Delta;&chi;&sup2;，改用資訊準則來比較。</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th data-zh="準則" data-en="Criterion">準則</th>
+                  <th data-zh="原則" data-en="Rule">原則</th>
+                  <th data-zh="特性" data-en="Characteristics">特性</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>AIC</td>
+                  <td data-zh="值越小越好" data-en="Lower is better">值越小越好</td>
+                  <td data-zh="兼顧適配度與簡約性；適合預測導向" data-en="Balances fit and parsimony; suited for prediction">兼顧適配度與簡約性；適合預測導向</td>
+                </tr>
+                <tr>
+                  <td>BIC</td>
+                  <td data-zh="值越小越好" data-en="Lower is better">值越小越好</td>
+                  <td data-zh="對參數數量懲罰更重；偏好簡約模型" data-en="Heavier penalty for parameters; favors parsimonious models">對參數數量懲罰更重；偏好簡約模型</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="competing">
+        <div class="card">
+          <h3 data-zh="競爭模型策略" data-en="Competing Models Strategy">競爭模型策略</h3>
+          <p data-zh="最佳實踐是提出多個理論上合理的替代模型，而非僅呈現單一模型。這能增強研究的說服力。" data-en="Best practice is to propose multiple theoretically plausible alternative models, not just present a single model. This strengthens research credibility.">最佳實踐是提出多個理論上合理的替代模型，而非僅呈現單一模型。這能增強研究的說服力。</p>
+          <ul>
+            <li data-zh="假說模型 (Hypothesized Model)：根據文獻與理論提出的主要模型" data-en="Hypothesized Model: the primary model based on literature and theory">假說模型 (Hypothesized Model)：根據文獻與理論提出的主要模型</li>
+            <li data-zh="替代模型 (Alternative Model)：改變路徑方向或加減路徑的版本" data-en="Alternative Model: versions with changed path directions or added/removed paths">替代模型 (Alternative Model)：改變路徑方向或加減路徑的版本</li>
+            <li data-zh="簡約模型 (Parsimonious Model)：移除不顯著路徑後的精簡版本" data-en="Parsimonious Model: simplified version after removing non-significant paths">簡約模型 (Parsimonious Model)：移除不顯著路徑後的精簡版本</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Section 5: Model Modification ========== -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title" data-zh="5. 模型修正策略" data-en="5. Model Modification Strategies">5. 模型修正策略</h2>
+
+    <div class="card-grid" style="margin-top:1.5rem">
+      <div class="card" style="border-top:4px solid var(--accent)">
+        <h3 data-zh="理論驅動修正" data-en="Theory-Driven Modification">理論驅動修正</h3>
+        <ul>
+          <li data-zh="根據理論基礎增加或刪除路徑" data-en="Add or remove paths based on theoretical foundations">根據理論基礎增加或刪除路徑</li>
+          <li data-zh="修正前需有文獻支持" data-en="Modifications must be supported by literature">修正前需有文獻支持</li>
+          <li data-zh="需要在新樣本上進行交叉驗證" data-en="Requires cross-validation on a new sample">需要在新樣本上進行交叉驗證</li>
+        </ul>
+        <div class="concept-block success">
+          <p data-zh="推薦做法：修正有理論依據，結論可推廣" data-en="Recommended: modifications have theoretical basis, conclusions are generalizable">推薦做法：修正有理論依據，結論可推廣</p>
+        </div>
+      </div>
+      <div class="card" style="border-top:4px solid var(--danger)">
+        <h3 data-zh="資料驅動修正" data-en="Data-Driven Modification">資料驅動修正</h3>
+        <ul>
+          <li data-zh="根據修正指標 (Modification Indices, MI) 調整" data-en="Adjust based on Modification Indices (MI)">根據修正指標 (Modification Indices, MI) 調整</li>
+          <li data-zh="MI 告訴你「如果加這條路徑，&chi;&sup2; 可以降多少」" data-en="MI tells you 'if you add this path, how much chi-square drops'">MI 告訴你「如果加這條路徑，&chi;&sup2; 可以降多少」</li>
+          <li data-zh="有過度適配 (overfitting) 的風險" data-en="Risk of overfitting the data">有過度適配 (overfitting) 的風險</li>
+        </ul>
+        <div class="concept-block danger">
+          <p data-zh="風險：純粹追求統計改善，結果可能不可複製" data-en="Risk: purely chasing statistical improvement; results may not replicate">風險：純粹追求統計改善，結果可能不可複製</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="concept-block warn" style="margin-top:1.5rem">
+      <h4 data-zh="規範搜尋的風險" data-en="Specification Search Risks">規範搜尋的風險</h4>
+      <p data-zh="反覆嘗試不同的路徑組合以尋找「最佳」模型（specification search），會嚴重膨脹 Type I 錯誤率，使偶然發現的關係被誤判為真實效果。每次修正都應有理論理由，且應報告所有嘗試過的模型。" data-en="Repeatedly trying different path combinations to find the 'best' model (specification search) seriously inflates Type I error rates, making spurious relationships appear as real effects. Every modification should have a theoretical rationale, and all tested models should be reported.">反覆嘗試不同的路徑組合以尋找「最佳」模型（specification search），會嚴重膨脹 Type I 錯誤率，使偶然發現的關係被誤判為真實效果。每次修正都應有理論理由，且應報告所有嘗試過的模型。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Section 6: Reporting Results ========== -->
+<section class="section" style="background:#fff">
+  <div class="container">
+    <h2 class="section-title" data-zh="6. 報告撰寫" data-en="6. Reporting SEM Results">6. 報告撰寫</h2>
+
+    <div class="card">
+      <h3 data-zh="SEM 結果報告檢核清單" data-en="SEM Results Reporting Checklist">SEM 結果報告檢核清單</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-zh="報告項目" data-en="Reporting Item">報告項目</th>
+              <th data-zh="具體內容" data-en="Specific Content">具體內容</th>
+              <th data-zh="位置" data-en="Where">位置</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-zh="樣本資訊" data-en="Sample Information">樣本資訊</td>
+              <td data-zh="樣本大小、抽樣方法、回收率" data-en="Sample size, sampling method, response rate">樣本大小、抽樣方法、回收率</td>
+              <td data-zh="方法" data-en="Method">方法</td>
+            </tr>
+            <tr>
+              <td data-zh="估計方法" data-en="Estimation Method">估計方法</td>
+              <td data-zh="ML、MLR、WLSMV 等" data-en="ML, MLR, WLSMV, etc.">ML、MLR、WLSMV 等</td>
+              <td data-zh="方法" data-en="Method">方法</td>
+            </tr>
+            <tr>
+              <td data-zh="測量模型適配" data-en="Measurement Model Fit">測量模型適配</td>
+              <td data-zh="&chi;&sup2;(df)、CFI、TLI、RMSEA [90% CI]、SRMR" data-en="chi-square(df), CFI, TLI, RMSEA [90% CI], SRMR">&chi;&sup2;(df)、CFI、TLI、RMSEA [90% CI]、SRMR</td>
+              <td data-zh="結果" data-en="Results">結果</td>
+            </tr>
+            <tr>
+              <td data-zh="信效度" data-en="Reliability & Validity">信效度</td>
+              <td data-zh="CR、AVE、HTMT 或 Fornell-Larcker" data-en="CR, AVE, HTMT or Fornell-Larcker">CR、AVE、HTMT 或 Fornell-Larcker</td>
+              <td data-zh="結果" data-en="Results">結果</td>
+            </tr>
+            <tr>
+              <td data-zh="結構模型適配" data-en="Structural Model Fit">結構模型適配</td>
+              <td data-zh="同上的適配指標組合" data-en="Same set of fit indices">同上的適配指標組合</td>
+              <td data-zh="結果" data-en="Results">結果</td>
+            </tr>
+            <tr>
+              <td class="highlight-cell" data-zh="路徑係數" data-en="Path Coefficients">路徑係數</td>
+              <td class="highlight-cell" data-zh="標準化 &beta;、SE、t/z 值、p 值（或 95% CI）" data-en="Standardized beta, SE, t/z-value, p-value (or 95% CI)">標準化 &beta;、SE、t/z 值、p 值（或 95% CI）</td>
+              <td data-zh="結果" data-en="Results">結果</td>
+            </tr>
+            <tr>
+              <td data-zh="R&sup2;" data-en="R&sup2;">R&sup2;</td>
+              <td data-zh="每個內生建構的 R&sup2; 值" data-en="R&sup2; for each endogenous construct">每個內生建構的 R&sup2; 值</td>
+              <td data-zh="結果" data-en="Results">結果</td>
+            </tr>
+            <tr>
+              <td data-zh="假說表" data-en="Hypothesis Table">假說表</td>
+              <td data-zh="假說內容、路徑、&beta;、p、結論（支持/不支持）" data-en="Hypothesis, path, beta, p, conclusion (supported/not)">假說內容、路徑、&beta;、p、結論（支持/不支持）</td>
+              <td data-zh="結果" data-en="Results">結果</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="concept-block success" style="margin-top:1.5rem">
+      <h4 data-zh="報告範例用語" data-en="Example Reporting Language">報告範例用語</h4>
+      <p data-zh="「結構模型的適配度良好 (&chi;&sup2;(52) = 78.34, p = .011; CFI = .97; TLI = .96; RMSEA = .045 [.021, .066]; SRMR = .038)。服務品質對顧客滿意度有顯著正向影響 (&beta; = .58, p < .001)，滿意度對忠誠度亦有顯著正向影響 (&beta; = .67, p < .001)。滿意度的 R&sup2; = .34，忠誠度的 R&sup2; = .45，顯示模型具有中等解釋力。」" data-en="'The structural model showed good fit (chi-square(52) = 78.34, p = .011; CFI = .97; TLI = .96; RMSEA = .045 [.021, .066]; SRMR = .038). Service quality had a significant positive effect on satisfaction (beta = .58, p < .001), and satisfaction significantly predicted loyalty (beta = .67, p < .001). R-squared for satisfaction was .34 and for loyalty was .45, indicating moderate explanatory power.'">「結構模型的適配度良好 (&chi;&sup2;(52) = 78.34, p = .011; CFI = .97; TLI = .96; RMSEA = .045 [.021, .066]; SRMR = .038)。服務品質對顧客滿意度有顯著正向影響 (&beta; = .58, p &lt; .001)，滿意度對忠誠度亦有顯著正向影響 (&beta; = .67, p &lt; .001)。滿意度的 R&sup2; = .34，忠誠度的 R&sup2; = .45，顯示模型具有中等解釋力。」</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Section 7: Quiz ========== -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title" data-zh="7. 自我測驗" data-en="7. Self-Assessment Quiz">7. 自我測驗</h2>
+
+    <div class="quiz">
+      <h3 data-zh="測試你對結構模型的理解" data-en="Test Your Understanding of Structural Models">測試你對結構模型的理解</h3>
+
+      <div class="quiz-question">
+        <p data-zh="Q1：Anderson & Gerbing (1988) 的兩階段法中，為什麼要先評估測量模型再評估結構模型？" data-en="Q1: In Anderson & Gerbing's (1988) two-step approach, why evaluate the measurement model before the structural model?">Q1：Anderson & Gerbing (1988) 的兩階段法中，為什麼要先評估測量模型再評估結構模型？</p>
+        <div class="quiz-option" data-correct="false" data-zh="因為測量模型比較簡單，先做容易的" data-en="Because the measurement model is simpler; do the easy part first">因為測量模型比較簡單，先做容易的</div>
+        <div class="quiz-option" data-correct="true" data-zh="因為如果測量工具有問題，建構之間的路徑關係就不可信" data-en="Because if measurement tools are flawed, path relationships between constructs are unreliable">因為如果測量工具有問題，建構之間的路徑關係就不可信</div>
+        <div class="quiz-option" data-correct="false" data-zh="因為軟體要求必須先跑 CFA" data-en="Because software requires running CFA first">因為軟體要求必須先跑 CFA</div>
+        <div class="quiz-feedback" data-zh="正確！測量模型確保你的測量工具是可靠且有效的。如果連測量都有問題（信效度不足），那基於這些測量所建立的結構路徑就失去了意義。" data-en="Correct! The measurement model ensures your instruments are reliable and valid. If measurements are flawed (insufficient reliability/validity), structural paths based on those measures become meaningless.">正確！測量模型確保你的測量工具是可靠且有效的。如果連測量都有問題（信效度不足），那基於這些測量所建立的結構路徑就失去了意義。</div>
+      </div>
+
+      <div class="quiz-question">
+        <p data-zh="Q2：兩個非巢套的模型要進行比較，應使用什麼方法？" data-en="Q2: What method should be used to compare two non-nested models?">Q2：兩個非巢套的模型要進行比較，應使用什麼方法？</p>
+        <div class="quiz-option" data-correct="false" data-zh="&Delta;&chi;&sup2; 差異檢定" data-en="Delta chi-square difference test">&Delta;&chi;&sup2; 差異檢定</div>
+        <div class="quiz-option" data-correct="true" data-zh="AIC 或 BIC 比較（值越小越好）" data-en="AIC or BIC comparison (lower is better)">AIC 或 BIC 比較（值越小越好）</div>
+        <div class="quiz-option" data-correct="false" data-zh="直接比較 R&sup2; 即可" data-en="Simply compare R-squared values">直接比較 R&sup2; 即可</div>
+        <div class="quiz-feedback" data-zh="正確！&Delta;&chi;&sup2; 只適用於巢套模型。非巢套模型應使用 AIC 或 BIC 等資訊準則，這些準則同時考慮模型適配度與簡約性。" data-en="Correct! Delta chi-square only applies to nested models. Non-nested models should use information criteria like AIC or BIC, which balance model fit and parsimony.">正確！&Delta;&chi;&sup2; 只適用於巢套模型。非巢套模型應使用 AIC 或 BIC 等資訊準則，這些準則同時考慮模型適配度與簡約性。</div>
+      </div>
+
+      <div class="quiz-question">
+        <p data-zh="Q3：一位研究者根據修正指標 (MI) 連續加了 5 條未預期的路徑，使 CFI 從 .91 提升到 .97。這個做法有什麼問題？" data-en="Q3: A researcher added 5 unexpected paths based on modification indices, improving CFI from .91 to .97. What's wrong with this approach?">Q3：一位研究者根據修正指標 (MI) 連續加了 5 條未預期的路徑，使 CFI 從 .91 提升到 .97。這個做法有什麼問題？</p>
+        <div class="quiz-option" data-correct="false" data-zh="完全沒問題，適配度越好越好" data-en="No problem at all; better fit is always better">完全沒問題，適配度越好越好</div>
+        <div class="quiz-option" data-correct="false" data-zh="只需要加兩條路徑就夠了" data-en="Only two added paths would be sufficient">只需要加兩條路徑就夠了</div>
+        <div class="quiz-option" data-correct="true" data-zh="這是資料驅動修正，有過度適配的風險，且缺乏理論支持的路徑結果不可複製" data-en="This is data-driven modification with overfitting risk; paths without theoretical support may not replicate">這是資料驅動修正，有過度適配的風險，且缺乏理論支持的路徑結果不可複製</div>
+        <div class="quiz-feedback" data-zh="正確！僅根據修正指標修正模型是典型的「規範搜尋」，會嚴重膨脹 Type I 錯誤率。每一次修正都必須有理論依據，而不是單純追求更好的適配度數字。" data-en="Correct! Modifying models solely based on modification indices is classic 'specification search', which inflates Type I error. Every modification needs theoretical justification, not just better fit numbers.">正確！僅根據修正指標修正模型是典型的「規範搜尋」，會嚴重膨脹 Type I 錯誤率。每一次修正都必須有理論依據，而不是單純追求更好的適配度數字。</div>
+      </div>
+
+      <div class="quiz-question">
+        <p data-zh="Q4：報告 SEM 結果時，以下哪項是最不可或缺的？" data-en="Q4: When reporting SEM results, which of the following is most essential?">Q4：報告 SEM 結果時，以下哪項是最不可或缺的？</p>
+        <div class="quiz-option" data-correct="false" data-zh="只報告 CFI 和 RMSEA 就夠了" data-en="Reporting only CFI and RMSEA is sufficient">只報告 CFI 和 RMSEA 就夠了</div>
+        <div class="quiz-option" data-correct="true" data-zh="適配指標組合、標準化路徑係數（含 SE 與 p 值）、以及 R&sup2;" data-en="Fit index set, standardized path coefficients (with SE and p-values), and R-squared">適配指標組合、標準化路徑係數（含 SE 與 p 值）、以及 R&sup2;</div>
+        <div class="quiz-option" data-correct="false" data-zh="只需報告顯著的路徑" data-en="Only significant paths need to be reported">只需報告顯著的路徑</div>
+        <div class="quiz-feedback" data-zh="正確！完整的 SEM 報告應包含多個適配指標、所有路徑係數（包括不顯著的）及其標準誤和 p 值、以及所有內生建構的 R&sup2;。選擇性報告只有顯著結果是不良的研究實踐。" data-en="Correct! A complete SEM report should include multiple fit indices, ALL path coefficients (including non-significant ones) with standard errors and p-values, and R-squared for all endogenous constructs. Selectively reporting only significant results is poor research practice.">正確！完整的 SEM 報告應包含多個適配指標、所有路徑係數（包括不顯著的）及其標準誤和 p 值、以及所有內生建構的 R&sup2;。選擇性報告只有顯著結果是不良的研究實踐。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <p data-zh="Ch.11 結構方程模型檢驗 | 基於 Hair et al. (2019) 第八版" data-en="Ch.11 Testing Structural Equation Models | Based on Hair et al. (2019) 8th Ed.">Ch.11 結構方程模型檢驗 | 基於 Hair et al. (2019) 第八版</p>
+    <p style="margin-top:.5rem;font-size:.8rem;opacity:.8">&copy; 版權所有 葉欲禾 (Gary Yu-Ho Yeh)</p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

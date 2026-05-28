@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>結構方程模型導論 | SEM: An Introduction</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="lang-zh">
+<div class="progress-bar"><div class="fill"></div></div>
+
+<nav class="top-nav">
+  <div class="container">
+    <a href="../index.html" class="brand" data-zh="多變量資料分析" data-en="Multivariate Data Analysis">多變量資料分析</a>
+    <div class="nav-links">
+      <a href="../index.html" data-zh="首頁" data-en="Home">首頁</a>
+      <a href="ch9-sem-intro.html" class="active" data-zh="SEM導論" data-en="SEM Intro">SEM導論</a>
+      <a href="ch10-cfa.html" data-zh="CFA分析" data-en="CFA">CFA分析</a>
+      <a href="ch10-cfa-validity.html" data-zh="CFA效度" data-en="CFA Validity">CFA效度</a>
+      <button class="lang-toggle">EN</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1 data-zh="結構方程模型導論" data-en="SEM: An Introduction">結構方程模型導論</h1>
+    <p data-zh="Ch.9 SEM 基礎理論、路徑分析、模型設定與適配度評估" data-en="Ch.9 SEM Fundamentals, Path Analysis, Model Specification & Fit Assessment">Ch.9 SEM 基礎理論、路徑分析、模型設定與適配度評估</p>
+  </div>
+</header>
+
+<main class="section">
+<div class="container">
+
+<!-- ================================ -->
+<!-- SECTION 1: Introduction to SEM   -->
+<!-- ================================ -->
+<h2 class="section-title" data-zh="一、SEM 簡介" data-en="1. Introduction to SEM">一、SEM 簡介</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p><strong>結構方程模型（Structural Equation Modeling, SEM）</strong>是一套結合因素分析與多元迴歸的統計技術家族，能同時估計一系列相互依存的關係。SEM 起源於 1920 年代 Sewall Wright 的<strong>路徑分析（Path Analysis）</strong>，並在 1970 年代隨著 Karl Joreskog 開發 LISREL 軟體而成熟。</p>
+  </div>
+  <div class="en">
+    <p><strong>Structural Equation Modeling (SEM)</strong> is a family of statistical techniques combining factor analysis and multiple regression, capable of estimating a series of interrelated dependence relationships simultaneously. SEM originated from Sewall Wright's <strong>path analysis</strong> in the 1920s and matured in the 1970s with Karl Joreskog's development of the LISREL software.</p>
+  </div>
+</div>
+
+<div class="concept-block success">
+  <h4 data-zh="白話解釋" data-en="Plain Language">白話解釋</h4>
+  <div class="bilingual">
+    <div class="zh"><p>SEM 就像<strong>同時看到整棵因果關係樹</strong>——不像迴歸一次只看一個 Y，SEM 能同時處理多個自變數和多個依變數之間的複雜因果網絡，還能考量測量誤差。就像從空中俯瞰整片森林，而不是一棵棵樹去看。</p></div>
+    <div class="en"><p>SEM is like <strong>seeing the entire causal tree at once</strong> — unlike regression which examines one Y at a time, SEM handles complex causal networks among multiple IVs and DVs simultaneously, accounting for measurement error. It's like viewing the entire forest from above rather than tree by tree.</p></div>
+  </div>
+</div>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="面向" data-en="Aspect">面向</th>
+        <th data-zh="多元迴歸" data-en="Multiple Regression">多元迴歸</th>
+        <th>SEM</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-zh="依變數數量" data-en="Number of DVs">依變數數量</td>
+        <td data-zh="一個" data-en="One">一個</td>
+        <td data-zh="多個（同時估計）" data-en="Multiple (simultaneously)">多個（同時估計）</td>
+      </tr>
+      <tr>
+        <td data-zh="測量誤差" data-en="Measurement error">測量誤差</td>
+        <td data-zh="假設無誤差" data-en="Assumed error-free">假設無誤差</td>
+        <td data-zh="明確估計誤差" data-en="Explicitly estimated">明確估計誤差</td>
+      </tr>
+      <tr>
+        <td data-zh="潛在變數" data-en="Latent variables">潛在變數</td>
+        <td data-zh="不支援" data-en="Not supported">不支援</td>
+        <td data-zh="核心功能" data-en="Core feature">核心功能</td>
+      </tr>
+      <tr>
+        <td data-zh="中介效果" data-en="Mediation">中介效果</td>
+        <td data-zh="需分步驟進行" data-en="Requires multiple steps">需分步驟進行</td>
+        <td data-zh="直接同時估計" data-en="Estimated simultaneously">直接同時估計</td>
+      </tr>
+      <tr>
+        <td data-zh="模型適配度" data-en="Model fit">模型適配度</td>
+        <td data-zh="R² 為主" data-en="Mainly R²">R² 為主</td>
+        <td data-zh="多元適配度指標" data-en="Multiple fit indices">多元適配度指標</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ================================ -->
+<!-- SECTION 2: Core Concepts         -->
+<!-- ================================ -->
+<h2 class="section-title" data-zh="二、SEM 基本概念" data-en="2. Core Concepts of SEM">二、SEM 基本概念</h2>
+
+<div class="bilingual">
+  <div class="zh"><p>理解 SEM 需要掌握以下基本概念與術語：</p></div>
+  <div class="en"><p>Understanding SEM requires mastering the following fundamental concepts and terminology:</p></div>
+</div>
+
+<div class="card-grid" style="margin-top:1rem">
+  <div class="card">
+    <h3 data-zh="觀察變數 vs 潛在變數" data-en="Observed vs. Latent Variables">觀察變數 vs 潛在變數</h3>
+    <div class="zh-only">
+      <p><strong>觀察變數（Observed / Manifest）：</strong>可以直接測量的變數，以<strong>矩形</strong>表示（如問卷題項、考試分數）。</p>
+      <p style="margin-top:.5rem"><strong>潛在變數（Latent）：</strong>無法直接測量的抽象概念，以<strong>橢圓形</strong>表示（如智力、工作滿意度）。需要透過多個觀察變數來間接推論。</p>
+    </div>
+    <div class="en-only">
+      <p><strong>Observed (Manifest) variables:</strong> Directly measurable, shown as <strong>rectangles</strong> (e.g., survey items, test scores).</p>
+      <p style="margin-top:.5rem"><strong>Latent variables:</strong> Abstract concepts that cannot be directly measured, shown as <strong>ellipses</strong> (e.g., intelligence, job satisfaction). Inferred through multiple observed variables.</p>
+    </div>
+  </div>
+  <div class="card">
+    <h3 data-zh="外衍 vs 內衍變數" data-en="Exogenous vs. Endogenous Variables">外衍 vs 內衍變數</h3>
+    <div class="zh-only">
+      <p><strong>外衍變數（Exogenous）：</strong>模型中的「原因」，不被其他變數所預測，等同於自變數。在路徑圖中<strong>沒有指向它的箭頭</strong>。</p>
+      <p style="margin-top:.5rem"><strong>內衍變數（Endogenous）：</strong>模型中被預測的「結果」變數，至少有一個指向它的箭頭。可同時扮演某些關係的自變數和依變數。</p>
+    </div>
+    <div class="en-only">
+      <p><strong>Exogenous:</strong> "Causes" in the model, not predicted by other variables — equivalent to independent variables. <strong>No arrows pointing to them</strong> in path diagrams.</p>
+      <p style="margin-top:.5rem"><strong>Endogenous:</strong> "Outcome" variables predicted by at least one other variable. Can serve as both IV and DV in different relationships simultaneously.</p>
+    </div>
+  </div>
+  <div class="card">
+    <h3 data-zh="測量模型 vs 結構模型" data-en="Measurement vs. Structural Model">測量模型 vs 結構模型</h3>
+    <div class="zh-only">
+      <p><strong>測量模型（Measurement Model）：</strong>描述潛在變數如何被其觀察指標所測量。使用 CFA 來驗證——確保指標確實反映了對應的潛在建構。</p>
+      <p style="margin-top:.5rem"><strong>結構模型（Structural Model）：</strong>描述潛在變數之間的因果關係，即假設中的理論路徑。只有在測量模型被確認後才進行結構模型的評估。</p>
+    </div>
+    <div class="en-only">
+      <p><strong>Measurement Model:</strong> Specifies how latent variables are measured by their observed indicators. Validated through CFA — ensures indicators truly reflect their intended constructs.</p>
+      <p style="margin-top:.5rem"><strong>Structural Model:</strong> Specifies causal relationships among latent variables — the hypothesized theoretical paths. Only evaluated after the measurement model is confirmed.</p>
+    </div>
+  </div>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="SEM 的兩階段法則（Two-Step Approach）" data-en="Two-Step Approach in SEM">SEM 的兩階段法則（Two-Step Approach）</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p>Anderson & Gerbing (1988) 建議的兩階段分析策略：</p>
+      <ol style="padding-left:1.2rem">
+        <li><strong>第一步：</strong>先驗證測量模型（CFA），確認所有建構的信效度</li>
+        <li><strong>第二步：</strong>再評估結構模型，檢驗假設中的路徑關係</li>
+      </ol>
+      <p style="margin-top:.5rem">如果測量模型不佳就直接跑結構模型，就像用壞掉的尺去量東西——結果不可信。</p>
+    </div>
+    <div class="en">
+      <p>Anderson & Gerbing (1988) recommended a two-step analysis strategy:</p>
+      <ol style="padding-left:1.2rem">
+        <li><strong>Step 1:</strong> Validate the measurement model (CFA), confirming reliability and validity of all constructs</li>
+        <li><strong>Step 2:</strong> Evaluate the structural model, testing hypothesized path relationships</li>
+      </ol>
+      <p style="margin-top:.5rem">Running the structural model with a poor measurement model is like measuring with a broken ruler — results cannot be trusted.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- SECTION 3: Path Analysis         -->
+<!-- ================================ -->
+<h2 class="section-title" data-zh="三、路徑分析" data-en="3. Path Analysis">三、路徑分析</h2>
+
+<div class="bilingual">
+  <div class="zh"><p>路徑分析是 SEM 的基礎。透過路徑圖（path diagram），我們可以視覺化地表示變數之間的因果假設，並分解不同類型的效果。</p></div>
+  <div class="en"><p>Path analysis forms the foundation of SEM. Through path diagrams, we can visually represent causal hypotheses between variables and decompose different types of effects.</p></div>
+</div>
+
+<!-- SVG: Mediation Model -->
+<div class="diagram">
+  <svg viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg" style="max-width:560px">
+    <defs>
+      <marker id="arrP" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#2c3e50"/>
+      </marker>
+    </defs>
+
+    <!-- X variable -->
+    <rect x="30" y="180" width="100" height="50" rx="6" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+    <text x="80" y="200" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">X</text>
+    <text x="80" y="218" text-anchor="middle" font-size="10" fill="#6c757d" data-zh="(外衍變數)" data-en="(Exogenous)">(外衍變數)</text>
+
+    <!-- M variable -->
+    <rect x="240" y="30" width="120" height="50" rx="6" fill="#fdebd0" stroke="#f39c12" stroke-width="2"/>
+    <text x="300" y="50" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">M</text>
+    <text x="300" y="68" text-anchor="middle" font-size="10" fill="#6c757d" data-zh="(中介變數)" data-en="(Mediator)">(中介變數)</text>
+
+    <!-- Y variable -->
+    <rect x="470" y="180" width="100" height="50" rx="6" fill="#d5f5e3" stroke="#27ae60" stroke-width="2"/>
+    <text x="520" y="200" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Y</text>
+    <text x="520" y="218" text-anchor="middle" font-size="10" fill="#6c757d" data-zh="(內衍變數)" data-en="(Endogenous)">(內衍變數)</text>
+
+    <!-- Path a: X -> M -->
+    <line x1="130" y1="185" x2="245" y2="75" stroke="#3498db" stroke-width="2.5" marker-end="url(#arrP)"/>
+    <text x="170" y="115" text-anchor="middle" font-size="14" font-weight="bold" fill="#3498db">a = .45</text>
+
+    <!-- Path b: M -> Y -->
+    <line x1="355" y1="75" x2="470" y2="185" stroke="#f39c12" stroke-width="2.5" marker-end="url(#arrP)"/>
+    <text x="430" y="115" text-anchor="middle" font-size="14" font-weight="bold" fill="#f39c12">b = .38</text>
+
+    <!-- Path c': X -> Y (direct) -->
+    <line x1="130" y1="210" x2="468" y2="210" stroke="#27ae60" stroke-width="2.5" marker-end="url(#arrP)"/>
+    <text x="300" y="240" text-anchor="middle" font-size="14" font-weight="bold" fill="#27ae60">c' = .22</text>
+    <text x="300" y="260" text-anchor="middle" font-size="11" fill="#6c757d" data-zh="(直接效果)" data-en="(Direct effect)">(直接效果)</text>
+  </svg>
+  <p class="caption" data-zh="圖：簡單中介模型路徑圖 — X 透過 M 間接影響 Y" data-en="Figure: Simple mediation path diagram — X indirectly affects Y through M">圖：簡單中介模型路徑圖 — X 透過 M 間接影響 Y</p>
+</div>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="效果類型" data-en="Effect Type">效果類型</th>
+        <th data-zh="定義" data-en="Definition">定義</th>
+        <th data-zh="本範例" data-en="This Example">本範例</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-zh="直接效果 (Direct)" data-en="Direct Effect">直接效果 (Direct)</td>
+        <td data-zh="X 直接影響 Y 的路徑 (c')" data-en="Path from X directly to Y (c')">X 直接影響 Y 的路徑 (c')</td>
+        <td><strong>c' = .22</strong></td>
+      </tr>
+      <tr>
+        <td data-zh="間接效果 (Indirect)" data-en="Indirect Effect">間接效果 (Indirect)</td>
+        <td data-zh="X 透過 M 影響 Y (a x b)" data-en="X affects Y through M (a x b)">X 透過 M 影響 Y (a x b)</td>
+        <td><strong>a x b = .45 x .38 = .171</strong></td>
+      </tr>
+      <tr>
+        <td data-zh="總效果 (Total)" data-en="Total Effect">總效果 (Total)</td>
+        <td data-zh="直接 + 間接效果 (c' + ab)" data-en="Direct + Indirect (c' + ab)">直接 + 間接效果 (c' + ab)</td>
+        <td><strong>.22 + .171 = .391</strong></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="formula-box">
+  <div data-zh="間接效果 = a × b" data-en="Indirect Effect = a × b">間接效果 = a × b</div>
+  <div data-zh="總效果 = c' + ab" data-en="Total Effect = c' + ab">總效果 = c' + ab</div>
+  <span class="label" data-zh="其中 c' 為直接效果，a 和 b 為中介路徑係數" data-en="where c' is the direct effect, a and b are mediation path coefficients">其中 c' 為直接效果，a 和 b 為中介路徑係數</span>
+</div>
+
+
+<!-- ================================ -->
+<!-- SECTION 4: Model Specification   -->
+<!-- ================================ -->
+<h2 class="section-title" data-zh="四、模型設定與識別" data-en="4. Model Specification & Identification">四、模型設定與識別</h2>
+
+<div class="bilingual">
+  <div class="zh"><p>在 SEM 中，模型設定（specification）是指將理論轉化為統計模型的過程。模型識別（identification）則關乎模型是否有唯一解。</p></div>
+  <div class="en"><p>In SEM, model specification is the process of translating theory into a statistical model. Model identification concerns whether the model has a unique solution.</p></div>
+</div>
+
+<div class="formula-box" style="margin-top:1rem">
+  <div data-zh="自由度 df = p(p+1)/2 - t" data-en="Degrees of freedom df = p(p+1)/2 - t">df = p(p+1)/2 - t</div>
+  <span class="label" data-zh="p = 觀察變數數量；t = 自由估計的參數數量" data-en="p = number of observed variables; t = number of freely estimated parameters">p = 觀察變數數量；t = 自由估計的參數數量</span>
+</div>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="識別狀態" data-en="Identification Status">識別狀態</th>
+        <th data-zh="條件" data-en="Condition">條件</th>
+        <th data-zh="自由度" data-en="df">自由度</th>
+        <th data-zh="含義" data-en="Meaning">含義</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong data-zh="不足識別 (Under-identified)" data-en="Under-identified">不足識別</strong></td>
+        <td>t > p(p+1)/2</td>
+        <td>df < 0</td>
+        <td data-zh="資訊不足，無法求解——需增加觀察變數或增加限制條件" data-en="Insufficient information, cannot solve — add observed variables or constraints">資訊不足，無法求解</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="恰好識別 (Just-identified)" data-en="Just-identified">恰好識別</strong></td>
+        <td>t = p(p+1)/2</td>
+        <td>df = 0</td>
+        <td data-zh="有唯一解，但無法檢驗適配度（完美適配但無意義）" data-en="Unique solution exists, but fit cannot be tested (perfect but meaningless fit)">有唯一解，但無法檢驗適配度</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="過度識別 (Over-identified)" data-en="Over-identified">過度識別</strong></td>
+        <td>t < p(p+1)/2</td>
+        <td>df > 0</td>
+        <td data-zh="資訊充足，可以檢驗適配度——SEM 的目標狀態" data-en="Sufficient information, fit can be tested — the goal in SEM">資訊充足，可以檢驗適配度</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="t 規則（t-rule）" data-en="The t-rule">t 規則（t-rule）</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p>模型可識別的<strong>必要條件</strong>（但非充分條件）：自由估計的參數數量（t）不得超過可用的資訊量 p(p+1)/2。</p>
+      <p style="margin-top:.5rem"><strong>範例：</strong>若有 6 個觀察變數（p = 6），則可用資訊 = 6(7)/2 = 21 個唯一元素。若需估計 15 個參數，則 df = 21 - 15 = 6 > 0，為過度識別。</p>
+    </div>
+    <div class="en">
+      <p>A <strong>necessary condition</strong> (but not sufficient) for model identification: the number of freely estimated parameters (t) must not exceed the available information p(p+1)/2.</p>
+      <p style="margin-top:.5rem"><strong>Example:</strong> With 6 observed variables (p = 6), available information = 6(7)/2 = 21 unique elements. If 15 parameters are estimated, df = 21 - 15 = 6 > 0, the model is over-identified.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- SECTION 5: Estimation Methods    -->
+<!-- ================================ -->
+<h2 class="section-title" data-zh="五、模型估計方法" data-en="5. Estimation Methods">五、模型估計方法</h2>
+
+<div class="bilingual">
+  <div class="zh"><p>SEM 透過迭代演算法（iterative algorithm）尋找最佳參數估計值，使模型所隱含的共變異數矩陣盡可能接近觀察到的共變異數矩陣。</p></div>
+  <div class="en"><p>SEM uses iterative algorithms to find optimal parameter estimates that make the model-implied covariance matrix as close as possible to the observed covariance matrix.</p></div>
+</div>
+
+<!-- Tab: Estimation methods -->
+<div class="tab-container" style="margin-top:1.5rem">
+  <div class="tab-header">
+    <button class="tab-btn active" data-tab="tab-ml" data-zh="最大概似法 (ML)" data-en="Maximum Likelihood (ML)">最大概似法 (ML)</button>
+    <button class="tab-btn" data-tab="tab-gls" data-zh="廣義最小平方 (GLS)" data-en="Generalized Least Squares (GLS)">廣義最小平方 (GLS)</button>
+    <button class="tab-btn" data-tab="tab-wls" data-zh="加權最小平方 (WLS)" data-en="Weighted Least Squares (WLS)">加權最小平方 (WLS)</button>
+  </div>
+
+  <!-- ML -->
+  <div class="tab-panel active" id="tab-ml">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>最大概似法（Maximum Likelihood, ML）</h4>
+        <p>SEM 中<strong>最常用</strong>的估計方法。ML 假設資料來自多元常態分配，並最大化觀察資料在模型參數下出現的機率。</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>優點：</strong>在大樣本下具有一致性、漸近無偏性，且統計效率高</li>
+          <li><strong>假設：</strong>多元常態分配（multivariate normality）</li>
+          <li><strong>樣本量：</strong>建議 n ≥ 200，或每個估計參數 5-10 個觀察值</li>
+          <li><strong>對非常態的敏感度：</strong>中度非常態下仍相當穩健，但嚴重偏態或峰態會導致 χ² 膨脹、標準誤偏低</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>Maximum Likelihood (ML)</h4>
+        <p>The <strong>most widely used</strong> estimation method in SEM. ML assumes multivariate normal data and maximizes the probability of observing the data given the model parameters.</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>Strengths:</strong> Consistent, asymptotically unbiased, and statistically efficient in large samples</li>
+          <li><strong>Assumption:</strong> Multivariate normality</li>
+          <li><strong>Sample size:</strong> Recommended n ≥ 200, or 5-10 observations per estimated parameter</li>
+          <li><strong>Sensitivity:</strong> Fairly robust to moderate non-normality, but severe skewness/kurtosis inflates χ² and deflates standard errors</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- GLS -->
+  <div class="tab-panel" id="tab-gls">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>廣義最小平方法（Generalized Least Squares, GLS）</h4>
+        <p>GLS 最小化觀察與估計共變異矩陣之間的加權殘差。</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>優點：</strong>在某些條件下比 ML 更具效率；產出的統計量與 ML 漸近等價</li>
+          <li><strong>假設：</strong>也要求多元常態分配</li>
+          <li><strong>使用時機：</strong>資料接近常態且需要替代 ML 時</li>
+          <li><strong>限制：</strong>對非常態更為敏感；在應用上較少使用</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>Generalized Least Squares (GLS)</h4>
+        <p>GLS minimizes weighted residuals between observed and estimated covariance matrices.</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>Strengths:</strong> Can be more efficient than ML under certain conditions; asymptotically equivalent to ML</li>
+          <li><strong>Assumption:</strong> Also requires multivariate normality</li>
+          <li><strong>When to use:</strong> When data is approximately normal and an alternative to ML is needed</li>
+          <li><strong>Limitation:</strong> More sensitive to non-normality; less commonly used in practice</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- WLS -->
+  <div class="tab-panel" id="tab-wls">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>加權最小平方法（Weighted Least Squares, WLS / ADF）</h4>
+        <p>WLS（又稱 ADF, Asymptotically Distribution-Free）不假設多元常態分配。</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>優點：</strong>不需要常態假設，適合次序資料（ordinal data）</li>
+          <li><strong>樣本量：</strong>需要非常大的樣本（n ≥ 1000-5000）</li>
+          <li><strong>變體：</strong>WLSMV（robust WLS）在 Mplus 中常用，適用於較小樣本的次序資料</li>
+          <li><strong>限制：</strong>需要估計四階動差的權重矩陣，小樣本時估計不穩定</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>Weighted Least Squares (WLS / ADF)</h4>
+        <p>WLS (also called ADF, Asymptotically Distribution-Free) does not assume multivariate normality.</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>Strengths:</strong> No normality assumption needed; suitable for ordinal data</li>
+          <li><strong>Sample size:</strong> Requires very large samples (n ≥ 1000-5000)</li>
+          <li><strong>Variant:</strong> WLSMV (robust WLS) commonly used in Mplus for ordinal data with smaller samples</li>
+          <li><strong>Limitation:</strong> Requires estimation of a weight matrix from fourth-order moments; unstable in small samples</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="樣本量的經驗法則" data-en="Sample Size Rules of Thumb">樣本量的經驗法則</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li><strong>最低門檻：</strong>n ≥ 200（對於簡單模型）</li>
+        <li><strong>參數比例法：</strong>每個自由估計參數需 5-10 個觀察值</li>
+        <li><strong>指標比例法：</strong>每個觀察變數需 15-20 個觀察值</li>
+        <li><strong>模型複雜度越高，需要越大的樣本量</strong></li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li><strong>Minimum:</strong> n ≥ 200 (for simple models)</li>
+        <li><strong>Parameter ratio:</strong> 5-10 observations per freely estimated parameter</li>
+        <li><strong>Indicator ratio:</strong> 15-20 observations per observed variable</li>
+        <li><strong>Greater model complexity requires larger samples</strong></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- SECTION 6: Model Fit             -->
+<!-- ================================ -->
+<h2 class="section-title" data-zh="六、模型適配度" data-en="6. Model Fit Assessment">六、模型適配度</h2>
+
+<div class="bilingual">
+  <div class="zh"><p>模型適配度評估是 SEM 的核心步驟，用於判斷研究者提出的理論模型是否與實際觀察資料吻合。應同時報告多種類型的適配度指標。</p></div>
+  <div class="en"><p>Model fit assessment is a core step in SEM, determining whether the researcher's theoretical model is consistent with observed data. Multiple types of fit indices should be reported simultaneously.</p></div>
+</div>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="類型" data-en="Type">類型</th>
+        <th data-zh="指標" data-en="Index">指標</th>
+        <th data-zh="良好適配" data-en="Good Fit">良好適配</th>
+        <th data-zh="可接受" data-en="Acceptable">可接受</th>
+        <th data-zh="說明" data-en="Description">說明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td rowspan="3" data-zh="絕對適配" data-en="Absolute Fit">絕對適配</td>
+        <td><strong>χ²</strong></td>
+        <td>p > .05</td>
+        <td>—</td>
+        <td data-zh="檢驗模型與資料的差異；對樣本量敏感" data-en="Tests discrepancy between model and data; sensitive to sample size">檢驗模型與資料的差異；對樣本量敏感</td>
+      </tr>
+      <tr>
+        <td><strong>RMSEA</strong></td>
+        <td>≤ .06</td>
+        <td>≤ .08</td>
+        <td data-zh="近似均方根誤差；考慮模型複雜度" data-en="Root Mean Square Error of Approximation; adjusts for complexity">近似均方根誤差</td>
+      </tr>
+      <tr>
+        <td><strong>SRMR</strong></td>
+        <td>≤ .08</td>
+        <td>≤ .10</td>
+        <td data-zh="標準化均方根殘差；觀察與預測共變異差異" data-en="Standardized Root Mean Square Residual">標準化均方根殘差</td>
+      </tr>
+      <tr>
+        <td rowspan="3" data-zh="增量適配" data-en="Incremental Fit">增量適配</td>
+        <td><strong>CFI</strong></td>
+        <td>≥ .95</td>
+        <td>≥ .90</td>
+        <td data-zh="比較適配指標；相對於虛無模型的改善" data-en="Comparative Fit Index; improvement over null model">比較適配指標</td>
+      </tr>
+      <tr>
+        <td><strong>TLI (NNFI)</strong></td>
+        <td>≥ .95</td>
+        <td>≥ .90</td>
+        <td data-zh="Tucker-Lewis 指標；考慮模型簡約性" data-en="Tucker-Lewis Index; adjusts for parsimony">Tucker-Lewis 指標</td>
+      </tr>
+      <tr>
+        <td><strong>NFI</strong></td>
+        <td>≥ .95</td>
+        <td>≥ .90</td>
+        <td data-zh="正規化適配指標；不調整自由度" data-en="Normed Fit Index; does not adjust for df">正規化適配指標</td>
+      </tr>
+      <tr>
+        <td rowspan="3" data-zh="簡約適配" data-en="Parsimony Fit">簡約適配</td>
+        <td><strong>χ²/df</strong></td>
+        <td>< 3.0</td>
+        <td>< 5.0</td>
+        <td data-zh="正規化卡方；簡單的適配度指標" data-en="Normed chi-square; simple fit measure">正規化卡方</td>
+      </tr>
+      <tr>
+        <td><strong>AIC</strong></td>
+        <td colspan="2" data-zh="越小越好（比較模型用）" data-en="Smaller is better (for model comparison)">越小越好（比較模型用）</td>
+        <td data-zh="Akaike 訊息準則；懲罰複雜模型" data-en="Akaike Information Criterion; penalizes complexity">Akaike 訊息準則</td>
+      </tr>
+      <tr>
+        <td><strong>BIC</strong></td>
+        <td colspan="2" data-zh="越小越好（比較模型用）" data-en="Smaller is better (for model comparison)">越小越好（比較模型用）</td>
+        <td data-zh="Bayesian 訊息準則；比 AIC 更懲罰複雜度" data-en="Bayesian Information Criterion; stronger penalty than AIC">Bayesian 訊息準則</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Accordion: Fit index details -->
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="χ² 卡方檢驗的限制與解讀" data-en="Limitations and Interpretation of χ² Test">χ² 卡方檢驗的限制與解讀</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh">
+        <p>χ² 檢驗的虛無假設是「模型與資料完全吻合」（H₀: Σ = Σ(θ)）。然而它有幾個重要限制：</p>
+        <ul style="padding-left:1.2rem">
+          <li><strong>對樣本量極為敏感：</strong>n > 250 時，即使模型適配良好，χ² 也常顯著</li>
+          <li><strong>對非常態敏感：</strong>非常態資料會膨脹 χ² 值</li>
+          <li><strong>對模型複雜度敏感：</strong>越多觀察變數，χ² 越大</li>
+          <li><strong>解決方案：</strong>使用 χ²/df 比值，或報告其他適配度指標作為補充</li>
+        </ul>
+      </div>
+      <div class="en">
+        <p>The χ² test's null hypothesis is "the model perfectly reproduces the data" (H₀: Σ = Σ(θ)). However, it has several important limitations:</p>
+        <ul style="padding-left:1.2rem">
+          <li><strong>Highly sensitive to sample size:</strong> With n > 250, χ² is often significant even with good fit</li>
+          <li><strong>Sensitive to non-normality:</strong> Non-normal data inflates χ² values</li>
+          <li><strong>Sensitive to model complexity:</strong> More observed variables lead to larger χ²</li>
+          <li><strong>Solution:</strong> Use χ²/df ratio, or report other fit indices as supplements</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="RMSEA 與 SRMR 的差異" data-en="Differences Between RMSEA and SRMR">RMSEA 與 SRMR 的差異</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh">
+        <ul style="padding-left:1.2rem">
+          <li><strong>RMSEA：</strong>評估模型對母體（而非樣本）的近似程度。它考慮了模型複雜度（自由度），偏好簡約的模型。可報告 90% 信賴區間。</li>
+          <li><strong>SRMR：</strong>直接比較觀察與預測的共變異矩陣元素的平均差異。它不調整模型複雜度，是最直觀的殘差指標。</li>
+          <li><strong>建議：</strong>同時報告兩者——RMSEA 評估模型的近似程度，SRMR 評估殘差大小。</li>
+        </ul>
+      </div>
+      <div class="en">
+        <ul style="padding-left:1.2rem">
+          <li><strong>RMSEA:</strong> Assesses how well the model approximates the population (not sample). Adjusts for model complexity (df), favoring parsimonious models. Report the 90% confidence interval.</li>
+          <li><strong>SRMR:</strong> Directly compares observed and predicted covariance matrix elements. Does not adjust for complexity — the most intuitive residual measure.</li>
+          <li><strong>Recommendation:</strong> Report both — RMSEA assesses approximation quality, SRMR assesses residual magnitude.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="CFI 與 TLI 的計算邏輯" data-en="Logic Behind CFI and TLI">CFI 與 TLI 的計算邏輯</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh">
+        <p>增量適配指標比較研究者的模型與「虛無模型（null/independence model）」——假設所有變數互不相關的最差模型。</p>
+        <ul style="padding-left:1.2rem">
+          <li><strong>CFI：</strong>= 1 - (χ²<sub>model</sub> - df<sub>model</sub>) / (χ²<sub>null</sub> - df<sub>null</sub>)，值介於 0-1</li>
+          <li><strong>TLI：</strong>類似 CFI 但額外考慮了自由度的比例，因此會懲罰過度複雜的模型（可能 > 1.0 或 < 0）</li>
+          <li><strong>解讀：</strong>CFI = .95 表示研究者的模型比虛無模型改善了 95% 的不適配度</li>
+        </ul>
+      </div>
+      <div class="en">
+        <p>Incremental fit indices compare the researcher's model against a "null/independence model" — the worst model assuming all variables are uncorrelated.</p>
+        <ul style="padding-left:1.2rem">
+          <li><strong>CFI:</strong> = 1 - (χ²<sub>model</sub> - df<sub>model</sub>) / (χ²<sub>null</sub> - df<sub>null</sub>), ranges 0-1</li>
+          <li><strong>TLI:</strong> Similar to CFI but additionally accounts for df ratio, thus penalizing overly complex models (can exceed 1.0 or go below 0)</li>
+          <li><strong>Interpretation:</strong> CFI = .95 means the model improved 95% of the misfit relative to the null model</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- SECTION 7: Quiz                  -->
+<!-- ================================ -->
+<h2 class="section-title" data-zh="七、自我測驗" data-en="7. Self-Assessment Quiz">七、自我測驗</h2>
+
+<div class="quiz">
+  <h3 data-zh="測試你對 SEM 基礎概念的理解" data-en="Test Your Understanding of SEM Fundamentals">測試你對 SEM 基礎概念的理解</h3>
+
+  <div class="quiz-question">
+    <p data-zh="Q1: SEM 與多元迴歸的最大差異是什麼？" data-en="Q1: What is the key difference between SEM and multiple regression?">Q1: SEM 與多元迴歸的最大差異是什麼？</p>
+    <div class="quiz-option" data-correct="false" data-zh="SEM 只能處理線性關係" data-en="SEM can only handle linear relationships">SEM 只能處理線性關係</div>
+    <div class="quiz-option" data-correct="true" data-zh="SEM 能同時估計多個依變數的關係，並明確考量測量誤差" data-en="SEM can simultaneously estimate relationships with multiple DVs and explicitly model measurement error">SEM 能同時估計多個依變數的關係，並明確考量測量誤差</div>
+    <div class="quiz-option" data-correct="false" data-zh="SEM 不需要理論基礎" data-en="SEM does not require a theoretical basis">SEM 不需要理論基礎</div>
+    <div class="quiz-option" data-correct="false" data-zh="SEM 的樣本量要求比迴歸低" data-en="SEM requires smaller samples than regression">SEM 的樣本量要求比迴歸低</div>
+    <div class="quiz-feedback" data-zh="正確！SEM 最核心的優勢在於：(1) 能同時處理多個依變數之間的相互依存關係，(2) 透過測量模型明確估計測量誤差，而不是假設變數被完美測量。" data-en="Correct! SEM's core advantages are: (1) simultaneously handling interdependent relationships among multiple DVs, (2) explicitly estimating measurement error through the measurement model, rather than assuming perfect measurement.">正確！SEM 的核心優勢是同時估計多個依變數並考量測量誤差。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q2: 在中介模型中，X 對 Y 的間接效果如何計算？" data-en="Q2: In a mediation model, how is the indirect effect of X on Y calculated?">Q2: 在中介模型中，X 對 Y 的間接效果如何計算？</p>
+    <div class="quiz-option" data-correct="false" data-zh="c' + ab" data-en="c' + ab">c' + ab</div>
+    <div class="quiz-option" data-correct="false" data-zh="a + b" data-en="a + b">a + b</div>
+    <div class="quiz-option" data-correct="true" data-zh="a × b" data-en="a × b">a × b</div>
+    <div class="quiz-option" data-correct="false" data-zh="c' - ab" data-en="c' - ab">c' - ab</div>
+    <div class="quiz-feedback" data-zh="正確！間接效果是路徑 a（X→M）乘以路徑 b（M→Y）的乘積。總效果 = 直接效果 (c') + 間接效果 (a×b)。" data-en="Correct! The indirect effect is the product of path a (X→M) and path b (M→Y). Total effect = direct (c') + indirect (a×b).">正確！間接效果 = a × b，是兩段中介路徑的乘積。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q3: 一個模型有 8 個觀察變數，需要估計 30 個參數。這個模型的識別狀態為何？" data-en="Q3: A model has 8 observed variables and 30 parameters to estimate. What is its identification status?">Q3: 一個模型有 8 個觀察變數，需要估計 30 個參數。這個模型的識別狀態為何？</p>
+    <div class="quiz-option" data-correct="false" data-zh="過度識別（df = 6）" data-en="Over-identified (df = 6)">過度識別（df = 6）</div>
+    <div class="quiz-option" data-correct="false" data-zh="恰好識別（df = 0）" data-en="Just-identified (df = 0)">恰好識別（df = 0）</div>
+    <div class="quiz-option" data-correct="true" data-zh="過度識別（df = 6），因為 8(9)/2 = 36, df = 36 - 30 = 6" data-en="Over-identified (df = 6), since 8(9)/2 = 36, df = 36 - 30 = 6">過度識別（df = 6），因為 8(9)/2 = 36, df = 36 - 30 = 6</div>
+    <div class="quiz-option" data-correct="false" data-zh="不足識別（df < 0）" data-en="Under-identified (df < 0)">不足識別（df < 0）</div>
+    <div class="quiz-feedback" data-zh="正確！p(p+1)/2 = 8(9)/2 = 36 個唯一資訊。df = 36 - 30 = 6 > 0，因此為過度識別，可以評估模型適配度。" data-en="Correct! p(p+1)/2 = 8(9)/2 = 36 unique pieces of information. df = 36 - 30 = 6 > 0, so the model is over-identified and fit can be assessed.">正確！df = 36 - 30 = 6 > 0，為過度識別。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q4: 以下哪組適配度指標值代表模型適配良好？" data-en="Q4: Which set of fit index values indicates good model fit?">Q4: 以下哪組適配度指標值代表模型適配良好？</p>
+    <div class="quiz-option" data-correct="false" data-zh="χ²/df = 6.2, CFI = .88, RMSEA = .12" data-en="χ²/df = 6.2, CFI = .88, RMSEA = .12">χ²/df = 6.2, CFI = .88, RMSEA = .12</div>
+    <div class="quiz-option" data-correct="true" data-zh="χ²/df = 2.1, CFI = .97, RMSEA = .04, SRMR = .05" data-en="χ²/df = 2.1, CFI = .97, RMSEA = .04, SRMR = .05">χ²/df = 2.1, CFI = .97, RMSEA = .04, SRMR = .05</div>
+    <div class="quiz-option" data-correct="false" data-zh="χ²/df = 1.0, CFI = 1.00, RMSEA = .00（恰好識別）" data-en="χ²/df = 1.0, CFI = 1.00, RMSEA = .00 (just-identified)">χ²/df = 1.0, CFI = 1.00, RMSEA = .00（恰好識別）</div>
+    <div class="quiz-option" data-correct="false" data-zh="χ²/df = 4.8, CFI = .91, RMSEA = .09" data-en="χ²/df = 4.8, CFI = .91, RMSEA = .09">χ²/df = 4.8, CFI = .91, RMSEA = .09</div>
+    <div class="quiz-feedback" data-zh="正確！χ²/df = 2.1 (< 3)、CFI = .97 (≥ .95)、RMSEA = .04 (≤ .06)、SRMR = .05 (≤ .08) 全部達到良好適配的門檻。第三個選項雖然數值完美，但那是恰好識別模型的結果，適配度完美但無意義。" data-en="Correct! χ²/df = 2.1 (< 3), CFI = .97 (≥ .95), RMSEA = .04 (≤ .06), SRMR = .05 (≤ .08) all meet good-fit thresholds. The third option appears perfect but results from a just-identified model — perfect fit is meaningless.">正確！所有指標均達良好適配門檻。完美適配（df=0）反而無意義。</div>
+  </div>
+</div>
+
+
+</div><!-- container -->
+</main>
+
+<!-- Navigation -->
+<div style="padding:2rem 0;background:#f0f3f5">
+  <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+    <a href="ch3-reliability-validity.html" style="font-weight:600;background:var(--accent);color:#fff;padding:.5rem 1rem;border-radius:4px" data-zh="← 上一章：信效度基礎" data-en="← Previous: R&V Basics">← 上一章：信效度基礎</a>
+    <a href="ch10-cfa.html" style="font-weight:600;background:var(--accent);color:#fff;padding:.5rem 1rem;border-radius:4px" data-zh="下一章：CFA 分析 →" data-en="Next: CFA Analysis →">下一章：CFA 分析 →</a>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>Hair, J.F., Black, W.C., Babin, B.J., & Anderson, R.E. (2019). <em>Multivariate Data Analysis</em> (8th ed.).</p>
+    <p style="margin-top:.5rem;font-size:.8rem;opacity:.8">© 版權所有 葉欲禾 (Gary Yu-Ho Yeh)</p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

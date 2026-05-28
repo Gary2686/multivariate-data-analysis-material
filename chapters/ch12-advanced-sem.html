@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ch.12 進階SEM主題 | Advanced SEM Topics</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="lang-zh">
+<div class="progress-bar"><div class="fill"></div></div>
+
+<nav class="top-nav">
+  <div class="container">
+    <a href="../index.html" class="brand" data-zh="多變量資料分析" data-en="Multivariate Data Analysis">多變量資料分析</a>
+    <div class="nav-links">
+      <a href="../index.html" data-zh="首頁" data-en="Home">首頁</a>
+      <a href="ch11-structural-models.html" data-zh="結構模型" data-en="Structural">結構模型</a>
+      <a href="ch12-advanced-sem.html" class="active" data-zh="進階SEM" data-en="Adv SEM">進階SEM</a>
+      <a href="ch13-pls-sem.html" data-zh="PLS-SEM" data-en="PLS-SEM">PLS-SEM</a>
+      <button class="lang-toggle">EN</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1 data-zh="Ch.12 進階 SEM 主題" data-en="Ch.12 Advanced SEM Topics">Ch.12 進階 SEM 主題</h1>
+    <p data-zh="中介效果、調節效果、多群組分析與共同方法變異" data-en="Mediation, moderation, multi-group analysis, and common method variance">中介效果、調節效果、多群組分析與共同方法變異</p>
+  </div>
+</header>
+
+<!-- ========== Section 1: Mediation ========== -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title" data-zh="1. 中介效果" data-en="1. Mediation">1. 中介效果</h2>
+
+    <div class="concept-block success">
+      <h4 data-zh="白話解釋" data-en="Plain-Language Explanation">白話解釋</h4>
+      <p data-zh="中介就像骨牌效應：X 推倒 M，M 再推倒 Y。例如「廣告曝光 (X) → 品牌態度 (M) → 購買意圖 (Y)」。廣告不是直接讓你想買，而是先改變你對品牌的感覺，然後這個好感才讓你想購買。M 就是那個「中間的骨牌」，負責傳遞 X 對 Y 的影響。" data-en="Mediation is like a domino effect: X pushes M, M pushes Y. For example, 'Ad exposure (X) leads to brand attitude (M), then to purchase intention (Y)'. Ads don't directly make you want to buy; they first change your brand perception, and that positive feeling drives purchase intent. M is the 'middle domino' transmitting X's effect on Y.">中介就像骨牌效應：X 推倒 M，M 再推倒 Y。例如「廣告曝光 (X) &rarr; 品牌態度 (M) &rarr; 購買意圖 (Y)」。廣告不是直接讓你想買，而是先改變你對品牌的感覺，然後這個好感才讓你想購買。M 就是那個「中間的骨牌」，負責傳遞 X 對 Y 的影響。</p>
+    </div>
+
+    <div class="diagram" style="margin-top:1.5rem">
+      <svg viewBox="0 0 600 260" width="100%">
+        <defs>
+          <marker id="arrowMed" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2c3e50"/></marker>
+        </defs>
+        <!-- X -->
+        <ellipse cx="100" cy="200" rx="60" ry="30" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+        <text x="100" y="205" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">X</text>
+        <!-- M -->
+        <ellipse cx="300" cy="60" rx="60" ry="30" fill="#fff3cd" stroke="#f39c12" stroke-width="2"/>
+        <text x="300" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">M</text>
+        <!-- Y -->
+        <ellipse cx="500" cy="200" rx="60" ry="30" fill="#d4edda" stroke="#27ae60" stroke-width="2"/>
+        <text x="500" y="205" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">Y</text>
+        <!-- X -> M (a) -->
+        <line x1="145" y1="180" x2="255" y2="80" stroke="#2c3e50" stroke-width="2.5" marker-end="url(#arrowMed)"/>
+        <text x="175" y="118" font-size="14" fill="#e74c3c" font-weight="bold">a</text>
+        <!-- M -> Y (b) -->
+        <line x1="345" y1="80" x2="455" y2="180" stroke="#2c3e50" stroke-width="2.5" marker-end="url(#arrowMed)"/>
+        <text x="415" y="118" font-size="14" fill="#e74c3c" font-weight="bold">b</text>
+        <!-- X -> Y (c') -->
+        <line x1="160" y1="210" x2="440" y2="210" stroke="#8e44ad" stroke-width="2" stroke-dasharray="8,4" marker-end="url(#arrowMed)"/>
+        <text x="300" y="235" text-anchor="middle" font-size="13" fill="#8e44ad" font-weight="bold">c' (direct effect)</text>
+        <!-- Indirect label -->
+        <text x="300" y="15" text-anchor="middle" font-size="12" fill="#6c757d">Indirect effect = a &times; b</text>
+      </svg>
+      <div class="caption" data-zh="中介模型：間接效果 = a &times; b，直接效果 = c'，總效果 = c' + ab" data-en="Mediation model: indirect effect = a &times; b, direct effect = c', total effect = c' + ab">中介模型：間接效果 = a &times; b，直接效果 = c'，總效果 = c' + ab</div>
+    </div>
+
+    <div class="tab-container" style="margin-top:1.5rem">
+      <div class="tab-header">
+        <button class="tab-btn active" data-tab="bk-steps" data-zh="Baron-Kenny 法" data-en="Baron-Kenny Method">Baron-Kenny 法</button>
+        <button class="tab-btn" data-tab="bootstrap-med" data-zh="Bootstrapping 法（推薦）" data-en="Bootstrapping (Recommended)">Bootstrapping 法（推薦）</button>
+      </div>
+
+      <div class="tab-panel active" id="bk-steps">
+        <div class="card">
+          <h3 data-zh="Baron & Kenny (1986) 四步驟" data-en="Baron & Kenny (1986) Four Steps">Baron & Kenny (1986) 四步驟</h3>
+          <ol style="line-height:2;font-size:.95rem">
+            <li data-zh="Step 1：X 對 Y 有顯著效果 (c 顯著)" data-en="Step 1: X significantly affects Y (c is significant)">Step 1：X 對 Y 有顯著效果 (c 顯著)</li>
+            <li data-zh="Step 2：X 對 M 有顯著效果 (a 顯著)" data-en="Step 2: X significantly affects M (a is significant)">Step 2：X 對 M 有顯著效果 (a 顯著)</li>
+            <li data-zh="Step 3：控制 X 後，M 對 Y 有顯著效果 (b 顯著)" data-en="Step 3: Controlling for X, M significantly affects Y (b is significant)">Step 3：控制 X 後，M 對 Y 有顯著效果 (b 顯著)</li>
+            <li data-zh="Step 4：加入 M 後，X 對 Y 的效果 (c') 減弱或消失" data-en="Step 4: After adding M, X's effect on Y (c') is reduced or eliminated">Step 4：加入 M 後，X 對 Y 的效果 (c') 減弱或消失</li>
+          </ol>
+          <div class="table-wrap" style="margin-top:1rem">
+            <table>
+              <thead><tr><th data-zh="結果" data-en="Result">結果</th><th data-zh="判斷" data-en="Conclusion">判斷</th></tr></thead>
+              <tbody>
+                <tr><td data-zh="c' 不顯著" data-en="c' not significant">c' 不顯著</td><td data-zh="完全中介 (Full Mediation)" data-en="Full Mediation">完全中介 (Full Mediation)</td></tr>
+                <tr><td data-zh="c' 顯著但減弱" data-en="c' significant but reduced">c' 顯著但減弱</td><td data-zh="部分中介 (Partial Mediation)" data-en="Partial Mediation">部分中介 (Partial Mediation)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="concept-block warn">
+            <p data-zh="Baron-Kenny 法的限制：Step 1 不是必要條件（即使 X→Y 不顯著也可能存在中介），且 Sobel test 假設間接效果為常態分配，在小樣本下不準確。目前學界普遍推薦 Bootstrapping 法。" data-en="Limitations: Step 1 is not necessary (mediation can exist even if X to Y is not significant), and the Sobel test assumes normality of the indirect effect, which is inaccurate in small samples. Bootstrapping is now widely recommended.">Baron-Kenny 法的限制：Step 1 不是必要條件（即使 X&rarr;Y 不顯著也可能存在中介），且 Sobel test 假設間接效果為常態分配，在小樣本下不準確。目前學界普遍推薦 Bootstrapping 法。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="bootstrap-med">
+        <div class="card">
+          <h3 data-zh="Bootstrapping 中介效果檢定（推薦方法）" data-en="Bootstrapping Mediation Test (Recommended)">Bootstrapping 中介效果檢定（推薦方法）</h3>
+          <p data-zh="Bootstrapping 不假設間接效果的抽樣分配形態，直接透過重複抽樣來建立間接效果 (a&times;b) 的信賴區間。" data-en="Bootstrapping makes no assumptions about the sampling distribution of the indirect effect. It constructs confidence intervals for a*b through repeated resampling.">Bootstrapping 不假設間接效果的抽樣分配形態，直接透過重複抽樣來建立間接效果 (a&times;b) 的信賴區間。</p>
+          <div class="concept-block success">
+            <h4 data-zh="判斷準則" data-en="Decision Rule">判斷準則</h4>
+            <p data-zh="如果間接效果 (a&times;b) 的 95% 信賴區間不包含 0，即表示中介效果顯著。例如 CI = [0.05, 0.32] 代表中介效果顯著；CI = [-0.03, 0.28] 包含 0 則不顯著。" data-en="If the 95% confidence interval for the indirect effect (a*b) does not include 0, the mediation is significant. Example: CI = [0.05, 0.32] indicates significant mediation; CI = [-0.03, 0.28] includes 0, so not significant.">如果間接效果 (a&times;b) 的 95% 信賴區間不包含 0，即表示中介效果顯著。例如 CI = [0.05, 0.32] 代表中介效果顯著；CI = [-0.03, 0.28] 包含 0 則不顯著。</p>
+          </div>
+          <ol style="line-height:2;font-size:.95rem;margin-top:1rem">
+            <li data-zh="在 SEM 模型中同時估計路徑 a、b、c'" data-en="Estimate paths a, b, c' simultaneously in the SEM model">在 SEM 模型中同時估計路徑 a、b、c'</li>
+            <li data-zh="執行 Bootstrapping（建議至少 5,000 次重抽樣）" data-en="Run Bootstrapping (at least 5,000 resamples recommended)">執行 Bootstrapping（建議至少 5,000 次重抽樣）</li>
+            <li data-zh="檢查間接效果 (a&times;b) 的 Bias-corrected 95% CI 是否包含 0" data-en="Check whether the Bias-corrected 95% CI for indirect effect (a*b) includes 0">檢查間接效果 (a&times;b) 的 Bias-corrected 95% CI 是否包含 0</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="formula-box" style="margin-top:1.5rem">
+      <strong data-zh="間接效果" data-en="Indirect Effect">Indirect Effect</strong> = a &times; b
+      <span class="label" data-zh="Sobel z = ab / &radic;(b&sup2;s&sup2;a + a&sup2;s&sup2;b)，其中 sa 和 sb 分別為路徑 a 和 b 的標準誤。但 Bootstrapping CI 更為推薦。" data-en="Sobel z = ab / sqrt(b-squared times sa-squared + a-squared times sb-squared), where sa and sb are standard errors of paths a and b. But Bootstrapping CI is preferred.">Sobel z = ab / &radic;(b&sup2;s&sup2;<sub>a</sub> + a&sup2;s&sup2;<sub>b</sub>)，其中 s<sub>a</sub> 和 s<sub>b</sub> 分別為路徑 a 和 b 的標準誤。但 Bootstrapping CI 更為推薦。</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Section 2: Moderation ========== -->
+<section class="section" style="background:#fff">
+  <div class="container">
+    <h2 class="section-title" data-zh="2. 調節效果" data-en="2. Moderation">2. 調節效果</h2>
+
+    <div class="concept-block success">
+      <h4 data-zh="白話解釋" data-en="Plain-Language Explanation">白話解釋</h4>
+      <p data-zh="調節就像調味料改變菜的味道：X 對 Y 的影響會因為 M（調節變數）的不同而「改變強度或方向」。例如「促銷 (X) 對購買 (Y) 的效果」會因為「品牌忠誠度 (M)」而不同——忠誠顧客即使沒促銷也會買，非忠誠顧客則對促銷反應更大。調節變數不是中間橋樑，而是改變影響關係的「條件」。" data-en="Moderation is like seasoning changing a dish's flavor: X's effect on Y changes in strength or direction depending on M (moderator). For example, 'promotion (X) effect on purchase (Y)' differs by 'brand loyalty (M)' -- loyal customers buy regardless of promotions, while non-loyal customers respond more to promotions. The moderator is not a bridge but a 'condition' that changes the relationship.">調節就像調味料改變菜的味道：X 對 Y 的影響會因為 M（調節變數）的不同而「改變強度或方向」。例如「促銷 (X) 對購買 (Y) 的效果」會因為「品牌忠誠度 (M)」而不同——忠誠顧客即使沒促銷也會買，非忠誠顧客則對促銷反應更大。調節變數不是中間橋樑，而是改變影響關係的「條件」。</p>
+    </div>
+
+    <div class="diagram" style="margin-top:1.5rem">
+      <svg viewBox="0 0 520 260" width="100%">
+        <defs>
+          <marker id="arrowMod" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2c3e50"/></marker>
+        </defs>
+        <!-- X -->
+        <ellipse cx="100" cy="180" rx="60" ry="30" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+        <text x="100" y="185" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">X</text>
+        <!-- Y -->
+        <ellipse cx="420" cy="180" rx="60" ry="30" fill="#d4edda" stroke="#27ae60" stroke-width="2"/>
+        <text x="420" y="185" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">Y</text>
+        <!-- M -->
+        <ellipse cx="260" cy="50" rx="60" ry="30" fill="#f8d7da" stroke="#e74c3c" stroke-width="2"/>
+        <text x="260" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">M</text>
+        <!-- X -> Y -->
+        <line x1="160" y1="180" x2="360" y2="180" stroke="#2c3e50" stroke-width="2.5" marker-end="url(#arrowMod)"/>
+        <text x="260" y="200" text-anchor="middle" font-size="12" fill="#8e44ad" font-weight="bold">&beta;1</text>
+        <!-- M moderates (arrow to path) -->
+        <line x1="260" y1="80" x2="260" y2="165" stroke="#e74c3c" stroke-width="2" marker-end="url(#arrowMod)"/>
+        <circle cx="260" cy="180" r="6" fill="#e74c3c"/>
+        <text x="275" y="130" font-size="12" fill="#e74c3c" font-weight="bold">&beta;3</text>
+        <!-- M -> Y -->
+        <line x1="310" y1="65" x2="385" y2="155" stroke="#6c757d" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrowMod)"/>
+        <text x="370" y="105" font-size="11" fill="#6c757d">&beta;2</text>
+        <!-- Equation -->
+        <text x="260" y="250" text-anchor="middle" font-size="12" fill="#6c757d">Y = &beta;1X + &beta;2M + &beta;3(X&times;M) + e</text>
+      </svg>
+      <div class="caption" data-zh="調節模型：M 透過交互作用項 (X&times;M) 改變 X 對 Y 的影響強度" data-en="Moderation model: M changes X's effect on Y through the interaction term (X*M)">調節模型：M 透過交互作用項 (X&times;M) 改變 X 對 Y 的影響強度</div>
+    </div>
+
+    <div class="card" style="margin-top:1.5rem">
+      <h3 data-zh="調節效果的檢驗方法" data-en="Methods for Testing Moderation">調節效果的檢驗方法</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-zh="方法" data-en="Method">方法</th>
+              <th data-zh="適用情境" data-en="When to Use">適用情境</th>
+              <th data-zh="操作方式" data-en="Procedure">操作方式</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-zh="交互作用項 (Interaction Term)" data-en="Interaction Term">交互作用項</td>
+              <td data-zh="連續型調節變數" data-en="Continuous moderator">連續型調節變數</td>
+              <td data-zh="先平均中心化 X 和 M，再建立 X&times;M 乘積項" data-en="Mean-center X and M first, then create X*M product term">先平均中心化 X 和 M，再建立 X&times;M 乘積項</td>
+            </tr>
+            <tr>
+              <td data-zh="多群組分析 (Multi-Group)" data-en="Multi-Group Analysis">多群組分析</td>
+              <td data-zh="類別型調節變數（如性別）" data-en="Categorical moderator (e.g., gender)">類別型調節變數（如性別）</td>
+              <td data-zh="將樣本依調節變數分組，比較組間路徑係數差異" data-en="Split sample by moderator, compare path coefficients across groups">將樣本依調節變數分組，比較組間路徑係數差異</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="concept-block warn" style="margin-top:1.5rem">
+      <h4 data-zh="平均中心化 (Mean Centering)" data-en="Mean Centering">平均中心化 (Mean Centering)</h4>
+      <p data-zh="使用交互作用項前，應先將 X 和 M 進行平均中心化（減去各自的平均值）。這不會改變交互效果，但能：(1) 降低 X、M 與 X&times;M 之間的多元共線性；(2) 使主效果係數更容易解釋。" data-en="Before using interaction terms, mean-center X and M (subtract their respective means). This doesn't change the interaction effect but: (1) reduces multicollinearity between X, M, and X*M; (2) makes main effect coefficients easier to interpret.">使用交互作用項前，應先將 X 和 M 進行平均中心化（減去各自的平均值）。這不會改變交互效果，但能：(1) 降低 X、M 與 X&times;M 之間的多元共線性；(2) 使主效果係數更容易解釋。</p>
+    </div>
+
+    <div class="card" style="margin-top:1.5rem">
+      <h3 data-zh="探查交互作用 (Probing Interactions)" data-en="Probing Interactions">探查交互作用 (Probing Interactions)</h3>
+      <p data-zh="當交互作用項顯著時，需進一步探查具體的調節模式。常用方法：" data-en="When the interaction term is significant, further probing is needed to understand the specific moderation pattern. Common methods:">當交互作用項顯著時，需進一步探查具體的調節模式。</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-zh="方法" data-en="Method">方法</th>
+              <th data-zh="說明" data-en="Description">說明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-zh="簡單斜率檢定 (Simple Slope Test)" data-en="Simple Slope Test">簡單斜率檢定</td>
+              <td data-zh="在調節變數的不同水準（如 M+1SD、M-1SD）分別計算 X 對 Y 的斜率，檢驗各斜率是否顯著" data-en="Calculate X's slope on Y at different levels of the moderator (e.g., M+1SD, M-1SD), testing whether each slope is significant">在 M 的不同水準分別計算 X 對 Y 的斜率</td>
+            </tr>
+            <tr>
+              <td data-zh="Johnson-Neyman 技術" data-en="Johnson-Neyman Technique">Johnson-Neyman 技術</td>
+              <td data-zh="找出調節變數在什麼範圍內 X 對 Y 的效果是顯著的（不需要人為切分高低組）" data-en="Identifies the range of moderator values where X's effect on Y is significant (no arbitrary high/low split needed)">找出 M 在什麼範圍內效果顯著</td>
+            </tr>
+            <tr>
+              <td data-zh="交互作用圖 (Interaction Plot)" data-en="Interaction Plot">交互作用圖</td>
+              <td data-zh="視覺化呈現不同 M 水準下 X-Y 關係的斜率變化" data-en="Visually displays how the X-Y relationship slope changes at different M levels">視覺化呈現斜率變化</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="concept-block success">
+        <p data-zh="報告調節效果時，應同時呈現：(1) 交互項的 &beta; 和 p 值，(2) &Delta;R&sup2;（加入交互項後 R&sup2; 的增量），(3) 簡單斜率分析結果，(4) 交互作用圖。" data-en="When reporting moderation, present: (1) interaction term beta and p-value, (2) delta R-squared (R-squared increment after adding interaction), (3) simple slope analysis results, (4) interaction plot.">報告調節效果時，應同時呈現交互項係數、&Delta;R&sup2;、簡單斜率結果、以及交互作用圖。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Section 3: Multi-Group Analysis ========== -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title" data-zh="3. 多群組分析" data-en="3. Multi-Group Analysis">3. 多群組分析</h2>
+
+    <p data-zh="多群組 SEM 可用來檢驗「模型結構在不同群組之間是否相同」，例如男性與女性之間路徑係數是否有差異。但在比較之前，必須先確認「測量恆等性」(Measurement Invariance)。" data-en="Multi-group SEM tests whether 'model structures are the same across different groups', such as whether path coefficients differ between males and females. But before comparing, you must first establish 'measurement invariance'.">多群組 SEM 可用來檢驗「模型結構在不同群組之間是否相同」，例如男性與女性之間路徑係數是否有差異。但在比較之前，必須先確認「測量恆等性」(Measurement Invariance)。</p>
+
+    <div class="card" style="margin-top:1.5rem">
+      <h3 data-zh="測量恆等性三層次" data-en="Three Levels of Measurement Invariance">測量恆等性三層次</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-zh="層次" data-en="Level">層次</th>
+              <th data-zh="名稱" data-en="Name">名稱</th>
+              <th data-zh="限制條件" data-en="Constraint">限制條件</th>
+              <th data-zh="白話意義" data-en="Plain Meaning">白話意義</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td data-zh="形態恆等 (Configural)" data-en="Configural Invariance">形態恆等 (Configural)</td>
+              <td data-zh="因素結構相同（同樣的題目對應同樣的建構）" data-en="Same factor structure (same items load on same constructs)">因素結構相同</td>
+              <td data-zh="兩組人對問卷的「理解方式」一樣" data-en="Both groups 'understand' the questionnaire the same way">兩組人對問卷的「理解方式」一樣</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td data-zh="計量恆等 (Metric)" data-en="Metric Invariance">計量恆等 (Metric)</td>
+              <td data-zh="因素負荷量跨組相等" data-en="Factor loadings equal across groups">因素負荷量跨組相等</td>
+              <td data-zh="兩組人回答每一題時，「尺度」是一樣的" data-en="Both groups use the same 'scale' when answering each item">兩組人回答每一題時，「尺度」是一樣的</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td data-zh="純量恆等 (Scalar)" data-en="Scalar Invariance">純量恆等 (Scalar)</td>
+              <td data-zh="因素負荷量 + 截距跨組相等" data-en="Factor loadings + intercepts equal across groups">因素負荷量 + 截距跨組相等</td>
+              <td data-zh="兩組人不僅尺度一樣，「起點」也一樣（可比較平均值）" data-en="Both groups have same scale AND same 'starting point' (means can be compared)">兩組人不僅尺度一樣，「起點」也一樣</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="formula-box" style="margin-top:1.5rem">
+      <strong data-zh="恆等性檢定" data-en="Invariance Test">Invariance Test</strong>: &Delta;&chi;&sup2; = &chi;&sup2;<sub>constrained</sub> - &chi;&sup2;<sub>baseline</sub>
+      <span class="label" data-zh="若 &Delta;&chi;&sup2; 不顯著（p > .05），代表限制條件成立（恆等性成立）。也可搭配 &Delta;CFI < .01 作為輔助判斷。" data-en="If delta chi-square is not significant (p > .05), the constraint holds (invariance established). Can also use delta CFI < .01 as supplementary criterion.">若 &Delta;&chi;&sup2; 不顯著（p &gt; .05），代表限制條件成立。也可搭配 &Delta;CFI &lt; .01 作為輔助判斷。</span>
+    </div>
+
+    <div class="concept-block success" style="margin-top:1.5rem">
+      <h4 data-zh="白話解釋" data-en="Plain-Language Explanation">白話解釋</h4>
+      <p data-zh="想像你用同一把尺量兩個人的身高。如果「尺的刻度」在兩個人身上不一樣（沒有計量恆等），那比較出來的身高差異就沒意義。恆等性檢驗就是在確認你的「尺」在不同群組之間是公平的。" data-en="Imagine measuring two people's height with the same ruler. If the 'ruler's markings' are different for each person (no metric invariance), comparing their heights is meaningless. Invariance testing ensures your 'ruler' is fair across groups.">想像你用同一把尺量兩個人的身高。如果「尺的刻度」在兩個人身上不一樣（沒有計量恆等），那比較出來的身高差異就沒意義。恆等性檢驗就是在確認你的「尺」在不同群組之間是公平的。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Section 4: Mediated Moderation & Moderated Mediation ========== -->
+<section class="section" style="background:#fff">
+  <div class="container">
+    <h2 class="section-title" data-zh="4. 中介調節與調節中介" data-en="4. Mediated Moderation & Moderated Mediation">4. 中介調節與調節中介</h2>
+
+    <div class="card-grid" style="margin-top:1.5rem">
+      <div class="card" style="border-top:4px solid var(--accent)">
+        <h3 data-zh="調節中介 (Moderated Mediation)" data-en="Moderated Mediation">調節中介 (Moderated Mediation)</h3>
+        <p data-zh="中介效果的「強度」會因為調節變數的不同而改變。也就是說，間接效果 (a&times;b) 在不同條件下有不同的大小。" data-en="The 'strength' of the mediation effect changes depending on the moderator. That is, the indirect effect (a*b) varies under different conditions.">中介效果的「強度」會因為調節變數的不同而改變。也就是說，間接效果 (a&times;b) 在不同條件下有不同的大小。</p>
+        <div class="concept-block">
+          <p data-zh="例如：「培訓 (X) → 自我效能 (M) → 工作表現 (Y)」的中介效果在「主管支持高」的時候更強。主管支持是「調節」了中介路徑。" data-en="Example: 'Training (X) to self-efficacy (M) to performance (Y)' mediation is stronger when supervisor support is high. Supervisor support 'moderates' the mediation path.">例如：「培訓 (X) &rarr; 自我效能 (M) &rarr; 工作表現 (Y)」的中介效果在「主管支持高」的時候更強。</p>
+        </div>
+        <p data-zh="檢定方法：計算條件間接效果 (Conditional Indirect Effect)，並使用 Bootstrapping 檢驗其信賴區間。" data-en="Testing: Calculate the conditional indirect effect and use Bootstrapping to test its confidence interval.">檢定方法：計算條件間接效果，並使用 Bootstrapping 檢驗其信賴區間。</p>
+      </div>
+      <div class="card" style="border-top:4px solid var(--warning)">
+        <h3 data-zh="中介調節 (Mediated Moderation)" data-en="Mediated Moderation">中介調節 (Mediated Moderation)</h3>
+        <p data-zh="調節效果（交互作用）是「透過」中介變數來影響依變數的。也就是說，X&times;W 的交互作用先影響 M，再透過 M 影響 Y。" data-en="The moderation effect (interaction) influences the dependent variable 'through' a mediator. That is, the X*W interaction affects M first, then M affects Y.">調節效果（交互作用）是「透過」中介變數來影響依變數的。也就是說，X&times;W 的交互作用先影響 M，再透過 M 影響 Y。</p>
+        <div class="concept-block">
+          <p data-zh="例如：「壓力&times;人格」的交互作用先影響「因應策略」（中介），再影響「身心健康」。" data-en="Example: 'stress*personality' interaction first affects 'coping strategy' (mediator), then affects 'well-being'.">例如：「壓力&times;人格」的交互作用先影響「因應策略」（中介），再影響「身心健康」。</p>
+        </div>
+        <p data-zh="在概念上，有學者認為中介調節可以被重新詮釋為調節中介的特例。" data-en="Conceptually, some scholars argue mediated moderation can be reinterpreted as a special case of moderated mediation.">在概念上，有學者認為中介調節可以被重新詮釋為調節中介的特例。</p>
+      </div>
+    </div>
+
+    <div class="concept-block" style="margin-top:1.5rem">
+      <h4 data-zh="如何區分？" data-en="How to Distinguish?">如何區分？</h4>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-zh="面向" data-en="Aspect">面向</th>
+              <th data-zh="調節中介 (Moderated Mediation)" data-en="Moderated Mediation">調節中介</th>
+              <th data-zh="中介調節 (Mediated Moderation)" data-en="Mediated Moderation">中介調節</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-zh="核心問題" data-en="Core Question">核心問題</td>
+              <td data-zh="中介效果在什麼條件下更強/更弱？" data-en="Under what conditions is the mediation effect stronger/weaker?">中介效果在什麼條件下更強/弱？</td>
+              <td data-zh="調節效果透過什麼機制產生影響？" data-en="Through what mechanism does the moderation effect operate?">調節效果透過什麼機制產生影響？</td>
+            </tr>
+            <tr>
+              <td data-zh="分析焦點" data-en="Analysis Focus">分析焦點</td>
+              <td data-zh="條件間接效果 (Conditional Indirect Effect)" data-en="Conditional Indirect Effect">條件間接效果</td>
+              <td data-zh="交互項的間接效果" data-en="Indirect effect of the interaction term">交互項的間接效果</td>
+            </tr>
+            <tr>
+              <td data-zh="統計檢定" data-en="Statistical Test">統計檢定</td>
+              <td data-zh="Bootstrapping CI + Index of Moderated Mediation" data-en="Bootstrapping CI + Index of Moderated Mediation">Bootstrapping CI + 調節中介指數</td>
+              <td data-zh="Bootstrapping 檢驗 X&times;W &rarr; M &rarr; Y 的間接效果" data-en="Bootstrapping test of X*W to M to Y indirect effect">Bootstrapping 間接效果 CI</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Section 5: Common Method Variance ========== -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title" data-zh="5. 共同方法變異" data-en="5. Common Method Variance (CMV)">5. 共同方法變異</h2>
+
+    <div class="concept-block danger">
+      <h4 data-zh="什麼是共同方法變異？" data-en="What is Common Method Variance?">什麼是共同方法變異？</h4>
+      <p data-zh="當自變數和依變數來自同一個來源（如同一位受試者在同一時間填的同一份問卷），變數之間的相關可能被人為膨脹。這不是真實的理論關係，而是「方法」本身造成的假相關。例如受試者可能因為一致性偏誤（想讓答案前後一致）而讓所有題目都勾高分。" data-en="When IVs and DVs come from the same source (e.g., same respondent, same time, same questionnaire), correlations between variables may be artificially inflated. This is not a real theoretical relationship but a spurious correlation caused by the 'method' itself. For example, respondents may consistently rate items high due to consistency bias.">當自變數和依變數來自同一個來源（如同一位受試者在同一時間填的同一份問卷），變數之間的相關可能被人為膨脹。這不是真實的理論關係，而是「方法」本身造成的假相關。</p>
+    </div>
+
+    <div class="card" style="margin-top:1.5rem">
+      <h3 data-zh="CMV 檢測與補救方法" data-en="CMV Detection & Remedies">CMV 檢測與補救方法</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-zh="類型" data-en="Type">類型</th>
+              <th data-zh="方法" data-en="Method">方法</th>
+              <th data-zh="說明" data-en="Description">說明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="2" data-zh="統計檢測" data-en="Statistical Detection">統計檢測</td>
+              <td data-zh="Harman 單因子檢定" data-en="Harman's Single Factor Test">Harman 單因子檢定</td>
+              <td data-zh="將所有項目投入 EFA，若單一因子解釋 > 50% 變異，CMV 可能嚴重。但此法敏感度低，不被推薦作為唯一檢測。" data-en="Enter all items in EFA; if a single factor explains > 50% variance, CMV may be serious. However, this test has low sensitivity and is not recommended as the sole check.">將所有項目投入 EFA，若單一因子解釋 &gt; 50% 變異，CMV 可能嚴重</td>
+            </tr>
+            <tr>
+              <td data-zh="標記變數技術 (Marker Variable)" data-en="Marker Variable Technique">標記變數技術</td>
+              <td data-zh="在問卷中加入一個理論上與研究變數無關的量表。若此量表與研究變數有顯著相關，暗示存在 CMV。" data-en="Include a scale theoretically unrelated to study variables. If this scale significantly correlates with study variables, CMV is suspected.">在問卷中加入一個與研究變數無關的量表</td>
+            </tr>
+            <tr>
+              <td rowspan="3" data-zh="程序性補救" data-en="Procedural Remedies">程序性補救</td>
+              <td data-zh="時間分離 (Temporal Separation)" data-en="Temporal Separation">時間分離</td>
+              <td data-zh="在不同時間點蒐集自變數與依變數的資料" data-en="Collect IV and DV data at different time points">在不同時間點蒐集自變數與依變數的資料</td>
+            </tr>
+            <tr>
+              <td data-zh="來源分離 (Source Separation)" data-en="Source Separation">來源分離</td>
+              <td data-zh="從不同來源蒐集自變數與依變數（如主管評員工）" data-en="Collect IVs and DVs from different sources (e.g., supervisor rates employee)">從不同來源蒐集自變數與依變數</td>
+            </tr>
+            <tr>
+              <td data-zh="問卷設計" data-en="Questionnaire Design">問卷設計</td>
+              <td data-zh="分散題目順序、使用不同量尺格式、保護匿名性" data-en="Randomize item order, use different scale formats, protect anonymity">分散題目順序、使用不同量尺格式、保護匿名性</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Section 6: Quiz ========== -->
+<section class="section" style="background:#fff">
+  <div class="container">
+    <h2 class="section-title" data-zh="6. 自我測驗" data-en="6. Self-Assessment Quiz">6. 自我測驗</h2>
+
+    <div class="quiz">
+      <h3 data-zh="測試你對進階 SEM 主題的理解" data-en="Test Your Understanding of Advanced SEM Topics">測試你對進階 SEM 主題的理解</h3>
+
+      <div class="quiz-question">
+        <p data-zh="Q1：使用 Bootstrapping 檢驗中介效果時，如何判斷間接效果是否顯著？" data-en="Q1: When using Bootstrapping to test mediation, how do you determine if the indirect effect is significant?">Q1：使用 Bootstrapping 檢驗中介效果時，如何判斷間接效果是否顯著？</p>
+        <div class="quiz-option" data-correct="false" data-zh="看 Sobel test 的 z 值是否大於 1.96" data-en="Check if the Sobel test z-value exceeds 1.96">看 Sobel test 的 z 值是否大於 1.96</div>
+        <div class="quiz-option" data-correct="true" data-zh="看間接效果 (a&times;b) 的 95% 信賴區間是否不包含 0" data-en="Check if the 95% CI for the indirect effect (a*b) does not include 0">看間接效果 (a&times;b) 的 95% 信賴區間是否不包含 0</div>
+        <div class="quiz-option" data-correct="false" data-zh="看 X 對 Y 的直接效果是否不顯著" data-en="Check if X's direct effect on Y is not significant">看 X 對 Y 的直接效果是否不顯著</div>
+        <div class="quiz-feedback" data-zh="正確！Bootstrapping 法直接建構間接效果 (a&times;b) 的信賴區間。若 95% CI 不包含 0（如 [0.05, 0.32]），則中介效果顯著。這比 Sobel test 更穩健，因為不需要假設間接效果為常態分配。" data-en="Correct! Bootstrapping directly constructs the CI for the indirect effect. If the 95% CI doesn't include 0 (e.g., [0.05, 0.32]), mediation is significant. This is more robust than the Sobel test because it doesn't assume normality of the indirect effect.">正確！Bootstrapping 法直接建構間接效果 (a&times;b) 的信賴區間。若 95% CI 不包含 0，則中介效果顯著。</div>
+      </div>
+
+      <div class="quiz-question">
+        <p data-zh="Q2：在 SEM 中檢驗調節效果時，為什麼要先對自變數和調節變數進行平均中心化？" data-en="Q2: When testing moderation in SEM, why should you mean-center the IV and moderator first?">Q2：在 SEM 中檢驗調節效果時，為什麼要先對自變數和調節變數進行平均中心化？</p>
+        <div class="quiz-option" data-correct="false" data-zh="為了改變交互作用的效果大小" data-en="To change the interaction effect size">為了改變交互作用的效果大小</div>
+        <div class="quiz-option" data-correct="true" data-zh="為了降低 X、M 與交互項 X&times;M 之間的多元共線性" data-en="To reduce multicollinearity between X, M, and the interaction term X*M">為了降低 X、M 與交互項 X&times;M 之間的多元共線性</div>
+        <div class="quiz-option" data-correct="false" data-zh="為了讓資料符合常態分配" data-en="To make the data normally distributed">為了讓資料符合常態分配</div>
+        <div class="quiz-feedback" data-zh="正確！平均中心化不會改變交互效果本身，但能有效降低 X、M 與 X&times;M 之間的多元共線性，並使主效果係數的解釋更為直觀。" data-en="Correct! Mean centering doesn't change the interaction effect itself, but effectively reduces multicollinearity between X, M, and X*M, and makes main effect coefficients more interpretable.">正確！平均中心化不會改變交互效果本身，但能有效降低多元共線性。</div>
+      </div>
+
+      <div class="quiz-question">
+        <p data-zh="Q3：進行多群組 SEM 分析前，至少需要通過哪個層次的測量恆等性，才能比較群組間的路徑係數？" data-en="Q3: Before multi-group SEM analysis, what minimum level of measurement invariance is needed to compare path coefficients across groups?">Q3：進行多群組 SEM 分析前，至少需要通過哪個層次的測量恆等性，才能比較群組間的路徑係數？</p>
+        <div class="quiz-option" data-correct="false" data-zh="形態恆等 (Configural Invariance)" data-en="Configural Invariance">形態恆等 (Configural Invariance)</div>
+        <div class="quiz-option" data-correct="true" data-zh="計量恆等 (Metric Invariance)" data-en="Metric Invariance">計量恆等 (Metric Invariance)</div>
+        <div class="quiz-option" data-correct="false" data-zh="純量恆等 (Scalar Invariance)" data-en="Scalar Invariance">純量恆等 (Scalar Invariance)</div>
+        <div class="quiz-feedback" data-zh="正確！計量恆等（因素負荷量跨組相等）是比較路徑係數的最低要求。如果負荷量不同，代表同一道題在不同群組中測量出的「單位」不同，路徑係數的比較就沒有意義。純量恆等是比較潛在變數平均值時才需要的更嚴格條件。" data-en="Correct! Metric invariance (equal factor loadings across groups) is the minimum requirement for comparing path coefficients. If loadings differ, the same item measures different 'units' across groups, making path coefficient comparisons meaningless. Scalar invariance is needed for comparing latent means.">正確！計量恆等是比較路徑係數的最低要求。純量恆等是比較潛在變數平均值時才需要的更嚴格條件。</div>
+      </div>
+
+      <div class="quiz-question">
+        <p data-zh="Q4：一位研究者用 Harman 單因子檢定發現第一個因子解釋了 35% 的變異，就宣稱「沒有共同方法變異問題」。這個結論可靠嗎？" data-en="Q4: A researcher used Harman's single factor test and found the first factor explains 35% of variance, then claimed 'no CMV problem'. Is this conclusion reliable?">Q4：一位研究者用 Harman 單因子檢定發現第一個因子解釋了 35% 的變異，就宣稱「沒有共同方法變異問題」。這個結論可靠嗎？</p>
+        <div class="quiz-option" data-correct="false" data-zh="可靠，因為 35% 遠低於 50% 的門檻" data-en="Reliable, because 35% is well below the 50% threshold">可靠，因為 35% 遠低於 50% 的門檻</div>
+        <div class="quiz-option" data-correct="true" data-zh="不夠可靠，因為 Harman 檢定敏感度低，應搭配其他方法（如標記變數技術）" data-en="Not reliable enough, because Harman's test has low sensitivity; should combine with other methods (e.g., marker variable technique)">不夠可靠，因為 Harman 檢定敏感度低，應搭配其他方法</div>
+        <div class="quiz-option" data-correct="false" data-zh="不可靠，因為 35% 已經太高了" data-en="Not reliable, because 35% is already too high">不可靠，因為 35% 已經太高了</div>
+        <div class="quiz-feedback" data-zh="正確！Harman 單因子檢定的敏感度很低，即使通過也不能確保沒有 CMV。學界建議應搭配標記變數技術等更嚴謹的統計方法，並盡量在研究設計階段就採取程序性補救措施（如時間分離、來源分離）。" data-en="Correct! Harman's test has low sensitivity -- passing it doesn't guarantee absence of CMV. Combine with marker variable technique and adopt procedural remedies (temporal separation, source separation) during research design.">正確！Harman 檢定敏感度很低，應搭配標記變數技術及程序性補救措施。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <p data-zh="Ch.12 進階 SEM 主題 | 基於 Hair et al. (2019) 第八版" data-en="Ch.12 Advanced SEM Topics | Based on Hair et al. (2019) 8th Ed.">Ch.12 進階 SEM 主題 | 基於 Hair et al. (2019) 第八版</p>
+    <p style="margin-top:.5rem;font-size:.8rem;opacity:.8">&copy; 版權所有 葉欲禾 (Gary Yu-Ho Yeh)</p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

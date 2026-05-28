@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>驗證性因素分析 | SEM: Confirmatory Factor Analysis</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="lang-zh">
+<div class="progress-bar"><div class="fill"></div></div>
+
+<nav class="top-nav">
+  <div class="container">
+    <a href="../index.html" class="brand" data-zh="多變量資料分析" data-en="Multivariate Data Analysis">多變量資料分析</a>
+    <div class="nav-links">
+      <a href="../index.html" data-zh="首頁" data-en="Home">首頁</a>
+      <a href="ch9-sem-intro.html" data-zh="SEM導論" data-en="SEM Intro">SEM導論</a>
+      <a href="ch10-cfa.html" class="active" data-zh="CFA分析" data-en="CFA">CFA分析</a>
+      <a href="ch10-cfa-validity.html" data-zh="CFA效度" data-en="CFA Validity">CFA效度</a>
+      <button class="lang-toggle">EN</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1 data-zh="驗證性因素分析" data-en="SEM: Confirmatory Factor Analysis">驗證性因素分析</h1>
+    <p data-zh="Ch.10 CFA 模型設定、識別、適配度評估與模型修正" data-en="Ch.10 CFA Model Specification, Identification, Fit Assessment & Modification">Ch.10 CFA 模型設定、識別、適配度評估與模型修正</p>
+  </div>
+</header>
+
+<main class="section">
+<div class="container">
+
+<!-- ================================ -->
+<!-- SECTION 1: CFA Overview          -->
+<!-- ================================ -->
+<h2 class="section-title" data-zh="一、CFA 概述" data-en="1. CFA Overview">一、CFA 概述</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p><strong>驗證性因素分析（Confirmatory Factor Analysis, CFA）</strong>是 SEM 的測量模型部分，用來檢驗研究者事先提出的測量理論——即潛在建構與其觀察指標之間的對應關係——是否與實際資料吻合。CFA 是從 EFA 的「探索」進入「驗證」階段的關鍵方法。</p>
+  </div>
+  <div class="en">
+    <p><strong>Confirmatory Factor Analysis (CFA)</strong> is the measurement model component of SEM, used to test whether a researcher's pre-specified measurement theory — the correspondence between latent constructs and their observed indicators — is consistent with actual data. CFA is the critical method for moving from EFA's "exploration" to "confirmation."</p>
+  </div>
+</div>
+
+<div class="concept-block success">
+  <h4 data-zh="白話解釋" data-en="Plain Language">白話解釋</h4>
+  <div class="bilingual">
+    <div class="zh"><p>CFA 就像<strong>考試前先確認考卷題目真的在考你想考的東西</strong>——你設計了一份問卷來測量「工作滿意度」，但這些題目真的都在量同一個東西嗎？有沒有哪題其實在量別的概念？CFA 幫你用統計方法回答這些問題。</p></div>
+    <div class="en"><p>CFA is like <strong>confirming that test items actually measure what you intend</strong> before the exam — you designed a questionnaire for "job satisfaction," but do all items truly measure the same thing? Is any item actually measuring a different concept? CFA helps answer these questions statistically.</p></div>
+  </div>
+</div>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="面向" data-en="Aspect">面向</th>
+        <th>EFA</th>
+        <th>CFA</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-zh="理論需求" data-en="Theory Requirement">理論需求</td>
+        <td data-zh="不需要事先理論" data-en="No prior theory needed">不需要事先理論</td>
+        <td data-zh="必須有明確的測量理論" data-en="Clear measurement theory required">必須有明確的測量理論</td>
+      </tr>
+      <tr>
+        <td data-zh="因素數量" data-en="Number of Factors">因素數量</td>
+        <td data-zh="由資料決定" data-en="Determined by data">由資料決定</td>
+        <td data-zh="事先指定" data-en="Pre-specified">事先指定</td>
+      </tr>
+      <tr>
+        <td data-zh="交叉負荷" data-en="Cross-loadings">交叉負荷</td>
+        <td data-zh="全部自由估計" data-en="All freely estimated">全部自由估計</td>
+        <td data-zh="固定為零" data-en="Fixed to zero">固定為零</td>
+      </tr>
+      <tr>
+        <td data-zh="適配度評估" data-en="Fit Assessment">適配度評估</td>
+        <td data-zh="有限" data-en="Limited">有限</td>
+        <td data-zh="全面（多種適配度指標）" data-en="Comprehensive (multiple fit indices)">全面（多種適配度指標）</td>
+      </tr>
+      <tr>
+        <td data-zh="使用時機" data-en="When to Use">使用時機</td>
+        <td data-zh="量表開發初期、探索因素結構" data-en="Early scale development, exploring structure">量表開發初期、探索因素結構</td>
+        <td data-zh="量表驗證、已有理論基礎時" data-en="Scale validation, with existing theory">量表驗證、已有理論基礎時</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ================================ -->
+<!-- SECTION 2: Model Specification   -->
+<!-- ================================ -->
+<h2 class="section-title" data-zh="二、CFA 模型設定" data-en="2. CFA Model Specification">二、CFA 模型設定</h2>
+
+<div class="bilingual">
+  <div class="zh"><p>CFA 模型設定是將測量理論轉化為可估計的統計模型。研究者必須明確指定哪些觀察變數（指標）對應哪個潛在建構，以及哪些路徑被約束（固定）為零。</p></div>
+  <div class="en"><p>CFA model specification translates measurement theory into an estimable statistical model. Researchers must explicitly specify which observed variables (indicators) correspond to which latent constructs, and which paths are constrained (fixed) to zero.</p></div>
+</div>
+
+<!-- SVG: CFA Model Diagram -->
+<div class="diagram">
+  <svg viewBox="0 0 700 380" xmlns="http://www.w3.org/2000/svg" style="max-width:650px">
+    <defs>
+      <marker id="arrC" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#2c3e50"/>
+      </marker>
+    </defs>
+
+    <!-- Latent Variable (ellipse) -->
+    <ellipse cx="350" cy="60" rx="120" ry="40" fill="#d6eaf8" stroke="#3498db" stroke-width="2.5"/>
+    <text x="350" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50" data-zh="工作滿意度" data-en="Job Satisfaction">工作滿意度</text>
+    <text x="350" y="75" text-anchor="middle" font-size="11" fill="#6c757d">(ξ / η)</text>
+
+    <!-- Factor loadings arrows -->
+    <line x1="255" y1="95" x2="115" y2="165" stroke="#3498db" stroke-width="2" marker-end="url(#arrC)"/>
+    <line x1="310" y1="100" x2="255" y2="165" stroke="#3498db" stroke-width="2" marker-end="url(#arrC)"/>
+    <line x1="350" y1="100" x2="350" y2="165" stroke="#3498db" stroke-width="2" marker-end="url(#arrC)"/>
+    <line x1="390" y1="100" x2="445" y2="165" stroke="#3498db" stroke-width="2" marker-end="url(#arrC)"/>
+    <line x1="445" y1="95" x2="585" y2="165" stroke="#3498db" stroke-width="2" marker-end="url(#arrC)"/>
+
+    <!-- Loading labels -->
+    <text x="170" y="125" text-anchor="middle" font-size="11" font-weight="bold" fill="#3498db">λ₁=1*</text>
+    <text x="268" y="140" text-anchor="middle" font-size="11" font-weight="bold" fill="#3498db">λ₂</text>
+    <text x="365" y="140" text-anchor="middle" font-size="11" font-weight="bold" fill="#3498db">λ₃</text>
+    <text x="432" y="140" text-anchor="middle" font-size="11" font-weight="bold" fill="#3498db">λ₄</text>
+    <text x="530" y="125" text-anchor="middle" font-size="11" font-weight="bold" fill="#3498db">λ₅</text>
+
+    <!-- Indicator rectangles -->
+    <rect x="65" y="170" width="100" height="40" rx="4" fill="#fff" stroke="#3498db" stroke-width="1.5"/>
+    <text x="115" y="195" text-anchor="middle" font-size="12" fill="#2c3e50">X₁</text>
+    <rect x="205" y="170" width="100" height="40" rx="4" fill="#fff" stroke="#3498db" stroke-width="1.5"/>
+    <text x="255" y="195" text-anchor="middle" font-size="12" fill="#2c3e50">X₂</text>
+    <rect x="300" y="170" width="100" height="40" rx="4" fill="#fff" stroke="#3498db" stroke-width="1.5"/>
+    <text x="350" y="195" text-anchor="middle" font-size="12" fill="#2c3e50">X₃</text>
+    <rect x="395" y="170" width="100" height="40" rx="4" fill="#fff" stroke="#3498db" stroke-width="1.5"/>
+    <text x="445" y="195" text-anchor="middle" font-size="12" fill="#2c3e50">X₄</text>
+    <rect x="535" y="170" width="100" height="40" rx="4" fill="#fff" stroke="#3498db" stroke-width="1.5"/>
+    <text x="585" y="195" text-anchor="middle" font-size="12" fill="#2c3e50">X₅</text>
+
+    <!-- Error terms -->
+    <line x1="115" y1="210" x2="115" y2="250" stroke="#999" stroke-width="1.5" marker-end="url(#arrC)"/>
+    <line x1="255" y1="210" x2="255" y2="250" stroke="#999" stroke-width="1.5" marker-end="url(#arrC)"/>
+    <line x1="350" y1="210" x2="350" y2="250" stroke="#999" stroke-width="1.5" marker-end="url(#arrC)"/>
+    <line x1="445" y1="210" x2="445" y2="250" stroke="#999" stroke-width="1.5" marker-end="url(#arrC)"/>
+    <line x1="585" y1="210" x2="585" y2="250" stroke="#999" stroke-width="1.5" marker-end="url(#arrC)"/>
+    <ellipse cx="115" cy="268" rx="22" ry="15" fill="#f8f9fa" stroke="#999" stroke-width="1"/>
+    <text x="115" y="272" text-anchor="middle" font-size="10" fill="#999">e₁</text>
+    <ellipse cx="255" cy="268" rx="22" ry="15" fill="#f8f9fa" stroke="#999" stroke-width="1"/>
+    <text x="255" y="272" text-anchor="middle" font-size="10" fill="#999">e₂</text>
+    <ellipse cx="350" cy="268" rx="22" ry="15" fill="#f8f9fa" stroke="#999" stroke-width="1"/>
+    <text x="350" y="272" text-anchor="middle" font-size="10" fill="#999">e₃</text>
+    <ellipse cx="445" cy="268" rx="22" ry="15" fill="#f8f9fa" stroke="#999" stroke-width="1"/>
+    <text x="445" y="272" text-anchor="middle" font-size="10" fill="#999">e₄</text>
+    <ellipse cx="585" cy="268" rx="22" ry="15" fill="#f8f9fa" stroke="#999" stroke-width="1"/>
+    <text x="585" y="272" text-anchor="middle" font-size="10" fill="#999">e₅</text>
+
+    <!-- Note -->
+    <text x="350" y="320" text-anchor="middle" font-size="11" fill="#6c757d" data-zh="* λ₁ = 1 為標記變數（marker variable），用以設定潛在建構的尺度" data-en="* λ₁ = 1 is the marker variable, used to set the latent construct's scale">* λ₁ = 1 為標記變數（marker variable），用以設定潛在建構的尺度</text>
+    <text x="350" y="340" text-anchor="middle" font-size="11" fill="#6c757d" data-zh="橢圓 = 潛在變數 | 矩形 = 觀察指標 | 小圓 = 誤差項" data-en="Ellipse = latent variable | Rectangle = observed indicator | Small circle = error term">橢圓 = 潛在變數 | 矩形 = 觀察指標 | 小圓 = 誤差項</text>
+  </svg>
+  <p class="caption" data-zh="圖：單因素 CFA 模型 — 一個潛在建構由五個觀察指標測量" data-en="Figure: Single-factor CFA model — one latent construct measured by five indicators">圖：單因素 CFA 模型 — 一個潛在建構由五個觀察指標測量</p>
+</div>
+
+<div class="card-grid" style="margin-top:1rem">
+  <div class="card">
+    <h3 data-zh="CFA 中需要指定的元素" data-en="Elements to Specify in CFA">CFA 中需要指定的元素</h3>
+    <div class="zh-only">
+      <ol style="padding-left:1.2rem">
+        <li><strong>潛在建構（因素）：</strong>數量和名稱</li>
+        <li><strong>指標歸屬：</strong>每個觀察變數指定到一個建構</li>
+        <li><strong>因素負荷量：</strong>自由估計（歸屬路徑）或固定為零（交叉負荷）</li>
+        <li><strong>誤差項：</strong>每個指標各自的誤差變異</li>
+        <li><strong>因素間相關：</strong>允許建構之間的共變異</li>
+      </ol>
+    </div>
+    <div class="en-only">
+      <ol style="padding-left:1.2rem">
+        <li><strong>Latent constructs (factors):</strong> Number and names</li>
+        <li><strong>Indicator assignments:</strong> Each observed variable assigned to one construct</li>
+        <li><strong>Factor loadings:</strong> Freely estimated (assigned paths) or fixed to zero (cross-loadings)</li>
+        <li><strong>Error terms:</strong> Unique error variance for each indicator</li>
+        <li><strong>Factor correlations:</strong> Allowing covariance between constructs</li>
+      </ol>
+    </div>
+  </div>
+  <div class="card">
+    <h3 data-zh="設定規則" data-en="Specification Rules">設定規則</h3>
+    <div class="zh-only">
+      <ul style="padding-left:1.2rem">
+        <li>每個指標<strong>只能</strong>歸屬一個建構</li>
+        <li>非歸屬路徑的負荷量固定為 <strong>0</strong></li>
+        <li>誤差項之間<strong>不應有共變異</strong>（同源模型要求）</li>
+        <li>每個建構至少需要 <strong>3 個指標</strong>（理想 ≥ 4 個）</li>
+        <li>需設定<strong>標記變數</strong>或固定因素變異數以確立尺度</li>
+      </ul>
+    </div>
+    <div class="en-only">
+      <ul style="padding-left:1.2rem">
+        <li>Each indicator loads on <strong>only one</strong> construct</li>
+        <li>Non-assigned loadings fixed to <strong>0</strong></li>
+        <li>Error terms should have <strong>no covariance</strong> (congeneric model)</li>
+        <li>Each construct requires at least <strong>3 indicators</strong> (ideally ≥ 4)</li>
+        <li>A <strong>marker variable</strong> or fixed factor variance must be set for scaling</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- SECTION 3: Model Identification  -->
+<!-- ================================ -->
+<h2 class="section-title" data-zh="三、CFA 模型識別" data-en="3. CFA Model Identification">三、CFA 模型識別</h2>
+
+<div class="bilingual">
+  <div class="zh"><p>CFA 模型識別決定模型是否能產生唯一的參數估計值。識別不足的模型無法求解，恰好識別的模型無法評估適配度。</p></div>
+  <div class="en"><p>CFA model identification determines whether a model can produce unique parameter estimates. Under-identified models cannot be solved; just-identified models cannot assess fit.</p></div>
+</div>
+
+<div class="formula-box" style="margin-top:1rem">
+  <div data-zh="CFA 自由度：df = p(p+1)/2 - q" data-en="CFA degrees of freedom: df = p(p+1)/2 - q">df = p(p+1)/2 - q</div>
+  <span class="label" data-zh="p = 觀察變數總數；q = 自由估計的參數數量（負荷量 + 因素變異/共變異 + 誤差變異）" data-en="p = total observed variables; q = freely estimated parameters (loadings + factor variances/covariances + error variances)">p = 觀察變數總數；q = 自由估計的參數數量</span>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="三指標規則（Three-Indicator Rule）" data-en="Three-Indicator Rule">三指標規則（Three-Indicator Rule）</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p>每個潛在建構至少需要<strong>三個指標</strong>才能達到恰好識別（df = 0）。這是因為：</p>
+      <ul style="padding-left:1.2rem">
+        <li>3 個指標提供 3(4)/2 = <strong>6</strong> 個唯一資訊（共變異+變異數）</li>
+        <li>需估計：2 個負荷量（1個固定為標記變數）+ 1 個因素變異 + 3 個誤差變異 = <strong>6</strong> 個參數</li>
+        <li>df = 6 - 6 = 0（恰好識別）</li>
+        <li>4 個指標時：10 - 8 = 2（過度識別，可評估適配度）</li>
+      </ul>
+    </div>
+    <div class="en">
+      <p>Each latent construct needs at least <strong>three indicators</strong> for just-identification (df = 0). This is because:</p>
+      <ul style="padding-left:1.2rem">
+        <li>3 indicators provide 3(4)/2 = <strong>6</strong> unique pieces of information (covariances + variances)</li>
+        <li>Parameters to estimate: 2 loadings (1 fixed as marker) + 1 factor variance + 3 error variances = <strong>6</strong></li>
+        <li>df = 6 - 6 = 0 (just-identified)</li>
+        <li>With 4 indicators: 10 - 8 = 2 (over-identified, fit can be assessed)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="標記變數與尺度設定" data-en="Marker Variable & Scaling">標記變數與尺度設定</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p>潛在變數沒有自然的測量單位，因此需要設定尺度。兩種常見方法：</p>
+      <ul style="padding-left:1.2rem">
+        <li><strong>標記變數法：</strong>將一個指標的負荷量固定為 1.0，潛在變數的單位就等同於該指標的單位。通常選擇與建構定義最相關的指標。</li>
+        <li><strong>因素變異數法：</strong>固定潛在變數的變異數為 1.0，產生標準化解。所有負荷量都可自由估計。</li>
+      </ul>
+    </div>
+    <div class="en">
+      <p>Latent variables have no natural measurement units, so scaling must be set. Two common approaches:</p>
+      <ul style="padding-left:1.2rem">
+        <li><strong>Marker variable:</strong> Fix one indicator's loading to 1.0; the latent variable adopts that indicator's units. Usually choose the indicator most representative of the construct.</li>
+        <li><strong>Factor variance:</strong> Fix the latent variable's variance to 1.0, producing a standardized solution. All loadings are freely estimated.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- SECTION 4: Fit Assessment        -->
+<!-- ================================ -->
+<h2 class="section-title" data-zh="四、CFA 適配度評估" data-en="4. CFA Fit Assessment">四、CFA 適配度評估</h2>
+
+<div class="bilingual">
+  <div class="zh"><p>CFA 使用與 SEM 相同的適配度指標體系。目標是確認觀察到的共變異矩陣與模型所隱含的共變異矩陣之間的差異是否在可接受範圍內。</p></div>
+  <div class="en"><p>CFA uses the same fit index framework as SEM. The goal is to confirm that discrepancies between observed and model-implied covariance matrices are within acceptable bounds.</p></div>
+</div>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="指標" data-en="Index">指標</th>
+        <th data-zh="良好適配" data-en="Good Fit">良好適配</th>
+        <th data-zh="可接受" data-en="Acceptable">可接受</th>
+        <th data-zh="CFA 特別注意" data-en="CFA-Specific Notes">CFA 特別注意</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>χ²/df</strong></td>
+        <td>< 3.0</td>
+        <td>< 5.0</td>
+        <td data-zh="CFA 中 χ² 常因大樣本而顯著" data-en="Often significant in CFA due to large samples">CFA 中常因大樣本而顯著</td>
+      </tr>
+      <tr>
+        <td><strong>CFI</strong></td>
+        <td>≥ .95</td>
+        <td>≥ .90</td>
+        <td data-zh="CFA 中最常報告的增量適配指標" data-en="Most commonly reported incremental index in CFA">CFA 中最常報告的指標</td>
+      </tr>
+      <tr>
+        <td><strong>TLI</strong></td>
+        <td>≥ .95</td>
+        <td>≥ .90</td>
+        <td data-zh="考慮模型簡約性，與 CFI 搭配使用" data-en="Adjusts for parsimony, used alongside CFI">與 CFI 搭配使用</td>
+      </tr>
+      <tr>
+        <td><strong>RMSEA</strong></td>
+        <td>≤ .06</td>
+        <td>≤ .08</td>
+        <td data-zh="報告 90% CI；close-fit test: H₀: RMSEA ≤ .05" data-en="Report 90% CI; close-fit test: H₀: RMSEA ≤ .05">報告 90% CI</td>
+      </tr>
+      <tr>
+        <td><strong>SRMR</strong></td>
+        <td>≤ .08</td>
+        <td>≤ .10</td>
+        <td data-zh="測量模型的殘差指標" data-en="Residual measure for measurement model">測量模型的殘差指標</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="concept-block danger">
+  <h4 data-zh="適配度不佳時的警訊" data-en="Warning Signs of Poor Fit">適配度不佳時的警訊</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li>CFI < .90 或 RMSEA > .10：模型需要<strong>重大修改</strong>或重新概念化</li>
+        <li>個別指標的<strong>標準化殘差 > |4.0|</strong>：該指標可能有問題</li>
+        <li>某指標的<strong>標準化負荷量 < .50</strong>：考慮刪除</li>
+        <li>模型無法收斂（non-convergence）：通常表示模型設定有誤或樣本量不足</li>
+        <li>Heywood case（負誤差變異或負荷量 > 1.0）：嚴重的模型問題</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li>CFI < .90 or RMSEA > .10: Model needs <strong>major revision</strong> or reconceptualization</li>
+        <li>Individual indicator <strong>standardized residual > |4.0|</strong>: That indicator may be problematic</li>
+        <li>An indicator's <strong>standardized loading < .50</strong>: Consider deletion</li>
+        <li>Non-convergence: Usually indicates specification error or insufficient sample size</li>
+        <li>Heywood case (negative error variance or loading > 1.0): Serious model problems</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- SECTION 5: Model Modification    -->
+<!-- ================================ -->
+<h2 class="section-title" data-zh="五、模型修正" data-en="5. Model Modification">五、模型修正</h2>
+
+<div class="bilingual">
+  <div class="zh"><p>當 CFA 模型適配度不佳時，可能需要對模型進行修正。修正的依據來自兩個主要的診斷工具：<strong>修正指標（MI）</strong>和<strong>標準化殘差</strong>。但所有修正都必須有理論支持。</p></div>
+  <div class="en"><p>When CFA model fit is inadequate, modification may be needed. Modifications are guided by two primary diagnostic tools: <strong>modification indices (MI)</strong> and <strong>standardized residuals</strong>. All modifications must have theoretical justification.</p></div>
+</div>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="診斷工具" data-en="Diagnostic Tool">診斷工具</th>
+        <th data-zh="作用" data-en="Function">作用</th>
+        <th data-zh="判斷標準" data-en="Criteria">判斷標準</th>
+        <th data-zh="注意事項" data-en="Cautions">注意事項</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong data-zh="修正指標 (MI)" data-en="Modification Index (MI)">修正指標 (MI)</strong></td>
+        <td data-zh="預估釋放某路徑後 χ² 的減少量" data-en="Estimated χ² reduction from freeing a path">預估釋放某路徑後 χ² 的減少量</td>
+        <td data-zh="MI ≥ 4.0 表示統計上有意義" data-en="MI ≥ 4.0 is statistically meaningful">MI ≥ 4.0 表示有意義</td>
+        <td data-zh="不應僅依據 MI 修改模型；必須有理論支持" data-en="Never modify based solely on MI; theoretical support needed">必須有理論支持</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="標準化殘差" data-en="Standardized Residuals">標準化殘差</strong></td>
+        <td data-zh="觀察與預測共變異的差異" data-en="Difference between observed and predicted covariances">觀察與預測共變異的差異</td>
+        <td data-zh="< |2.50| 不構成問題；> |4.0| 可能需處理" data-en="< |2.50| not problematic; > |4.0| may need action">< |2.50| 可接受；> |4.0| 需處理</td>
+        <td data-zh="注意模式而非個別值" data-en="Look for patterns, not individual values">注意模式而非個別值</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="期望參數改變 (EPC)" data-en="Expected Parameter Change (EPC)">期望參數改變 (EPC)</strong></td>
+        <td data-zh="預估釋放路徑後參數的改變量" data-en="Estimated parameter value after freeing">預估釋放路徑後參數值</td>
+        <td data-zh="搭配 MI 一起判斷" data-en="Used together with MI">搭配 MI 一起判斷</td>
+        <td data-zh="EPC 很大但 MI 不大可能是假陽性" data-en="Large EPC with small MI may be false positive">大 EPC + 小 MI 可能假陽性</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="模型修正的黃金法則" data-en="Golden Rules of Model Modification">模型修正的黃金法則</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ol style="padding-left:1.2rem">
+        <li><strong>每次只做一個修改</strong>，然後重新估計模型</li>
+        <li>修改必須有<strong>理論上的合理性</strong></li>
+        <li>刪除題項前先確認不會違反<strong>三指標規則</strong></li>
+        <li>若修改超過<strong>20%的題項</strong>，應使用新的資料集驗證</li>
+        <li>允許誤差共變異應有<strong>實質理由</strong>（如共用方法、相似措辭）</li>
+        <li>所有修改必須在論文中<strong>明確報告</strong></li>
+      </ol>
+    </div>
+    <div class="en">
+      <ol style="padding-left:1.2rem">
+        <li>Make <strong>one modification at a time</strong>, then re-estimate</li>
+        <li>Modifications must have <strong>theoretical justification</strong></li>
+        <li>Before dropping items, ensure the <strong>three-indicator rule</strong> is not violated</li>
+        <li>If more than <strong>20% of items</strong> are changed, validate with a new dataset</li>
+        <li>Error covariances should have <strong>substantive reasons</strong> (e.g., shared method, similar wording)</li>
+        <li>All modifications must be <strong>explicitly reported</strong> in publications</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- SECTION 6: Reliability & Validity-->
+<!-- ================================ -->
+<h2 class="section-title" data-zh="六、信效度評估" data-en="6. Reliability & Validity Assessment">六、信效度評估</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>在確認 CFA 模型適配良好後，需要評估各建構的信度與效度。本節提供摘要，詳細的 AVE、CR、聚合效度與區辨效度計算請參考 <a href="ch10-cfa-validity.html"><strong>CFA 建構效度專章</strong></a>。</p>
+  </div>
+  <div class="en">
+    <p>After confirming good CFA model fit, construct reliability and validity must be assessed. This section provides a summary; for detailed AVE, CR, convergent and discriminant validity calculations, see the <a href="ch10-cfa-validity.html"><strong>CFA Construct Validity chapter</strong></a>.</p>
+  </div>
+</div>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="指標" data-en="Metric">指標</th>
+        <th data-zh="門檻" data-en="Threshold">門檻</th>
+        <th data-zh="評估的面向" data-en="What It Assesses">評估的面向</th>
+        <th data-zh="公式" data-en="Formula">公式</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong data-zh="標準化負荷量" data-en="Standardized Loading">標準化負荷量</strong></td>
+        <td class="highlight-cell">≥ .50 (ideally ≥ .70)</td>
+        <td data-zh="個別指標的聚合效度" data-en="Individual indicator convergent validity">個別指標的聚合效度</td>
+        <td>λ</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="組合信度 (CR)" data-en="Composite Reliability (CR)">組合信度 (CR)</strong></td>
+        <td class="highlight-cell">≥ .70</td>
+        <td data-zh="建構的內部一致性信度" data-en="Construct internal consistency">建構的內部一致性</td>
+        <td>(Σλ)² / [(Σλ)² + Σe]</td>
+      </tr>
+      <tr>
+        <td><strong>AVE</strong></td>
+        <td class="highlight-cell">≥ .50</td>
+        <td data-zh="整體聚合效度" data-en="Overall convergent validity">整體聚合效度</td>
+        <td>Σλ² / n</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="AVE vs r²" data-en="AVE vs r²">AVE vs r²</strong></td>
+        <td class="highlight-cell">AVE > r²</td>
+        <td data-zh="區辨效度（Fornell-Larcker）" data-en="Discriminant validity (Fornell-Larcker)">區辨效度</td>
+        <td>AVE<sub>A</sub> > r²<sub>AB</sub></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="concept-block" style="margin-top:1rem;background:linear-gradient(135deg,#f8f9fa,#e8f4fd);border-left:4px solid #3498db">
+  <h4 data-zh="延伸閱讀" data-en="Further Reading">延伸閱讀</h4>
+  <div class="bilingual">
+    <div class="zh"><p>完整的信效度計算方法、互動計算器（AVE Calculator、CR Calculator、Fornell-Larcker 檢驗器），以及範例演練，請參見：<br><a href="ch10-cfa-validity.html" style="font-weight:bold;font-size:1.05rem">→ Ch.10 CFA 建構效度專章</a></p></div>
+    <div class="en"><p>For complete reliability/validity calculation methods, interactive calculators (AVE, CR, Fornell-Larcker), and worked examples, see:<br><a href="ch10-cfa-validity.html" style="font-weight:bold;font-size:1.05rem">→ Ch.10 CFA Construct Validity Chapter</a></p></div>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- SECTION 7: Advanced Topics       -->
+<!-- ================================ -->
+<h2 class="section-title" data-zh="七、進階議題" data-en="7. Advanced Topics">七、進階議題</h2>
+
+<!-- Tab: first-order vs second-order -->
+<div class="tab-container" style="margin-top:1rem">
+  <div class="tab-header">
+    <button class="tab-btn active" data-tab="tab-first" data-zh="一階 CFA" data-en="First-Order CFA">一階 CFA</button>
+    <button class="tab-btn" data-tab="tab-second" data-zh="二階 CFA" data-en="Second-Order CFA">二階 CFA</button>
+  </div>
+
+  <div class="tab-panel active" id="tab-first">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>一階 CFA（First-Order CFA）</h4>
+        <p>標準的 CFA 模型，潛在建構直接由觀察指標測量。最常見的形式。</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li>每個建構直接連結到其指標</li>
+          <li>建構之間可以自由相關</li>
+          <li>適合當各建構之間不存在更高層次的共同因素時</li>
+          <li><strong>範例：</strong>工作滿意度、組織承諾、離職意圖——三個獨立但相關的建構</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>First-Order CFA</h4>
+        <p>The standard CFA model where latent constructs are directly measured by observed indicators. The most common form.</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li>Each construct directly links to its indicators</li>
+          <li>Constructs can freely correlate</li>
+          <li>Appropriate when no higher-order common factor underlies the constructs</li>
+          <li><strong>Example:</strong> Job satisfaction, organizational commitment, turnover intention — three independent but correlated constructs</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-second">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>二階 CFA（Second-Order CFA）</h4>
+        <p>當多個一階因素被假設為某個更高階、更抽象建構的子面向時使用。</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li>二階因素<strong>解釋</strong>一階因素之間的共變異</li>
+          <li>一階因素變成二階因素的「指標」</li>
+          <li>比一階模型更簡約（fewer parameters）</li>
+          <li><strong>識別條件：</strong>至少需要 3 個一階因素</li>
+          <li><strong>範例：</strong>「智力」（二階）由語文推理、數量推理、空間推理（一階）組成</li>
+        </ul>
+        <p style="margin-top:.5rem"><strong>比較：</strong>若二階模型的適配度與一階模型相當（Δχ² 不顯著），支持使用更簡約的二階模型。</p>
+      </div>
+      <div class="en">
+        <h4>Second-Order CFA</h4>
+        <p>Used when multiple first-order factors are hypothesized as sub-dimensions of a higher-order, more abstract construct.</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li>The second-order factor <strong>explains</strong> covariances among first-order factors</li>
+          <li>First-order factors become "indicators" of the second-order factor</li>
+          <li>More parsimonious than first-order models (fewer parameters)</li>
+          <li><strong>Identification:</strong> At least 3 first-order factors required</li>
+          <li><strong>Example:</strong> "Intelligence" (second-order) composed of verbal, quantitative, and spatial reasoning (first-order)</li>
+        </ul>
+        <p style="margin-top:.5rem"><strong>Comparison:</strong> If second-order fit is comparable to first-order (Δχ² non-significant), the more parsimonious second-order model is supported.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Accordion: Advanced topics -->
+<div class="accordion-item" style="margin-top:1.5rem">
+  <div class="accordion-header" data-zh="題目打包法（Parceling）" data-en="Item Parceling">題目打包法（Parceling）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh">
+        <p><strong>打包（Parceling）</strong>是將多個題項加總或平均為「包裹」（parcels）來作為指標，而非使用個別題項。</p>
+        <ul style="padding-left:1.2rem">
+          <li><strong>優點：</strong>減少估計參數、改善常態性、提高信度</li>
+          <li><strong>缺點：</strong>可能遮蔽因素結構問題、交叉負荷無法偵測</li>
+          <li><strong>使用條件：</strong>一階因素結構已透過 EFA/CFA 確認為單因素</li>
+          <li><strong>方法：</strong>隨機分配法、因素負荷量平衡法</li>
+          <li><strong>爭議：</strong>學界對打包的適用性仍有不同意見；建議在題項較多且結構明確時才使用</li>
+        </ul>
+      </div>
+      <div class="en">
+        <p><strong>Parceling</strong> involves summing or averaging multiple items into "parcels" as indicators, rather than using individual items.</p>
+        <ul style="padding-left:1.2rem">
+          <li><strong>Advantages:</strong> Fewer parameters, improved normality, higher reliability</li>
+          <li><strong>Disadvantages:</strong> May mask factor structure issues; cross-loadings undetectable</li>
+          <li><strong>Condition:</strong> First-order structure confirmed as unidimensional via EFA/CFA</li>
+          <li><strong>Methods:</strong> Random assignment, factor-loading balanced approach</li>
+          <li><strong>Controversy:</strong> Ongoing debate about appropriateness; recommended only with many items and clear structure</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="測量恆等性基礎（Measurement Invariance）" data-en="Measurement Invariance Basics">測量恆等性基礎（Measurement Invariance）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh">
+        <p><strong>測量恆等性</strong>檢驗同一份量表在不同群組（如性別、國家）中是否以相同方式測量相同建構。這是跨群組比較的前提。</p>
+        <p style="margin-top:.5rem">測量恆等性的層級（由寬鬆到嚴格）：</p>
+        <ol style="padding-left:1.2rem">
+          <li><strong>構形恆等性（Configural）：</strong>相同的因素結構適用於所有群組</li>
+          <li><strong>計量恆等性（Metric）：</strong>因素負荷量在群組間相等</li>
+          <li><strong>純量恆等性（Scalar）：</strong>截距在群組間相等（比較潛在平均數的前提）</li>
+          <li><strong>嚴格恆等性（Strict）：</strong>殘差變異在群組間相等</li>
+        </ol>
+        <p style="margin-top:.5rem"><strong>檢驗方法：</strong>透過多群組 CFA（Multi-Group CFA），依序對參數施加等值限制，比較不同限制程度下的模型適配度變化（ΔCFI ≤ .01 通常視為恆等性成立）。</p>
+      </div>
+      <div class="en">
+        <p><strong>Measurement invariance</strong> tests whether the same scale measures the same construct in the same way across different groups (e.g., gender, country). This is a prerequisite for cross-group comparisons.</p>
+        <p style="margin-top:.5rem">Levels of measurement invariance (from lenient to strict):</p>
+        <ol style="padding-left:1.2rem">
+          <li><strong>Configural:</strong> Same factor structure holds across all groups</li>
+          <li><strong>Metric:</strong> Factor loadings equal across groups</li>
+          <li><strong>Scalar:</strong> Intercepts equal across groups (prerequisite for latent mean comparisons)</li>
+          <li><strong>Strict:</strong> Residual variances equal across groups</li>
+        </ol>
+        <p style="margin-top:.5rem"><strong>Testing method:</strong> Through Multi-Group CFA, sequentially constrain parameters to equality and compare fit changes (ΔCFI ≤ .01 typically indicates invariance holds).</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- SECTION 8: Quiz                  -->
+<!-- ================================ -->
+<h2 class="section-title" data-zh="八、自我測驗" data-en="8. Self-Assessment Quiz">八、自我測驗</h2>
+
+<div class="quiz">
+  <h3 data-zh="測試你對 CFA 的理解" data-en="Test Your Understanding of CFA">測試你對 CFA 的理解</h3>
+
+  <div class="quiz-question">
+    <p data-zh="Q1: CFA 與 EFA 的最根本差異是什麼？" data-en="Q1: What is the most fundamental difference between CFA and EFA?">Q1: CFA 與 EFA 的最根本差異是什麼？</p>
+    <div class="quiz-option" data-correct="false" data-zh="CFA 使用更大的樣本量" data-en="CFA uses larger sample sizes">CFA 使用更大的樣本量</div>
+    <div class="quiz-option" data-correct="false" data-zh="CFA 產出更多統計指標" data-en="CFA produces more statistical indices">CFA 產出更多統計指標</div>
+    <div class="quiz-option" data-correct="true" data-zh="CFA 需要事先指定測量理論（哪些指標對應哪個建構），而 EFA 從資料中探索" data-en="CFA requires pre-specified measurement theory (which indicators load on which construct), while EFA explores from data">CFA 需要事先指定測量理論，而 EFA 從資料中探索</div>
+    <div class="quiz-option" data-correct="false" data-zh="CFA 只能用於心理學研究" data-en="CFA can only be used in psychology research">CFA 只能用於心理學研究</div>
+    <div class="quiz-feedback" data-zh="正確！CFA 是「驗證性」的——研究者必須根據理論事先指定每個指標歸屬於哪個建構，交叉負荷固定為零。EFA 是「探索性」的——讓資料決定因素結構。" data-en="Correct! CFA is 'confirmatory' — researchers must pre-specify indicator-construct assignments based on theory, with cross-loadings fixed to zero. EFA is 'exploratory' — data determines the factor structure.">正確！CFA 要求事先有測量理論，EFA 從資料探索。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q2: 為什麼 CFA 需要設定標記變數（marker variable）？" data-en="Q2: Why does CFA need a marker variable?">Q2: 為什麼 CFA 需要設定標記變數（marker variable）？</p>
+    <div class="quiz-option" data-correct="false" data-zh="為了改善模型適配度" data-en="To improve model fit">為了改善模型適配度</div>
+    <div class="quiz-option" data-correct="true" data-zh="因為潛在變數沒有自然的測量單位，需要透過固定一個負荷量為 1.0 來設定尺度" data-en="Because latent variables have no natural units, so fixing one loading to 1.0 sets the scale">因為潛在變數沒有自然單位，需固定一個負荷量為 1.0 來設定尺度</div>
+    <div class="quiz-option" data-correct="false" data-zh="為了確保模型能夠收斂" data-en="To ensure model convergence">為了確保模型能夠收斂</div>
+    <div class="quiz-option" data-correct="false" data-zh="為了減少自由估計的參數數量" data-en="To reduce the number of freely estimated parameters">為了減少自由估計的參數數量</div>
+    <div class="quiz-feedback" data-zh="正確！潛在變數是抽象概念，沒有自然的測量單位（不像身高用公分、體重用公斤）。將一個指標的負荷量固定為 1.0，讓潛在變數借用該指標的單位。另一種方法是固定因素變異數為 1.0。" data-en="Correct! Latent variables are abstract concepts with no natural measurement units (unlike height in cm, weight in kg). Fixing one indicator's loading to 1.0 lets the latent variable borrow that indicator's units. An alternative is fixing the factor variance to 1.0.">正確！潛在變數沒有自然單位，需借用標記變數的尺度。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q3: 一位研究者的 CFA 模型適配度不佳，修正指標建議在兩個不同建構的指標之間加入交叉負荷。最佳做法是？" data-en="Q3: A researcher's CFA has poor fit. MI suggests adding a cross-loading between indicators of different constructs. Best practice?">Q3: CFA 適配度不佳，MI 建議加入交叉負荷。最佳做法是？</p>
+    <div class="quiz-option" data-correct="false" data-zh="立即加入交叉負荷以改善適配度" data-en="Immediately add the cross-loading to improve fit">立即加入交叉負荷以改善適配度</div>
+    <div class="quiz-option" data-correct="false" data-zh="忽略修正指標，只報告目前的結果" data-en="Ignore MI and report current results only">忽略修正指標，只報告目前的結果</div>
+    <div class="quiz-option" data-correct="true" data-zh="先檢視該題項的內容是否確實與兩個建構都有關聯，若有理論支持再考慮刪題或重新歸類" data-en="First review whether the item content is truly related to both constructs; if theoretically justified, consider item deletion or reassignment">先檢視題項內容，有理論支持才考慮刪題或重新歸類</div>
+    <div class="quiz-option" data-correct="false" data-zh="加入所有 MI > 4.0 的交叉負荷" data-en="Add all cross-loadings with MI > 4.0">加入所有 MI > 4.0 的交叉負荷</div>
+    <div class="quiz-feedback" data-zh="正確！CFA 不是探索性工具。交叉負荷意味著建構效度有問題。最佳做法是回頭審視題項內容：如果這個題項確實同時與兩個建構有關，應考慮刪除該題項而非加入交叉負荷。所有修改都必須有理論依據。" data-en="Correct! CFA is not an exploratory tool. Cross-loadings indicate construct validity issues. Best practice is to review item content: if the item genuinely relates to both constructs, consider deleting it rather than adding a cross-loading. All modifications need theoretical justification.">正確！應從理論角度審視題項，而非盲目跟隨修正指標。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q4: 二階 CFA 至少需要幾個一階因素？" data-en="Q4: How many first-order factors are needed at minimum for a second-order CFA?">Q4: 二階 CFA 至少需要幾個一階因素？</p>
+    <div class="quiz-option" data-correct="false" data-zh="2 個" data-en="2">2 個</div>
+    <div class="quiz-option" data-correct="true" data-zh="3 個" data-en="3">3 個</div>
+    <div class="quiz-option" data-correct="false" data-zh="4 個" data-en="4">4 個</div>
+    <div class="quiz-option" data-correct="false" data-zh="5 個" data-en="5">5 個</div>
+    <div class="quiz-feedback" data-zh="正確！二階 CFA 的識別要求至少 3 個一階因素，就像一階 CFA 至少需要 3 個指標一樣。2 個一階因素會導致不足識別（除非加入額外的約束條件）。" data-en="Correct! Second-order CFA identification requires at least 3 first-order factors, just as first-order CFA requires at least 3 indicators. Two first-order factors would be under-identified (unless additional constraints are added).">正確！就像一階 CFA 需要至少 3 個指標，二階 CFA 需要至少 3 個一階因素。</div>
+  </div>
+</div>
+
+
+</div><!-- container -->
+</main>
+
+<!-- Navigation -->
+<div style="padding:2rem 0;background:#f0f3f5">
+  <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+    <a href="ch9-sem-intro.html" style="font-weight:600;background:var(--accent);color:#fff;padding:.5rem 1rem;border-radius:4px" data-zh="← 上一章：SEM 導論" data-en="← Previous: SEM Introduction">← 上一章：SEM 導論</a>
+    <a href="ch10-cfa-validity.html" style="font-weight:600;background:var(--accent);color:#fff;padding:.5rem 1rem;border-radius:4px" data-zh="下一章：CFA 建構效度 →" data-en="Next: CFA Construct Validity →">下一章：CFA 建構效度 →</a>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>Hair, J.F., Black, W.C., Babin, B.J., & Anderson, R.E. (2019). <em>Multivariate Data Analysis</em> (8th ed.).</p>
+    <p style="margin-top:.5rem;font-size:.8rem;opacity:.8">© 版權所有 葉欲禾 (Gary Yu-Ho Yeh)</p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

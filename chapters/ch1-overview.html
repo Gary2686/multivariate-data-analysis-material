@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ch.1 多變量方法概述 | Overview of Multivariate Methods</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="lang-zh">
+<div class="progress-bar"><div class="fill"></div></div>
+
+<nav class="top-nav">
+  <div class="container">
+    <a href="../index.html" class="brand" data-zh="多變量資料分析" data-en="Multivariate Data Analysis">多變量資料分析</a>
+    <div class="nav-links">
+      <a href="../index.html" data-zh="首頁" data-en="Home">首頁</a>
+      <button class="lang-toggle">EN</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1 data-zh="Ch.1 多變量方法概述" data-en="Ch.1 Overview of Multivariate Methods">Ch.1 多變量方法概述</h1>
+    <p data-zh="多變量分析的基本概念、測量尺度與方法分類" data-en="Fundamental concepts, measurement scales, and classification of multivariate methods">多變量分析的基本概念、測量尺度與方法分類</p>
+  </div>
+</header>
+
+<main class="section">
+<div class="container">
+
+<!-- ============================================ -->
+<!-- SECTION 1: WHAT IS MULTIVARIATE ANALYSIS     -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="一、什麼是多變量分析？" data-en="1. What Is Multivariate Analysis?">一、什麼是多變量分析？</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p><strong>多變量分析（Multivariate Analysis）</strong>是指同時分析<strong>三個或三個以上</strong>變數之間關係的所有統計方法。其核心概念是<strong>變數組合（variate）</strong>——透過加權方式將多個變數組合成一個線性複合指標。</p>
+    <p style="margin-top:.75rem">為什麼需要多變量分析？因為現實世界中的問題很少可以用單一變數來解釋。例如：</p>
+    <ul style="margin-top:.5rem;padding-left:1.5rem">
+      <li>消費者的購買行為受到價格、品牌、品質、廣告等<strong>多個因素</strong>同時影響</li>
+      <li>學生的學業成就受到智力、動機、家庭背景、教學品質等變數共同決定</li>
+      <li>企業績效是策略、市場、人力資源、財務等<strong>多維度</strong>互動的結果</li>
+    </ul>
+  </div>
+  <div class="en">
+    <p><strong>Multivariate analysis</strong> refers to all statistical methods that simultaneously analyze <strong>three or more</strong> variables. The core concept is the <strong>variate</strong> — a linear combination of variables with empirically determined weights.</p>
+    <p style="margin-top:.75rem">Why do we need multivariate analysis? Because real-world problems are rarely explained by a single variable. For example:</p>
+    <ul style="margin-top:.5rem;padding-left:1.5rem">
+      <li>Consumer purchasing behavior is simultaneously influenced by price, brand, quality, and advertising</li>
+      <li>Student achievement is determined by intelligence, motivation, family background, and teaching quality together</li>
+      <li>Firm performance results from multi-dimensional interactions of strategy, market, HR, and finance</li>
+    </ul>
+  </div>
+</div>
+
+<div class="concept-block success">
+  <h4 data-zh="白話解釋：多變量分析是什麼？" data-en="Plain Language: What Is Multivariate Analysis?">白話解釋：多變量分析是什麼？</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p>想像你是一個醫生，正在診斷一位病人。你不會只看體溫就下結論——你會同時看<strong>體溫、血壓、心跳、血液報告</strong>等多項指標，才能做出準確的診斷。多變量分析做的就是同樣的事情：它讓我們同時考慮多個變數，理解它們之間複雜的關係，而不是一次只看一個變數。</p>
+    </div>
+    <div class="en">
+      <p>Imagine you are a doctor diagnosing a patient. You would not draw a conclusion from temperature alone — you would simultaneously examine <strong>temperature, blood pressure, heart rate, and blood test results</strong> to make an accurate diagnosis. Multivariate analysis does the same thing: it lets us consider multiple variables simultaneously and understand their complex relationships, rather than examining one variable at a time.</p>
+    </div>
+  </div>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="核心概念：變數組合（Variate）" data-en="Core Concept: The Variate">核心概念：變數組合（Variate）</h4>
+  <div class="formula-box">
+    Variate = w<sub>1</sub>X<sub>1</sub> + w<sub>2</sub>X<sub>2</sub> + w<sub>3</sub>X<sub>3</sub> + ... + w<sub>n</sub>X<sub>n</sub>
+    <span class="label" data-zh="w = 權重（由統計方法決定），X = 觀察變數" data-en="w = weights (determined by the statistical method), X = observed variables">w = 權重（由統計方法決定），X = 觀察變數</span>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 2: MEASUREMENT SCALES                -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="二、測量尺度（Measurement Scales）" data-en="2. Measurement Scales">二、測量尺度（Measurement Scales）</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>選擇正確的多變量方法之前，必須先了解變數的<strong>測量尺度</strong>。不同的測量尺度決定了可以使用哪些統計方法。測量尺度分為兩大類：<strong>非計量（nonmetric）</strong>和<strong>計量（metric）</strong>。</p>
+  </div>
+  <div class="en">
+    <p>Before choosing the right multivariate method, you must understand the <strong>measurement scale</strong> of your variables. Different scales determine which statistical methods are appropriate. Scales fall into two categories: <strong>nonmetric</strong> and <strong>metric</strong>.</p>
+  </div>
+</div>
+
+<div class="tab-container" style="margin-top:1.5rem">
+  <div class="tab-header">
+    <button class="tab-btn active" data-tab="tab-nominal" data-zh="名目尺度" data-en="Nominal">名目尺度</button>
+    <button class="tab-btn" data-tab="tab-ordinal" data-zh="順序尺度" data-en="Ordinal">順序尺度</button>
+    <button class="tab-btn" data-tab="tab-interval" data-zh="等距尺度" data-en="Interval">等距尺度</button>
+    <button class="tab-btn" data-tab="tab-ratio" data-zh="比率尺度" data-en="Ratio">比率尺度</button>
+  </div>
+
+  <div class="tab-panel active" id="tab-nominal">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>名目尺度（Nominal Scale）— 非計量</h4>
+        <p>用於<strong>分類</strong>的最基本尺度。數字僅作為標籤，無大小順序。</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>特性：</strong>僅能分辨「相同」或「不同」</li>
+          <li><strong>可用統計：</strong>次數、百分比、眾數、卡方檢定</li>
+          <li><strong>例子：</strong>性別（1=男, 2=女）、血型（A, B, AB, O）、居住地區</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>Nominal Scale — Nonmetric</h4>
+        <p>The most basic scale used for <strong>classification</strong>. Numbers serve only as labels, with no inherent order.</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>Properties:</strong> Can only distinguish "same" or "different"</li>
+          <li><strong>Statistics:</strong> Frequency, percentage, mode, chi-square test</li>
+          <li><strong>Examples:</strong> Gender (1=male, 2=female), blood type (A, B, AB, O), region</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-ordinal">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>順序尺度（Ordinal Scale）— 非計量</h4>
+        <p>除了分類外，還可以<strong>排序</strong>。但各等級之間的差距不一定相等。</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>特性：</strong>可以排名，但間距不等</li>
+          <li><strong>可用統計：</strong>中位數、百分位數、Spearman相關</li>
+          <li><strong>例子：</strong>滿意度（非常不滿意→非常滿意）、教育程度（國中/高中/大學/碩士/博士）、品牌偏好排名</li>
+        </ul>
+        <p style="margin-top:.5rem;font-size:.85rem;color:var(--text-light)">注意：Likert量表嚴格來說是順序尺度，但實務上常被視為等距尺度處理。</p>
+      </div>
+      <div class="en">
+        <h4>Ordinal Scale — Nonmetric</h4>
+        <p>Beyond classification, values can be <strong>ranked</strong>. However, intervals between ranks are not necessarily equal.</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>Properties:</strong> Can rank, but intervals are unequal</li>
+          <li><strong>Statistics:</strong> Median, percentiles, Spearman correlation</li>
+          <li><strong>Examples:</strong> Satisfaction ratings (very dissatisfied → very satisfied), education level, brand preference ranking</li>
+        </ul>
+        <p style="margin-top:.5rem;font-size:.85rem;color:var(--text-light)">Note: Likert scales are strictly ordinal, but are commonly treated as interval in practice.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-interval">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>等距尺度（Interval Scale）— 計量</h4>
+        <p>各數值之間的<strong>間距相等</strong>且有意義。但沒有絕對零點。</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>特性：</strong>可以做加減運算，但比值無意義</li>
+          <li><strong>可用統計：</strong>平均數、標準差、Pearson相關、t檢定</li>
+          <li><strong>例子：</strong>溫度（攝氏/華氏）、年份、IQ分數、標準化測驗成績</li>
+        </ul>
+        <p style="margin-top:.5rem;font-size:.85rem;color:var(--text-light)">為什麼20°C不是10°C的兩倍熱？因為攝氏溫度沒有「真正的零」——0°C不代表沒有溫度。</p>
+      </div>
+      <div class="en">
+        <h4>Interval Scale — Metric</h4>
+        <p>The <strong>intervals between values are equal</strong> and meaningful. However, there is no absolute zero point.</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>Properties:</strong> Addition and subtraction are meaningful, but ratios are not</li>
+          <li><strong>Statistics:</strong> Mean, standard deviation, Pearson correlation, t-test</li>
+          <li><strong>Examples:</strong> Temperature (Celsius/Fahrenheit), calendar year, IQ scores</li>
+        </ul>
+        <p style="margin-top:.5rem;font-size:.85rem;color:var(--text-light)">Why isn't 20°C twice as hot as 10°C? Because Celsius has no "true zero" — 0°C does not mean absence of temperature.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-ratio">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>比率尺度（Ratio Scale）— 計量</h4>
+        <p>最高層級的測量尺度，具有<strong>絕對零點</strong>，可以做乘除運算。</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>特性：</strong>所有數學運算都有意義，比值可以解釋</li>
+          <li><strong>可用統計：</strong>所有統計方法皆可使用</li>
+          <li><strong>例子：</strong>身高、體重、年齡、收入、銷售量</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>Ratio Scale — Metric</h4>
+        <p>The highest level of measurement with an <strong>absolute zero point</strong>, allowing meaningful ratios.</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li><strong>Properties:</strong> All mathematical operations are meaningful, ratios are interpretable</li>
+          <li><strong>Statistics:</strong> All statistical methods can be used</li>
+          <li><strong>Examples:</strong> Height, weight, age, income, sales volume</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Measurement Scale Comparison Table -->
+<div class="table-wrap" style="margin-top:1.5rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="尺度" data-en="Scale">尺度</th>
+        <th data-zh="分類" data-en="Type">分類</th>
+        <th data-zh="特性" data-en="Properties">特性</th>
+        <th data-zh="範例" data-en="Examples">範例</th>
+        <th data-zh="可用運算" data-en="Operations">可用運算</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-zh="名目" data-en="Nominal">名目</td>
+        <td data-zh="非計量" data-en="Nonmetric">非計量</td>
+        <td data-zh="分類、標記" data-en="Classify, label">分類、標記</td>
+        <td data-zh="性別、血型" data-en="Gender, blood type">性別、血型</td>
+        <td>=, &ne;</td>
+      </tr>
+      <tr>
+        <td data-zh="順序" data-en="Ordinal">順序</td>
+        <td data-zh="非計量" data-en="Nonmetric">非計量</td>
+        <td data-zh="分類 + 排序" data-en="Classify + rank">分類 + 排序</td>
+        <td data-zh="滿意度、教育程度" data-en="Satisfaction, education level">滿意度、教育程度</td>
+        <td>=, &ne;, &gt;, &lt;</td>
+      </tr>
+      <tr>
+        <td data-zh="等距" data-en="Interval">等距</td>
+        <td data-zh="計量" data-en="Metric">計量</td>
+        <td data-zh="分類 + 排序 + 等距" data-en="Classify + rank + equal intervals">分類 + 排序 + 等距</td>
+        <td data-zh="溫度、IQ" data-en="Temperature, IQ">溫度、IQ</td>
+        <td>=, &ne;, &gt;, &lt;, +, &minus;</td>
+      </tr>
+      <tr>
+        <td data-zh="比率" data-en="Ratio">比率</td>
+        <td data-zh="計量" data-en="Metric">計量</td>
+        <td data-zh="分類 + 排序 + 等距 + 絕對零點" data-en="Classify + rank + equal intervals + absolute zero">分類 + 排序 + 等距 + 絕對零點</td>
+        <td data-zh="身高、收入" data-en="Height, income">身高、收入</td>
+        <td>=, &ne;, &gt;, &lt;, +, &minus;, &times;, &divide;</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 3: CLASSIFICATION OF METHODS         -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="三、多變量方法分類" data-en="3. Classification of Multivariate Methods">三、多變量方法分類</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>多變量方法依據研究目的可分為兩大類：</p>
+    <ul style="padding-left:1.5rem;margin-top:.5rem">
+      <li><strong>依變數技術（Dependence Techniques）：</strong>有明確的依變數（Y）和自變數（X），目的是解釋或預測 Y</li>
+      <li><strong>互依技術（Interdependence Techniques）：</strong>沒有明確的依變數/自變數之分，目的是找出變數或個案之間的結構</li>
+    </ul>
+  </div>
+  <div class="en">
+    <p>Multivariate methods are classified into two major categories:</p>
+    <ul style="padding-left:1.5rem;margin-top:.5rem">
+      <li><strong>Dependence Techniques:</strong> Have clearly identified dependent (Y) and independent (X) variables; purpose is to explain or predict Y</li>
+      <li><strong>Interdependence Techniques:</strong> No distinction between DV/IV; purpose is to find underlying structure among variables or cases</li>
+    </ul>
+  </div>
+</div>
+
+<!-- SVG Decision Flowchart -->
+<div class="diagram">
+  <svg viewBox="0 0 900 620" xmlns="http://www.w3.org/2000/svg" style="max-width:800px">
+    <defs>
+      <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#6c757d"/>
+      </marker>
+    </defs>
+
+    <!-- Top Question -->
+    <rect x="250" y="10" width="400" height="50" rx="25" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+    <text x="450" y="32" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Is there a dependent variable?</text>
+    <text x="450" y="48" text-anchor="middle" font-size="11" fill="#6c757d">是否有依變數？</text>
+
+    <!-- Yes branch -->
+    <line x1="350" y1="60" x2="250" y2="100" stroke="#27ae60" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="280" y="78" font-size="12" fill="#27ae60" font-weight="bold">Yes</text>
+
+    <!-- No branch -->
+    <line x1="550" y1="60" x2="680" y2="100" stroke="#e74c3c" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="620" y="78" font-size="12" fill="#e74c3c" font-weight="bold">No</text>
+
+    <!-- DEPENDENCE side -->
+    <rect x="80" y="100" width="340" height="45" rx="8" fill="#d5f5e3" stroke="#27ae60" stroke-width="2"/>
+    <text x="250" y="120" text-anchor="middle" font-size="12" font-weight="bold" fill="#2c3e50">Dependence Techniques (依變數技術)</text>
+    <text x="250" y="137" text-anchor="middle" font-size="11" fill="#6c757d">How many DVs? / DV type?</text>
+
+    <!-- Single DV branch -->
+    <line x1="170" y1="145" x2="120" y2="190" stroke="#27ae60" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <text x="120" y="175" font-size="10" fill="#6c757d">1 DV</text>
+
+    <!-- Multiple DV branch -->
+    <line x1="330" y1="145" x2="370" y2="190" stroke="#27ae60" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <text x="355" y="175" font-size="10" fill="#6c757d">Multiple DVs</text>
+
+    <!-- Single DV: Metric -->
+    <rect x="10" y="190" width="220" height="40" rx="6" fill="#fff" stroke="#27ae60" stroke-width="1.5"/>
+    <text x="120" y="208" text-anchor="middle" font-size="11" fill="#2c3e50">DV = Metric (計量)?</text>
+    <text x="120" y="222" text-anchor="middle" font-size="10" fill="#6c757d">or Nonmetric (非計量)?</text>
+
+    <line x1="60" y1="230" x2="40" y2="270" stroke="#6c757d" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <text x="30" y="255" font-size="10" fill="#27ae60">Metric</text>
+    <line x1="180" y1="230" x2="200" y2="270" stroke="#6c757d" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <text x="185" y="255" font-size="10" fill="#e74c3c">Nonmetric</text>
+
+    <!-- Metric DV answers -->
+    <rect x="0" y="270" width="110" height="55" rx="6" fill="#eaf4fc" stroke="#3498db" stroke-width="1.5"/>
+    <text x="55" y="290" text-anchor="middle" font-size="10" font-weight="bold" fill="#2c3e50">Multiple</text>
+    <text x="55" y="303" text-anchor="middle" font-size="10" font-weight="bold" fill="#2c3e50">Regression</text>
+    <text x="55" y="318" text-anchor="middle" font-size="9" fill="#6c757d">多元迴歸</text>
+
+    <!-- Nonmetric DV answers -->
+    <rect x="140" y="270" width="130" height="55" rx="6" fill="#eaf4fc" stroke="#3498db" stroke-width="1.5"/>
+    <text x="205" y="287" text-anchor="middle" font-size="10" font-weight="bold" fill="#2c3e50">Discriminant /</text>
+    <text x="205" y="300" text-anchor="middle" font-size="10" font-weight="bold" fill="#2c3e50">Logistic Regression</text>
+    <text x="205" y="318" text-anchor="middle" font-size="9" fill="#6c757d">判別 / 羅吉斯迴歸</text>
+
+    <!-- Multiple DVs -->
+    <rect x="300" y="190" width="150" height="40" rx="6" fill="#fff" stroke="#27ae60" stroke-width="1.5"/>
+    <text x="375" y="208" text-anchor="middle" font-size="11" fill="#2c3e50">DV = Metric?</text>
+    <text x="375" y="222" text-anchor="middle" font-size="10" fill="#6c757d">計量 or 非計量?</text>
+
+    <line x1="340" y1="230" x2="320" y2="270" stroke="#6c757d" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <text x="310" y="255" font-size="10" fill="#27ae60">Metric</text>
+    <line x1="410" y1="230" x2="440" y2="270" stroke="#6c757d" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <text x="430" y="255" font-size="10" fill="#e74c3c">Nonmetric</text>
+
+    <rect x="280" y="270" width="100" height="55" rx="6" fill="#eaf4fc" stroke="#3498db" stroke-width="1.5"/>
+    <text x="330" y="290" text-anchor="middle" font-size="10" font-weight="bold" fill="#2c3e50">MANOVA</text>
+    <text x="330" y="303" text-anchor="middle" font-size="10" font-weight="bold" fill="#2c3e50">/ Canonical</text>
+    <text x="330" y="318" text-anchor="middle" font-size="9" fill="#6c757d">典型相關</text>
+
+    <rect x="400" y="270" width="100" height="55" rx="6" fill="#eaf4fc" stroke="#3498db" stroke-width="1.5"/>
+    <text x="450" y="290" text-anchor="middle" font-size="10" font-weight="bold" fill="#2c3e50">Conjoint</text>
+    <text x="450" y="303" text-anchor="middle" font-size="10" font-weight="bold" fill="#2c3e50">Analysis</text>
+    <text x="450" y="318" text-anchor="middle" font-size="9" fill="#6c757d">聯合分析</text>
+
+    <!-- SEM bridge -->
+    <rect x="120" y="350" width="360" height="45" rx="8" fill="#fdebd0" stroke="#f39c12" stroke-width="2"/>
+    <text x="300" y="370" text-anchor="middle" font-size="12" font-weight="bold" fill="#2c3e50">SEM (Structural Equation Modeling) — 結構方程模型</text>
+    <text x="300" y="387" text-anchor="middle" font-size="10" fill="#6c757d">Combines dependence + interdependence / 結合兩種技術</text>
+
+    <!-- INTERDEPENDENCE side -->
+    <rect x="570" y="100" width="280" height="45" rx="8" fill="#fadbd8" stroke="#e74c3c" stroke-width="2"/>
+    <text x="710" y="120" text-anchor="middle" font-size="12" font-weight="bold" fill="#2c3e50">Interdependence (互依技術)</text>
+    <text x="710" y="137" text-anchor="middle" font-size="11" fill="#6c757d">What to group? / 分群對象？</text>
+
+    <line x1="640" y1="145" x2="610" y2="190" stroke="#e74c3c" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <text x="605" y="175" font-size="10" fill="#6c757d">Variables</text>
+    <line x1="780" y1="145" x2="800" y2="190" stroke="#e74c3c" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <text x="800" y="175" font-size="10" fill="#6c757d">Cases</text>
+
+    <!-- Variable grouping -->
+    <rect x="540" y="190" width="130" height="55" rx="6" fill="#eaf4fc" stroke="#3498db" stroke-width="1.5"/>
+    <text x="605" y="210" text-anchor="middle" font-size="10" font-weight="bold" fill="#2c3e50">Factor Analysis</text>
+    <text x="605" y="223" text-anchor="middle" font-size="10" font-weight="bold" fill="#2c3e50">(EFA / CFA)</text>
+    <text x="605" y="238" text-anchor="middle" font-size="9" fill="#6c757d">因素分析</text>
+
+    <!-- Case grouping -->
+    <rect x="735" y="190" width="130" height="55" rx="6" fill="#eaf4fc" stroke="#3498db" stroke-width="1.5"/>
+    <text x="800" y="210" text-anchor="middle" font-size="10" font-weight="bold" fill="#2c3e50">Cluster Analysis</text>
+    <text x="800" y="228" text-anchor="middle" font-size="9" fill="#6c757d">集群分析</text>
+
+    <!-- MDS -->
+    <rect x="640" y="270" width="120" height="50" rx="6" fill="#eaf4fc" stroke="#3498db" stroke-width="1.5"/>
+    <text x="700" y="290" text-anchor="middle" font-size="10" font-weight="bold" fill="#2c3e50">MDS</text>
+    <text x="700" y="305" text-anchor="middle" font-size="9" fill="#6c757d">多元尺度分析</text>
+    <line x1="700" y1="245" x2="700" y2="270" stroke="#6c757d" stroke-width="1.5" marker-end="url(#arrow)"/>
+  </svg>
+  <p class="caption" data-zh="圖：多變量方法選擇決策流程圖" data-en="Figure: Decision flowchart for choosing multivariate methods">圖：多變量方法選擇決策流程圖</p>
+</div>
+
+<!-- Comprehensive Method Table -->
+<div class="table-wrap" style="margin-top:1.5rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="方法" data-en="Method">方法</th>
+        <th data-zh="類型" data-en="Type">類型</th>
+        <th data-zh="依變數" data-en="DV">依變數</th>
+        <th data-zh="自變數" data-en="IV">自變數</th>
+        <th data-zh="主要用途" data-en="Primary Use">主要用途</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong data-zh="多元迴歸" data-en="Multiple Regression">多元迴歸</strong></td>
+        <td data-zh="依變數" data-en="Dependence">依變數</td>
+        <td data-zh="1個（計量）" data-en="1 (metric)">1個（計量）</td>
+        <td data-zh="多個（計量/非計量）" data-en="Multiple (metric/nonmetric)">多個（計量/非計量）</td>
+        <td data-zh="預測、解釋Y的變異" data-en="Predict, explain variance in Y">預測、解釋Y的變異</td>
+      </tr>
+      <tr>
+        <td><strong>ANOVA / MANOVA</strong></td>
+        <td data-zh="依變數" data-en="Dependence">依變數</td>
+        <td data-zh="1個/多個（計量）" data-en="1/multiple (metric)">1個/多個（計量）</td>
+        <td data-zh="非計量（分組）" data-en="Nonmetric (groups)">非計量（分組）</td>
+        <td data-zh="比較組別平均數差異" data-en="Compare group mean differences">比較組別平均數差異</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="判別分析" data-en="Discriminant Analysis">判別分析</strong></td>
+        <td data-zh="依變數" data-en="Dependence">依變數</td>
+        <td data-zh="1個（非計量）" data-en="1 (nonmetric)">1個（非計量）</td>
+        <td data-zh="多個（計量）" data-en="Multiple (metric)">多個（計量）</td>
+        <td data-zh="分類、預測組別歸屬" data-en="Classify, predict group membership">分類、預測組別歸屬</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="羅吉斯迴歸" data-en="Logistic Regression">羅吉斯迴歸</strong></td>
+        <td data-zh="依變數" data-en="Dependence">依變數</td>
+        <td data-zh="1個（二元非計量）" data-en="1 (binary nonmetric)">1個（二元非計量）</td>
+        <td data-zh="多個（計量/非計量）" data-en="Multiple (metric/nonmetric)">多個（計量/非計量）</td>
+        <td data-zh="預測二元結果的機率" data-en="Predict probability of binary outcome">預測二元結果的機率</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="因素分析" data-en="Factor Analysis">因素分析</strong></td>
+        <td data-zh="互依" data-en="Interdependence">互依</td>
+        <td colspan="2" data-zh="無區分（計量變數）" data-en="No distinction (metric variables)">無區分（計量變數）</td>
+        <td data-zh="化簡變數、找出潛在維度" data-en="Reduce variables, find latent dimensions">化簡變數、找出潛在維度</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="集群分析" data-en="Cluster Analysis">集群分析</strong></td>
+        <td data-zh="互依" data-en="Interdependence">互依</td>
+        <td colspan="2" data-zh="無區分（個案）" data-en="No distinction (cases)">無區分（個案）</td>
+        <td data-zh="將個案分成相似群組" data-en="Group cases into similar clusters">將個案分成相似群組</td>
+      </tr>
+      <tr>
+        <td><strong>SEM</strong></td>
+        <td data-zh="兩者兼具" data-en="Both">兩者兼具</td>
+        <td colspan="2" data-zh="潛在變數（計量）" data-en="Latent variables (metric)">潛在變數（計量）</td>
+        <td data-zh="同時估計測量模型與結構模型" data-en="Simultaneously estimate measurement and structural models">同時估計測量模型與結構模型</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 4: FROM UNIVARIATE TO MULTIVARIATE   -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="四、從單變量到多變量" data-en="4. From Univariate to Multivariate">四、從單變量到多變量</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>統計分析方法可以依照同時考慮的變數數量，由簡單到複雜排列。每一層都是前一層的延伸：</p>
+  </div>
+  <div class="en">
+    <p>Statistical methods can be arranged from simple to complex by the number of variables analyzed simultaneously. Each level extends the previous one:</p>
+  </div>
+</div>
+
+<div class="diagram">
+  <svg viewBox="0 0 800 320" xmlns="http://www.w3.org/2000/svg" style="max-width:700px">
+    <defs>
+      <marker id="arrow2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#6c757d"/>
+      </marker>
+    </defs>
+
+    <!-- Level 1 -->
+    <rect x="50" y="20" width="200" height="55" rx="8" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+    <text x="150" y="42" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Univariate (單變量)</text>
+    <text x="150" y="60" text-anchor="middle" font-size="11" fill="#6c757d">t-test, chi-square</text>
+
+    <line x1="250" y1="48" x2="300" y2="48" stroke="#6c757d" stroke-width="2" marker-end="url(#arrow2)"/>
+
+    <!-- Level 2 -->
+    <rect x="300" y="20" width="200" height="55" rx="8" fill="#d5f5e3" stroke="#27ae60" stroke-width="2"/>
+    <text x="400" y="42" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Bivariate (雙變量)</text>
+    <text x="400" y="60" text-anchor="middle" font-size="11" fill="#6c757d">Correlation, Simple Regression</text>
+
+    <line x1="500" y1="48" x2="550" y2="48" stroke="#6c757d" stroke-width="2" marker-end="url(#arrow2)"/>
+
+    <!-- Level 3 -->
+    <rect x="550" y="20" width="200" height="55" rx="8" fill="#fdebd0" stroke="#f39c12" stroke-width="2"/>
+    <text x="650" y="42" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Multivariate (多變量)</text>
+    <text x="650" y="60" text-anchor="middle" font-size="11" fill="#6c757d">MR, MANOVA, SEM, FA...</text>
+
+    <!-- Detailed progression -->
+    <rect x="50" y="110" width="160" height="45" rx="6" fill="#eaf4fc" stroke="#3498db" stroke-width="1.5"/>
+    <text x="130" y="130" text-anchor="middle" font-size="11" font-weight="bold" fill="#2c3e50">t-test</text>
+    <text x="130" y="147" text-anchor="middle" font-size="10" fill="#6c757d">1 DV, 2 groups</text>
+    <line x1="210" y1="132" x2="240" y2="132" stroke="#6c757d" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+    <rect x="240" y="110" width="160" height="45" rx="6" fill="#eaf4fc" stroke="#27ae60" stroke-width="1.5"/>
+    <text x="320" y="130" text-anchor="middle" font-size="11" font-weight="bold" fill="#2c3e50">ANOVA</text>
+    <text x="320" y="147" text-anchor="middle" font-size="10" fill="#6c757d">1 DV, 2+ groups</text>
+    <line x1="400" y1="132" x2="430" y2="132" stroke="#6c757d" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+    <rect x="430" y="110" width="160" height="45" rx="6" fill="#eaf4fc" stroke="#f39c12" stroke-width="1.5"/>
+    <text x="510" y="130" text-anchor="middle" font-size="11" font-weight="bold" fill="#2c3e50">MANOVA</text>
+    <text x="510" y="147" text-anchor="middle" font-size="10" fill="#6c757d">2+ DVs, 2+ groups</text>
+    <line x1="590" y1="132" x2="620" y2="132" stroke="#6c757d" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+    <rect x="620" y="110" width="160" height="45" rx="6" fill="#eaf4fc" stroke="#e74c3c" stroke-width="1.5"/>
+    <text x="700" y="130" text-anchor="middle" font-size="11" font-weight="bold" fill="#2c3e50">SEM</text>
+    <text x="700" y="147" text-anchor="middle" font-size="10" fill="#6c757d">Latent vars, paths</text>
+
+    <!-- Regression progression -->
+    <rect x="50" y="190" width="160" height="45" rx="6" fill="#eaf4fc" stroke="#3498db" stroke-width="1.5"/>
+    <text x="130" y="210" text-anchor="middle" font-size="11" font-weight="bold" fill="#2c3e50">Simple Regression</text>
+    <text x="130" y="227" text-anchor="middle" font-size="10" fill="#6c757d">1 IV → 1 DV</text>
+    <line x1="210" y1="212" x2="240" y2="212" stroke="#6c757d" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+    <rect x="240" y="190" width="160" height="45" rx="6" fill="#eaf4fc" stroke="#27ae60" stroke-width="1.5"/>
+    <text x="320" y="210" text-anchor="middle" font-size="11" font-weight="bold" fill="#2c3e50">Multiple Regression</text>
+    <text x="320" y="227" text-anchor="middle" font-size="10" fill="#6c757d">k IVs → 1 DV</text>
+    <line x1="400" y1="212" x2="430" y2="212" stroke="#6c757d" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+    <rect x="430" y="190" width="160" height="45" rx="6" fill="#eaf4fc" stroke="#f39c12" stroke-width="1.5"/>
+    <text x="510" y="210" text-anchor="middle" font-size="11" font-weight="bold" fill="#2c3e50">Canonical Corr.</text>
+    <text x="510" y="227" text-anchor="middle" font-size="10" fill="#6c757d">k IVs → m DVs</text>
+    <line x1="590" y1="212" x2="620" y2="212" stroke="#6c757d" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+    <rect x="620" y="190" width="160" height="45" rx="6" fill="#eaf4fc" stroke="#e74c3c" stroke-width="1.5"/>
+    <text x="700" y="210" text-anchor="middle" font-size="11" font-weight="bold" fill="#2c3e50">SEM (Path)</text>
+    <text x="700" y="227" text-anchor="middle" font-size="10" fill="#6c757d">Latent → Latent</text>
+
+    <!-- Bottom label -->
+    <line x1="100" y1="260" x2="750" y2="260" stroke="#dee2e6" stroke-width="1"/>
+    <text x="100" y="280" font-size="11" fill="#6c757d">Simple</text>
+    <text x="700" y="280" text-anchor="end" font-size="11" fill="#6c757d">Complex</text>
+    <text x="400" y="300" text-anchor="middle" font-size="12" fill="#2c3e50" font-weight="bold">Increasing complexity / 複雜度遞增 →</text>
+  </svg>
+  <p class="caption" data-zh="圖：統計方法的複雜度遞進" data-en="Figure: Progression of statistical method complexity">圖：統計方法的複雜度遞進</p>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 5: STEPS IN MODEL BUILDING           -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="五、模型建構的基本步驟" data-en="5. Steps in Model Building">五、模型建構的基本步驟</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>Hair et al. 提出了多變量分析的六個基本步驟，作為所有方法的通用框架：</p>
+  </div>
+  <div class="en">
+    <p>Hair et al. propose six fundamental steps for multivariate analysis, serving as a universal framework for all methods:</p>
+  </div>
+</div>
+
+<div class="diagram">
+  <svg viewBox="0 0 800 480" xmlns="http://www.w3.org/2000/svg" style="max-width:700px">
+    <defs>
+      <marker id="arrow3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#6c757d"/>
+      </marker>
+    </defs>
+
+    <rect x="200" y="10" width="400" height="55" rx="8" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+    <text x="400" y="32" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Step 1: Define the Research Problem</text>
+    <text x="400" y="52" text-anchor="middle" font-size="11" fill="#6c757d">定義研究問題與目標</text>
+    <line x1="400" y1="65" x2="400" y2="90" stroke="#3498db" stroke-width="2" marker-end="url(#arrow3)"/>
+
+    <rect x="200" y="90" width="400" height="55" rx="8" fill="#d5f5e3" stroke="#27ae60" stroke-width="2"/>
+    <text x="400" y="112" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Step 2: Develop the Analysis Plan</text>
+    <text x="400" y="132" text-anchor="middle" font-size="11" fill="#6c757d">發展分析計畫（樣本大小、變數選擇）</text>
+    <line x1="400" y1="145" x2="400" y2="170" stroke="#27ae60" stroke-width="2" marker-end="url(#arrow3)"/>
+
+    <rect x="200" y="170" width="400" height="55" rx="8" fill="#fdebd0" stroke="#f39c12" stroke-width="2"/>
+    <text x="400" y="192" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Step 3: Evaluate Assumptions</text>
+    <text x="400" y="212" text-anchor="middle" font-size="11" fill="#6c757d">檢驗統計假設（常態性、線性、同質性）</text>
+    <line x1="400" y1="225" x2="400" y2="250" stroke="#f39c12" stroke-width="2" marker-end="url(#arrow3)"/>
+
+    <rect x="200" y="250" width="400" height="55" rx="8" fill="#fadbd8" stroke="#e74c3c" stroke-width="2"/>
+    <text x="400" y="272" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Step 4: Estimate the Model & Assess Fit</text>
+    <text x="400" y="292" text-anchor="middle" font-size="11" fill="#6c757d">估計模型與評估適配度</text>
+    <line x1="400" y1="305" x2="400" y2="330" stroke="#e74c3c" stroke-width="2" marker-end="url(#arrow3)"/>
+
+    <rect x="200" y="330" width="400" height="55" rx="8" fill="#e8daef" stroke="#8e44ad" stroke-width="2"/>
+    <text x="400" y="352" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Step 5: Interpret the Results</text>
+    <text x="400" y="372" text-anchor="middle" font-size="11" fill="#6c757d">解釋變數組合與結果</text>
+    <line x1="400" y1="385" x2="400" y2="410" stroke="#8e44ad" stroke-width="2" marker-end="url(#arrow3)"/>
+
+    <rect x="200" y="410" width="400" height="55" rx="8" fill="#d5dbdb" stroke="#7f8c8d" stroke-width="2"/>
+    <text x="400" y="432" text-anchor="middle" font-size="13" font-weight="bold" fill="#2c3e50">Step 6: Validate the Model</text>
+    <text x="400" y="452" text-anchor="middle" font-size="11" fill="#6c757d">驗證模型（交叉驗證、穩健性檢驗）</text>
+  </svg>
+  <p class="caption" data-zh="圖：多變量分析的六步驟流程" data-en="Figure: Six-step process for multivariate analysis">圖：多變量分析的六步驟流程</p>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="每步驟的關鍵考量" data-en="Key Considerations for Each Step">每步驟的關鍵考量</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li><strong>Step 1：</strong>研究問題應以理論為基礎，明確界定概念性模型</li>
+        <li><strong>Step 2：</strong>決定最小樣本大小——一般規則是觀察值與變數的比至少為 5:1，理想 15-20:1</li>
+        <li><strong>Step 3：</strong>常態性、線性、同質性、多重共線性的假設檢驗（下一章的重點）</li>
+        <li><strong>Step 4：</strong>選擇適當的估計方法（如 OLS、ML），並檢驗模型適配度</li>
+        <li><strong>Step 5：</strong>根據統計顯著性與實質顯著性（效果量）來解釋結果</li>
+        <li><strong>Step 6：</strong>用新樣本或分割樣本來驗證結果的穩定性</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li><strong>Step 1:</strong> Research problem should be theory-based with a clear conceptual model</li>
+        <li><strong>Step 2:</strong> Determine minimum sample size — rule of thumb is 5:1 observations-to-variables ratio, ideally 15-20:1</li>
+        <li><strong>Step 3:</strong> Test assumptions of normality, linearity, homoscedasticity, multicollinearity (focus of next chapter)</li>
+        <li><strong>Step 4:</strong> Choose appropriate estimation method (e.g., OLS, ML) and assess model fit</li>
+        <li><strong>Step 5:</strong> Interpret results based on both statistical significance and practical significance (effect size)</li>
+        <li><strong>Step 6:</strong> Validate results with new or split samples to confirm stability</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="樣本大小經驗法則" data-en="Sample Size Rules of Thumb">樣本大小經驗法則</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li>最低要求：觀察值與自變數比 <strong>5:1</strong>（每個自變數至少5筆資料）</li>
+        <li>理想比例：<strong>15:1 到 20:1</strong></li>
+        <li>SEM 分析：一般建議至少 <strong>200</strong> 筆以上</li>
+        <li>當效果量較小或變數較多時，需要更大的樣本</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li>Minimum: observations-to-IV ratio of <strong>5:1</strong> (at least 5 cases per IV)</li>
+        <li>Ideal: <strong>15:1 to 20:1</strong></li>
+        <li>SEM: generally recommend at least <strong>200</strong> cases</li>
+        <li>Larger samples needed when effect sizes are small or there are many variables</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 6: QUIZ                              -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="六、自我測驗" data-en="6. Self-Assessment Quiz">六、自我測驗</h2>
+
+<div class="quiz">
+  <h3 data-zh="測試你對多變量方法的理解" data-en="Test Your Understanding of Multivariate Methods">測試你對多變量方法的理解</h3>
+
+  <div class="quiz-question">
+    <p data-zh="Q1: 「順序尺度」和「等距尺度」的主要差異是什麼？" data-en="Q1: What is the key difference between ordinal and interval scales?">Q1: 「順序尺度」和「等距尺度」的主要差異是什麼？</p>
+    <div class="quiz-option" data-correct="false" data-zh="順序尺度有絕對零點，等距尺度沒有" data-en="Ordinal has an absolute zero, interval does not">順序尺度有絕對零點，等距尺度沒有</div>
+    <div class="quiz-option" data-correct="true" data-zh="等距尺度的各等級間距相等且有意義，順序尺度的間距不一定相等" data-en="Interval scales have equal, meaningful distances between levels; ordinal scales do not">等距尺度的各等級間距相等且有意義，順序尺度的間距不一定相等</div>
+    <div class="quiz-option" data-correct="false" data-zh="兩者完全相同，只是名稱不同" data-en="They are identical, just named differently">兩者完全相同，只是名稱不同</div>
+    <div class="quiz-option" data-correct="false" data-zh="順序尺度可以做乘除運算" data-en="Ordinal scales allow multiplication and division">順序尺度可以做乘除運算</div>
+    <div class="quiz-feedback" data-zh="正確！等距尺度保證了數值之間的差距是相等且有意義的（如溫度差 10°-20° 等於 20°-30°），但順序尺度只保證排列順序（如第1名和第2名的差距不一定等於第2名和第3名的差距）。" data-en="Correct! Interval scales guarantee equal, meaningful distances between values (e.g., 10°-20° = 20°-30°), while ordinal scales only guarantee rank order (e.g., the gap between 1st and 2nd may not equal the gap between 2nd and 3rd).">正確！等距尺度保證了數值之間的差距是相等且有意義的，但順序尺度只保證排列順序。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q2: 多元迴歸分析的依變數應該是哪一種測量尺度？" data-en="Q2: What measurement scale should the dependent variable in multiple regression be?">Q2: 多元迴歸分析的依變數應該是哪一種測量尺度？</p>
+    <div class="quiz-option" data-correct="false" data-zh="名目尺度" data-en="Nominal">名目尺度</div>
+    <div class="quiz-option" data-correct="false" data-zh="順序尺度" data-en="Ordinal">順序尺度</div>
+    <div class="quiz-option" data-correct="true" data-zh="計量尺度（等距或比率）" data-en="Metric (interval or ratio)">計量尺度（等距或比率）</div>
+    <div class="quiz-option" data-correct="false" data-zh="任何尺度都可以" data-en="Any scale is acceptable">任何尺度都可以</div>
+    <div class="quiz-feedback" data-zh="正確！多元迴歸要求依變數是計量變數（等距或比率尺度）。如果依變數是非計量（如二元分類），則應使用羅吉斯迴歸；如果是多類別分類，則應使用判別分析。" data-en="Correct! Multiple regression requires a metric DV (interval or ratio). If the DV is nonmetric (e.g., binary), logistic regression should be used; for multi-category classification, discriminant analysis is appropriate.">正確！多元迴歸要求依變數是計量變數。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q3: 下列哪一個屬於「互依技術」？" data-en="Q3: Which of the following is an interdependence technique?">Q3: 下列哪一個屬於「互依技術」？</p>
+    <div class="quiz-option" data-correct="false" data-zh="多元迴歸（Multiple Regression）" data-en="Multiple Regression">多元迴歸（Multiple Regression）</div>
+    <div class="quiz-option" data-correct="false" data-zh="MANOVA" data-en="MANOVA">MANOVA</div>
+    <div class="quiz-option" data-correct="true" data-zh="因素分析（Factor Analysis）" data-en="Factor Analysis">因素分析（Factor Analysis）</div>
+    <div class="quiz-option" data-correct="false" data-zh="羅吉斯迴歸（Logistic Regression）" data-en="Logistic Regression">羅吉斯迴歸（Logistic Regression）</div>
+    <div class="quiz-feedback" data-zh="正確！因素分析是互依技術——它不區分依變數和自變數，而是尋找所有變數之間的潛在結構（因素）。其他三個選項都是依變數技術，需要明確指定 Y 和 X。" data-en="Correct! Factor analysis is an interdependence technique — it does not distinguish between DVs and IVs, but instead seeks latent structure (factors) among all variables. The other three are dependence techniques requiring specified Y and X.">正確！因素分析是互依技術，不區分依變數和自變數。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q4: 根據 Hair et al.，多變量分析中觀察值與自變數的最低比例建議是多少？" data-en="Q4: According to Hair et al., what is the minimum recommended ratio of observations to independent variables?">Q4: 根據 Hair et al.，多變量分析中觀察值與自變數的最低比例建議是多少？</p>
+    <div class="quiz-option" data-correct="false" data-zh="2:1" data-en="2:1">2:1</div>
+    <div class="quiz-option" data-correct="true" data-zh="5:1" data-en="5:1">5:1</div>
+    <div class="quiz-option" data-correct="false" data-zh="50:1" data-en="50:1">50:1</div>
+    <div class="quiz-option" data-correct="false" data-zh="100:1" data-en="100:1">100:1</div>
+    <div class="quiz-feedback" data-zh="正確！最低要求是 5:1（每個自變數至少需要 5 筆觀察值），理想比例為 15:1 到 20:1。樣本太小會導致模型過度適配（overfitting），結果無法推廣到新樣本。" data-en="Correct! The minimum is 5:1 (at least 5 observations per IV), with an ideal ratio of 15:1 to 20:1. Too-small samples lead to overfitting, making results non-generalizable to new samples.">正確！最低要求是 5:1，理想比例為 15:1 到 20:1。</div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- KEY TERMS ACCORDION                          -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="七、關鍵名詞解釋" data-en="7. Key Terms Glossary">七、關鍵名詞解釋</h2>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="變數組合（Variate）" data-en="Variate">變數組合（Variate）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>多變量分析的基石。將多個變數以加權方式組合為單一的線性複合指標。權重由統計方法根據資料自動決定，以達成特定目標（如最大化解釋變異、最大化組間差異等）。</p></div>
+      <div class="en"><p>The building block of multivariate analysis. A linear combination of variables with empirically determined weights. Weights are automatically determined by the statistical method to achieve a specific objective (e.g., maximize explained variance, maximize group differences).</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="依變數技術（Dependence Techniques）" data-en="Dependence Techniques">依變數技術（Dependence Techniques）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>有明確的依變數（Y）和自變數（X）區分的統計方法。目標是解釋或預測依變數的變異。包括多元迴歸、ANOVA/MANOVA、判別分析、羅吉斯迴歸、典型相關等。</p></div>
+      <div class="en"><p>Statistical methods with a clearly identified dependent variable (Y) and independent variables (X). The goal is to explain or predict variation in the DV. Includes multiple regression, ANOVA/MANOVA, discriminant analysis, logistic regression, and canonical correlation.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="互依技術（Interdependence Techniques）" data-en="Interdependence Techniques">互依技術（Interdependence Techniques）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>不區分依變數和自變數的方法。目標是找出變數或觀察值之間的潛在結構或群組。包括因素分析（EFA/CFA）、集群分析和多元尺度分析（MDS）。</p></div>
+      <div class="en"><p>Methods that make no distinction between DVs and IVs. The goal is to identify underlying structure or groupings among variables or observations. Includes factor analysis (EFA/CFA), cluster analysis, and multidimensional scaling (MDS).</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="計量 vs. 非計量資料（Metric vs. Nonmetric Data）" data-en="Metric vs. Nonmetric Data">計量 vs. 非計量資料（Metric vs. Nonmetric Data）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p><strong>計量資料：</strong>等距或比率尺度，數值之間的差距具有固定意義，可以做加減或乘除運算。例如身高、收入、溫度。<br><strong>非計量資料：</strong>名目或順序尺度，數值僅用於分類或排序，不代表等距的量化差異。例如性別、教育程度、偏好排名。</p></div>
+      <div class="en"><p><strong>Metric data:</strong> Interval or ratio scales where differences between values have fixed meaning; arithmetic operations are meaningful. Examples: height, income, temperature.<br><strong>Nonmetric data:</strong> Nominal or ordinal scales where values serve only as categories or ranks, not representing equal quantitative differences. Examples: gender, education level, preference rankings.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="統計檢力（Statistical Power）" data-en="Statistical Power">統計檢力（Statistical Power）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>正確拒絕虛無假設（H₀）的機率——即當真實效果存在時，統計檢定能偵測到它的能力。檢力受到三個因素影響：(1) 效果量大小、(2) 顯著水準 (α)、(3) 樣本大小。一般建議檢力至少達到 .80。</p></div>
+      <div class="en"><p>The probability of correctly rejecting a false null hypothesis (H₀) — the ability to detect a real effect when it exists. Power depends on three factors: (1) effect size, (2) significance level (α), and (3) sample size. A minimum power of .80 is generally recommended.</p></div>
+    </div>
+  </div>
+</div>
+
+
+</div><!-- container -->
+</main>
+
+<!-- Navigation -->
+<div style="padding:2rem 0;background:#f0f3f5">
+  <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+    <a href="../index.html" style="font-weight:600" data-zh="← 回到首頁" data-en="← Back to Home">← 回到首頁</a>
+    <a href="ch2-examining-data.html" style="font-weight:600;background:var(--accent);color:#fff;padding:.5rem 1rem;border-radius:4px" data-zh="下一章：檢視你的資料 →" data-en="Next: Examining Your Data →">下一章：檢視你的資料 →</a>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>Hair, J.F., Black, W.C., Babin, B.J., & Anderson, R.E. (2019). <em>Multivariate Data Analysis</em> (8th ed.).</p>
+    <p style="margin-top:.5rem;font-size:.8rem;opacity:.8">© 版權所有 葉欲禾 (Gary Yu-Ho Yeh)</p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

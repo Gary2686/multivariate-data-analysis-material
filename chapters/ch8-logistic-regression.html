@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>羅吉斯迴歸 | Logistic Regression</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="lang-zh">
+<div class="progress-bar"><div class="fill"></div></div>
+
+<nav class="top-nav">
+  <div class="container">
+    <a href="../index.html" class="brand" data-zh="多變量資料分析" data-en="Multivariate Data Analysis">多變量資料分析</a>
+    <div class="nav-links">
+      <a href="../index.html" data-zh="首頁" data-en="Home">首頁</a>
+      <a href="ch7-discriminant-analysis.html" data-zh="判別分析" data-en="MDA">判別分析</a>
+      <a href="ch8-logistic-regression.html" class="active" data-zh="羅吉斯迴歸" data-en="Logistic Reg.">羅吉斯迴歸</a>
+      <button class="lang-toggle">EN</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1 data-zh="羅吉斯迴歸" data-en="Logistic Regression">羅吉斯迴歸</h1>
+    <p data-zh="Ch.8 當依變數為類別變數時的迴歸替代方案" data-en="Ch.8 The Regression Alternative When the DV Is Categorical">Ch.8 當依變數為類別變數時的迴歸替代方案</p>
+  </div>
+</header>
+
+<main class="section">
+<div class="container">
+
+<!-- ============================================ -->
+<!-- SECTION 1: WHY LOGISTIC REGRESSION           -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="一、為什麼需要羅吉斯迴歸？" data-en="1. Why Logistic Regression?">一、為什麼需要羅吉斯迴歸？</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>當依變數是<strong>二元類別</strong>（0/1、是/否、成功/失敗）時，傳統的線性迴歸會遇到三個根本問題：</p>
+    <ul style="margin-top:.5rem;padding-left:1.5rem">
+      <li><strong>預測值超出範圍：</strong>線性迴歸的預測值可以是任何實數，但機率值必須介於 0 與 1 之間</li>
+      <li><strong>誤差項不符合常態分配：</strong>二元依變數的殘差呈離散分布，違反迴歸假設</li>
+      <li><strong>異質變異數：</strong>殘差的變異數隨預測值變化，違反等變異數假設</li>
+    </ul>
+  </div>
+  <div class="en">
+    <p>When the DV is <strong>binary</strong> (0/1, yes/no, success/failure), traditional linear regression faces three fundamental problems:</p>
+    <ul style="margin-top:.5rem;padding-left:1.5rem">
+      <li><strong>Out-of-range predictions:</strong> Linear regression can predict any real number, but probabilities must fall between 0 and 1</li>
+      <li><strong>Non-normal residuals:</strong> Residuals from a binary DV are discrete, violating regression assumptions</li>
+      <li><strong>Heteroscedasticity:</strong> Residual variance changes with predicted values, violating the equal variance assumption</li>
+    </ul>
+  </div>
+</div>
+
+<div class="concept-block success">
+  <h4 data-zh="白話解釋" data-en="Plain Language Explanation">白話解釋</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p><strong>線性迴歸預測「多少」，羅吉斯迴歸預測「是或否」。</strong>想像你是一位醫生：線性迴歸可以預測病人的血壓值（連續數字），但如果你想預測病人「會不會得糖尿病」（是/否），就需要羅吉斯迴歸。它不會告訴你一個數字，而是告訴你一個<strong>機率</strong>——例如「這位病人有 78% 的機率會得糖尿病」。</p>
+    </div>
+    <div class="en">
+      <p><strong>Linear regression predicts "how much"; logistic regression predicts "yes or no."</strong> Imagine you are a doctor: linear regression can predict a patient's blood pressure (a continuous number), but to predict whether a patient "will develop diabetes" (yes/no), you need logistic regression. It provides a <strong>probability</strong> -- e.g., "this patient has a 78% chance of developing diabetes."</p>
+    </div>
+  </div>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="線性迴歸 vs. 羅吉斯迴歸：預測的差異" data-en="Linear vs. Logistic Regression: Prediction Differences">線性迴歸 vs. 羅吉斯迴歸：預測的差異</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p>線性迴歸：Y = b₀ + b₁X → 預測值可能是 -0.3 或 1.5（超出機率範圍）</p>
+      <p>羅吉斯迴歸：P(Y=1) = e<sup>z</sup> / (1 + e<sup>z</sup>) → 預測值永遠在 0 到 1 之間</p>
+    </div>
+    <div class="en">
+      <p>Linear: Y = b₀ + b₁X → prediction can be -0.3 or 1.5 (outside probability range)</p>
+      <p>Logistic: P(Y=1) = e<sup>z</sup> / (1 + e<sup>z</sup>) → prediction is always between 0 and 1</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 2: MODEL PRINCIPLES                  -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="二、模型原理" data-en="2. Model Principles">二、模型原理</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>羅吉斯迴歸透過<strong>logit 轉換</strong>，將機率值（0-1 範圍）轉換為不受範圍限制的連續變數，再以線性方程式進行建模。</p>
+  </div>
+  <div class="en">
+    <p>Logistic regression uses the <strong>logit transformation</strong> to convert probability (0-1 range) into an unbounded continuous variable, then models it with a linear equation.</p>
+  </div>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="核心公式" data-en="Core Formulas">核心公式</h4>
+  <div class="formula-box">
+    Logit(P) = ln(P / (1-P)) = b<sub>0</sub> + b<sub>1</sub>X<sub>1</sub> + b<sub>2</sub>X<sub>2</sub> + ... + b<sub>k</sub>X<sub>k</sub>
+    <span class="label" data-zh="P = 事件發生機率, P/(1-P) = 勝算 (odds)" data-en="P = probability of event, P/(1-P) = odds">P = 事件發生機率, P/(1-P) = 勝算 (odds)</span>
+  </div>
+  <div class="formula-box" style="margin-top:1rem">
+    P(Y=1) = e<sup>z</sup> / (1 + e<sup>z</sup>) = 1 / (1 + e<sup>-z</sup>)
+    <span class="label" data-zh="z = b₀ + b₁X₁ + ... ，此為 S 型曲線（sigmoid function）" data-en="z = b₀ + b₁X₁ + ... , this is the sigmoid function (S-curve)">z = b₀ + b₁X₁ + ... ，此為 S 型曲線（sigmoid function）</span>
+  </div>
+</div>
+
+<div class="bilingual" style="margin-top:1rem">
+  <div class="zh">
+    <p><strong>勝算（Odds）</strong>與<strong>勝算比（Odds Ratio）</strong>：</p>
+    <ul style="padding-left:1.5rem;margin-top:.5rem">
+      <li><strong>勝算：</strong>P / (1-P)，事件發生與不發生的機率之比。例如：勝算 = 3 表示發生的可能性是不發生的 3 倍</li>
+      <li><strong>勝算比 Exp(B)：</strong>自變數每增加 1 單位時，勝算的<strong>倍數變化</strong></li>
+      <li>Exp(B) > 1：自變數增加時，事件發生的勝算增加</li>
+      <li>Exp(B) < 1：自變數增加時，事件發生的勝算減少</li>
+      <li>Exp(B) = 1：自變數對事件發生的勝算無影響</li>
+    </ul>
+  </div>
+  <div class="en">
+    <p><strong>Odds</strong> and <strong>Odds Ratio</strong>:</p>
+    <ul style="padding-left:1.5rem;margin-top:.5rem">
+      <li><strong>Odds:</strong> P / (1-P), ratio of event occurring to not occurring. E.g., odds = 3 means event is 3 times more likely to happen than not</li>
+      <li><strong>Odds Ratio Exp(B):</strong> The <strong>multiplicative change</strong> in odds for each 1-unit increase in the IV</li>
+      <li>Exp(B) > 1: Increasing IV raises the odds of the event</li>
+      <li>Exp(B) < 1: Increasing IV lowers the odds of the event</li>
+      <li>Exp(B) = 1: IV has no effect on the odds</li>
+    </ul>
+  </div>
+</div>
+
+<!-- SVG Diagram: Sigmoid / S-curve -->
+<div class="diagram">
+  <svg viewBox="0 0 700 380" xmlns="http://www.w3.org/2000/svg" style="max-width:650px">
+    <defs>
+      <marker id="arrowLR" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#6c757d"/>
+      </marker>
+    </defs>
+    <!-- Y-axis -->
+    <line x1="80" y1="330" x2="80" y2="30" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowLR)"/>
+    <text x="40" y="185" text-anchor="middle" font-size="13" fill="#6c757d" transform="rotate(-90,40,185)">P(Y=1)</text>
+    <text x="72" y="50" text-anchor="end" font-size="11" fill="#6c757d">1.0</text>
+    <text x="72" y="185" text-anchor="end" font-size="11" fill="#6c757d">0.5</text>
+    <text x="72" y="325" text-anchor="end" font-size="11" fill="#6c757d">0.0</text>
+    <!-- X-axis -->
+    <line x1="80" y1="320" x2="650" y2="320" stroke="#6c757d" stroke-width="2" marker-end="url(#arrowLR)"/>
+    <text x="370" y="360" text-anchor="middle" font-size="13" fill="#6c757d">z = b&#x2080; + b&#x2081;X&#x2081; + ...</text>
+    <!-- Grid lines -->
+    <line x1="80" y1="55" x2="640" y2="55" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,4"/>
+    <line x1="80" y1="185" x2="640" y2="185" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,4"/>
+    <!-- Sigmoid curve -->
+    <path d="M 90,310 C 130,308 170,305 210,298 C 250,285 280,265 310,230 C 330,205 350,175 370,150 C 400,110 430,82 470,68 C 510,58 560,53 600,51 C 620,50 635,50 640,50" stroke="#e74c3c" stroke-width="3" fill="none"/>
+    <!-- Linear regression line (for contrast) -->
+    <line x1="100" y1="310" x2="630" y2="30" stroke="#3498db" stroke-width="2" stroke-dasharray="8,4"/>
+    <!-- Labels -->
+    <rect x="440" y="120" width="180" height="50" rx="6" fill="#fadbd8" fill-opacity="0.8" stroke="#e74c3c" stroke-width="1"/>
+    <text x="530" y="140" text-anchor="middle" font-size="12" font-weight="bold" fill="#e74c3c">Logistic (S-curve)</text>
+    <text x="530" y="158" text-anchor="middle" font-size="11" fill="#e74c3c">Always 0 to 1</text>
+    <rect x="440" y="190" width="180" height="50" rx="6" fill="#d6eaf8" fill-opacity="0.8" stroke="#3498db" stroke-width="1"/>
+    <text x="530" y="210" text-anchor="middle" font-size="12" font-weight="bold" fill="#3498db">Linear regression</text>
+    <text x="530" y="228" text-anchor="middle" font-size="11" fill="#3498db">Can exceed 0-1 range</text>
+    <!-- 0.5 cutoff annotation -->
+    <circle cx="365" cy="185" r="5" fill="#f39c12"/>
+    <text x="375" y="178" font-size="11" fill="#f39c12">P = 0.5 cutoff</text>
+  </svg>
+  <p class="caption" data-zh="圖：S 型曲線（sigmoid function） -- 機率值 vs. 邏輯值對比線性迴歸" data-en="Figure: Sigmoid function -- probability vs. logit compared with linear regression">圖：S 型曲線（sigmoid function） -- 機率值 vs. 邏輯值對比線性迴歸</p>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 3: MODEL ESTIMATION                  -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="三、模型估計" data-en="3. Model Estimation">三、模型估計</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>羅吉斯迴歸使用<strong>最大概似估計法（MLE）</strong>而非 OLS。MLE 尋找的是讓觀察到的資料最有可能出現的參數值。</p>
+  </div>
+  <div class="en">
+    <p>Logistic regression uses <strong>Maximum Likelihood Estimation (MLE)</strong> instead of OLS. MLE finds the parameter values that make the observed data most probable.</p>
+  </div>
+</div>
+
+<div class="card-grid" style="margin-top:1rem">
+  <div class="card">
+    <h3 data-zh="-2 Log Likelihood (-2LL)" data-en="-2 Log Likelihood (-2LL)">-2 Log Likelihood (-2LL)</h3>
+    <div class="zh-only">
+      <p><strong>定義：</strong>衡量模型配適度的基本指標。</p>
+      <p><strong>解釋：</strong>數值越小表示模型與資料配適越好。完美配適時 -2LL = 0。</p>
+      <p><strong>類比：</strong>類似線性迴歸中的殘差平方和（RSS）。</p>
+      <p style="margin-top:.5rem;font-size:.85rem;color:var(--text-light)">-2LL measures model fit. Lower values = better fit. Analogous to RSS in linear regression.</p>
+    </div>
+    <div class="en-only">
+      <p><strong>Definition:</strong> The fundamental measure of model fit.</p>
+      <p><strong>Interpretation:</strong> Lower values indicate better fit. Perfect fit yields -2LL = 0.</p>
+      <p><strong>Analogy:</strong> Similar to residual sum of squares (RSS) in linear regression.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 data-zh="模型卡方檢定" data-en="Model Chi-Square Test">模型卡方檢定</h3>
+    <div class="zh-only">
+      <p><strong>計算：</strong>-2LL<sub>null</sub> - (-2LL<sub>model</sub>)</p>
+      <p><strong>解釋：</strong>檢定整體模型是否顯著優於只有截距的零模型。</p>
+      <p><strong>類比：</strong>類似線性迴歸中的整體 F 檢定。</p>
+      <p style="margin-top:.5rem;font-size:.85rem;color:var(--text-light)">Tests whether the full model is significantly better than the null (intercept-only) model.</p>
+    </div>
+    <div class="en-only">
+      <p><strong>Calculation:</strong> -2LL<sub>null</sub> - (-2LL<sub>model</sub>)</p>
+      <p><strong>Interpretation:</strong> Tests whether the full model is significantly better than the intercept-only (null) model.</p>
+      <p><strong>Analogy:</strong> Similar to the overall F-test in linear regression.</p>
+    </div>
+  </div>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="MLE vs. OLS" data-en="MLE vs. OLS">MLE vs. OLS</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li><strong>OLS（最小平方法）：</strong>最小化殘差平方和。需要連續依變數與常態殘差</li>
+        <li><strong>MLE（最大概似法）：</strong>最大化觀察資料出現的概似函數。不需常態假設，適用於類別依變數</li>
+        <li>MLE 採用<strong>迭代（iterative）</strong>程序，逐步改善參數估計直到收斂</li>
+        <li>當樣本數夠大時，MLE 的估計值具有漸近常態分配的性質</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li><strong>OLS:</strong> Minimizes sum of squared residuals. Requires continuous DV and normal residuals</li>
+        <li><strong>MLE:</strong> Maximizes the likelihood function of the observed data. No normality assumption, suitable for categorical DVs</li>
+        <li>MLE uses an <strong>iterative</strong> procedure, improving estimates until convergence</li>
+        <li>With sufficient sample size, MLE estimates are asymptotically normally distributed</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 4: MODEL ASSESSMENT                  -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="四、模型評估" data-en="4. Model Assessment">四、模型評估</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>羅吉斯迴歸沒有傳統的 R&sup2;，但有多種替代指標來評估模型品質。</p>
+  </div>
+  <div class="en">
+    <p>Logistic regression lacks a traditional R&sup2;, but several alternative metrics assess model quality.</p>
+  </div>
+</div>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="評估指標" data-en="Assessment Metric">評估指標</th>
+        <th data-zh="公式 / 說明" data-en="Formula / Description">公式 / 說明</th>
+        <th data-zh="判斷標準" data-en="Criteria">判斷標準</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Cox & Snell R&sup2;</strong></td>
+        <td data-zh="基於 -2LL 的改善量；上限無法到達 1.0" data-en="Based on -2LL improvement; upper bound cannot reach 1.0">基於 -2LL 的改善量；上限無法到達 1.0</td>
+        <td data-zh="越高越好（但受限於上限）" data-en="Higher is better (but limited by upper bound)">越高越好（但受限於上限）</td>
+      </tr>
+      <tr>
+        <td><strong>Nagelkerke R&sup2;</strong></td>
+        <td data-zh="修正 Cox & Snell 使上限可達 1.0" data-en="Adjusted Cox & Snell so upper bound can reach 1.0">修正 Cox & Snell 使上限可達 1.0</td>
+        <td data-zh="越高越好，較常使用" data-en="Higher is better, more commonly reported">越高越好，較常使用</td>
+      </tr>
+      <tr>
+        <td><strong>Hosmer-Lemeshow</strong></td>
+        <td data-zh="將樣本分 10 組，比較預測與觀察的頻率" data-en="Divides sample into 10 groups, compares predicted vs. observed frequencies">將樣本分 10 組，比較預測與觀察的頻率</td>
+        <td data-zh="p > .05 表示模型適配良好" data-en="p > .05 indicates good fit">p > .05 表示模型適配良好</td>
+      </tr>
+      <tr>
+        <td data-zh="分類表" data-en="Classification Table"><strong data-zh="分類表" data-en="Classification Table">分類表</strong></td>
+        <td data-zh="類似判別分析的混淆矩陣" data-en="Similar to MDA's confusion matrix">類似判別分析的混淆矩陣</td>
+        <td data-zh="整體正確率應顯著高於隨機" data-en="Overall accuracy should significantly exceed chance">整體正確率應顯著高於隨機</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="Pseudo R&sup2; 公式" data-en="Pseudo R&sup2; Formulas">Pseudo R&sup2; 公式</h4>
+  <div class="formula-box">
+    Cox &amp; Snell R&sup2; = 1 - [L<sub>0</sub> / L<sub>M</sub>]<sup>2/N</sup>
+    <span class="label" data-zh="L₀ = 零模型概似值, L_M = 完整模型概似值, N = 樣本數" data-en="L₀ = null model likelihood, L_M = full model likelihood, N = sample size">L&#x2080; = 零模型概似值, L<sub>M</sub> = 完整模型概似值, N = 樣本數</span>
+  </div>
+  <div class="formula-box" style="margin-top:.75rem">
+    Nagelkerke R&sup2; = Cox &amp; Snell R&sup2; / R&sup2;<sub>max</sub>
+    <span class="label" data-zh="R²max = 1 - L₀^(2/N)，使上限調整為 1.0" data-en="R²max = 1 - L₀^(2/N), adjusting the upper bound to 1.0">R&sup2;<sub>max</sub> = 1 - L&#x2080;<sup>2/N</sup>，使上限調整為 1.0</span>
+  </div>
+</div>
+
+<div class="concept-block danger">
+  <h4 data-zh="注意：Pseudo R&sup2; 的限制" data-en="Caution: Limitations of Pseudo R&sup2;">注意：Pseudo R&sup2; 的限制</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p>Pseudo R&sup2; <strong>不能像線性迴歸的 R&sup2; 一樣解釋為「解釋變異量百分比」</strong>。它們僅是模型改善程度的近似指標，不同的 Pseudo R&sup2; 計算方式會得到不同的數值。在羅吉斯迴歸中，分類準確度通常比 Pseudo R&sup2; 更具實用價值。</p>
+    </div>
+    <div class="en">
+      <p>Pseudo R&sup2; <strong>cannot be interpreted as "percentage of variance explained"</strong> like R&sup2; in linear regression. They are only approximations of model improvement, and different formulas yield different values. In logistic regression, classification accuracy is usually more practically useful than Pseudo R&sup2;.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 5: COEFFICIENT INTERPRETATION        -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="五、係數解釋" data-en="5. Coefficient Interpretation">五、係數解釋</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>羅吉斯迴歸的係數解釋與線性迴歸不同。B 係數代表 logit 的變化，而 Exp(B) 才是最直觀的勝算比解釋。</p>
+  </div>
+  <div class="en">
+    <p>Coefficient interpretation in logistic regression differs from linear regression. B represents the change in logit, while Exp(B) -- the odds ratio -- is the most intuitive interpretation.</p>
+  </div>
+</div>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="指標" data-en="Metric">指標</th>
+        <th data-zh="意義" data-en="Meaning">意義</th>
+        <th data-zh="範例" data-en="Example">範例</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>B</strong></td>
+        <td data-zh="自變數每增加 1 單位，logit 的變化量" data-en="Change in logit per 1-unit increase in IV">自變數每增加 1 單位，logit 的變化量</td>
+        <td data-zh="B = 0.8 → logit 增加 0.8" data-en="B = 0.8 → logit increases by 0.8">B = 0.8 &#8594; logit 增加 0.8</td>
+      </tr>
+      <tr>
+        <td><strong>Exp(B)</strong></td>
+        <td data-zh="勝算比：自變數每增加 1 單位，勝算的倍數" data-en="Odds ratio: multiplicative change in odds per 1-unit increase">勝算比：自變數每增加 1 單位，勝算的倍數</td>
+        <td data-zh="Exp(0.8) = 2.23 → 勝算變為 2.23 倍" data-en="Exp(0.8) = 2.23 → odds become 2.23 times">Exp(0.8) = 2.23 &#8594; 勝算變為 2.23 倍</td>
+      </tr>
+      <tr>
+        <td><strong>Wald</strong></td>
+        <td data-zh="檢定個別係數是否顯著異於零" data-en="Tests whether individual coefficient is significantly different from zero">檢定個別係數是否顯著異於零</td>
+        <td data-zh="Wald = (B / SE)&sup2;, 近似卡方分配" data-en="Wald = (B / SE)&sup2;, approximately chi-square">Wald = (B / SE)&sup2;</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Odds Ratio Interpretation Table -->
+<h3 style="margin-top:1.5rem" data-zh="勝算比 Exp(B) 解讀範例" data-en="Odds Ratio Exp(B) Interpretation Examples">勝算比 Exp(B) 解讀範例</h3>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="自變數" data-en="IV">自變數</th>
+        <th>B</th>
+        <th>Exp(B)</th>
+        <th data-zh="解釋" data-en="Interpretation">解釋</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-zh="年收入（萬元）" data-en="Annual income (10K)">年收入（萬元）</td>
+        <td>0.50</td>
+        <td>1.65</td>
+        <td data-zh="每增加 1 萬元收入，購買的勝算增為 1.65 倍" data-en="Each 10K increase raises purchase odds by 1.65 times">每增加 1 萬元收入，購買的勝算增為 1.65 倍</td>
+      </tr>
+      <tr>
+        <td data-zh="年齡" data-en="Age">年齡</td>
+        <td>-0.03</td>
+        <td>0.97</td>
+        <td data-zh="每增加 1 歲，購買勝算減為 0.97 倍（降低 3%）" data-en="Each year older reduces purchase odds to 0.97 times (3% decrease)">每增加 1 歲，購買勝算減為 0.97 倍（降低 3%）</td>
+      </tr>
+      <tr>
+        <td data-zh="性別（1=女）" data-en="Gender (1=female)">性別（1=女）</td>
+        <td>1.10</td>
+        <td>3.00</td>
+        <td data-zh="女性的購買勝算是男性的 3 倍" data-en="Females have 3 times the purchase odds of males">女性的購買勝算是男性的 3 倍</td>
+      </tr>
+      <tr>
+        <td data-zh="品牌忠誠度" data-en="Brand loyalty">品牌忠誠度</td>
+        <td>0.00</td>
+        <td>1.00</td>
+        <td data-zh="對購買勝算無影響" data-en="No effect on purchase odds">對購買勝算無影響</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="Wald 檢定的注意事項" data-en="Wald Test Caveat">Wald 檢定的注意事項</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p>Wald 統計量在 B 係數絕對值很大時會出現<strong>膨脹的標準誤</strong>，導致本應顯著的係數被錯誤判定為不顯著（Type II error）。當遇到這種情況時，建議改用<strong>概似比檢定（Likelihood Ratio Test）</strong>，比較含與不含該變數的兩個模型的 -2LL 差異。</p>
+    </div>
+    <div class="en">
+      <p>The Wald statistic can produce <strong>inflated standard errors</strong> when the absolute value of B is large, causing truly significant coefficients to appear non-significant (Type II error). In such cases, use the <strong>Likelihood Ratio Test</strong> instead, comparing -2LL values with and without the variable.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 6: MULTINOMIAL LOGISTIC              -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="六、多元羅吉斯迴歸" data-en="6. Multinomial Logistic Regression">六、多元羅吉斯迴歸</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>當依變數有<strong>三個或以上的類別</strong>時（如：選擇品牌 A / B / C），使用多元羅吉斯迴歸。其核心概念是選定一個<strong>參照類別（reference category）</strong>，然後針對其他每個類別分別建立一個 logit 方程式。</p>
+  </div>
+  <div class="en">
+    <p>When the DV has <strong>three or more categories</strong> (e.g., choose brand A / B / C), use multinomial logistic regression. The core concept is selecting a <strong>reference category</strong>, then building a separate logit equation for each other category against it.</p>
+  </div>
+</div>
+
+<!-- Tab: Binary vs. Multinomial -->
+<div class="tab-container" style="margin-top:1.5rem">
+  <div class="tab-header">
+    <button class="tab-btn active" data-tab="tab-binary" data-zh="二元羅吉斯迴歸" data-en="Binary Logistic">二元羅吉斯迴歸</button>
+    <button class="tab-btn" data-tab="tab-multinomial" data-zh="多元羅吉斯迴歸" data-en="Multinomial Logistic">多元羅吉斯迴歸</button>
+  </div>
+
+  <div class="tab-panel active" id="tab-binary">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>二元羅吉斯迴歸（Binary Logistic Regression）</h4>
+        <p>依變數只有兩個類別（0 或 1），是最基本且最常用的形式。</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li>僅需建立 <strong>1 個 logit 方程式</strong></li>
+          <li>預測結果：P(Y=1) 的機率</li>
+          <li>通常以 P = 0.5 作為分類門檻</li>
+          <li>適用範例：購買/不購買、通過/不通過、有病/無病</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>Binary Logistic Regression</h4>
+        <p>DV has only two categories (0 or 1), the most basic and common form.</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li>Only <strong>1 logit equation</strong> needed</li>
+          <li>Predicts: probability of P(Y=1)</li>
+          <li>Typically uses P = 0.5 as the classification cutoff</li>
+          <li>Examples: purchase/no purchase, pass/fail, disease/no disease</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-multinomial">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>多元羅吉斯迴歸（Multinomial Logistic Regression）</h4>
+        <p>依變數有三個或以上的無序類別。</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li>需建立 <strong>k-1 個 logit 方程式</strong>（k = 類別數）</li>
+          <li>每個方程式比較一個類別與<strong>參照類別</strong>的差異</li>
+          <li>參照類別的選擇不影響模型整體結果，但影響係數的解讀方向</li>
+          <li><strong>IIA 假設</strong>（無關替代方案的獨立性）：移除一個選項不應改變其他選項之間的相對機率</li>
+          <li>適用範例：品牌選擇（A/B/C）、交通方式（公車/捷運/自駕）</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>Multinomial Logistic Regression</h4>
+        <p>DV has three or more unordered categories.</p>
+        <ul style="padding-left:1.2rem;margin-top:.5rem">
+          <li>Requires <strong>k-1 logit equations</strong> (k = number of categories)</li>
+          <li>Each equation compares one category against the <strong>reference category</strong></li>
+          <li>Choice of reference does not affect overall model results, but affects coefficient interpretation</li>
+          <li><strong>IIA assumption</strong> (Independence of Irrelevant Alternatives): removing one option should not change the relative probabilities among the remaining options</li>
+          <li>Examples: brand choice (A/B/C), transportation mode (bus/metro/car)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="concept-block danger" style="margin-top:1rem">
+      <h4 data-zh="IIA 假設：經典的「紅色公車 / 藍色公車」悖論" data-en="IIA Assumption: The Classic 'Red Bus / Blue Bus' Paradox">IIA 假設：經典的「紅色公車 / 藍色公車」悖論</h4>
+      <div class="bilingual">
+        <div class="zh">
+          <p>假設「開車」與「搭公車」各有 50% 的選擇機率。如果新增一條「藍色公車」路線，IIA 假設預測三者的比例為 33% / 33% / 33%。但實際上，藍色公車主要分走的是原公車的乘客，合理的比例應更接近 50% / 25% / 25%。若 IIA 假設被違反，應考慮使用巢狀羅吉斯模型（nested logit）或混合羅吉斯模型（mixed logit）。</p>
+        </div>
+        <div class="en">
+          <p>Suppose "car" and "bus" each have a 50% choice probability. If a "blue bus" is added, IIA predicts 33%/33%/33%. But realistically, the blue bus mainly draws from existing bus riders, so 50%/25%/25% is more plausible. When IIA is violated, consider nested logit or mixed logit models.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Comparison Table: Linear vs. Logistic -->
+<h3 style="margin-top:2rem" data-zh="線性迴歸 vs. 羅吉斯迴歸 完整比較" data-en="Linear vs. Logistic Regression: Full Comparison">線性迴歸 vs. 羅吉斯迴歸 完整比較</h3>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="比較面向" data-en="Comparison">比較面向</th>
+        <th data-zh="線性迴歸" data-en="Linear Regression">線性迴歸</th>
+        <th data-zh="羅吉斯迴歸" data-en="Logistic Regression">羅吉斯迴歸</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-zh="依變數" data-en="Dependent Variable">依變數</td>
+        <td data-zh="連續（計量）" data-en="Continuous (metric)">連續（計量）</td>
+        <td data-zh="類別（二元或多元）" data-en="Categorical (binary or multinomial)">類別（二元或多元）</td>
+      </tr>
+      <tr>
+        <td data-zh="預測結果" data-en="Predicted Output">預測結果</td>
+        <td data-zh="Y 的估計值" data-en="Estimated value of Y">Y 的估計值</td>
+        <td data-zh="事件發生的機率 P(Y=1)" data-en="Probability of event P(Y=1)">事件發生的機率 P(Y=1)</td>
+      </tr>
+      <tr>
+        <td data-zh="估計方法" data-en="Estimation Method">估計方法</td>
+        <td data-zh="OLS（最小平方法）" data-en="OLS (Ordinary Least Squares)">OLS（最小平方法）</td>
+        <td data-zh="MLE（最大概似估計法）" data-en="MLE (Maximum Likelihood)">MLE（最大概似估計法）</td>
+      </tr>
+      <tr>
+        <td data-zh="配適度指標" data-en="Fit Measures">配適度指標</td>
+        <td>R&sup2;, Adjusted R&sup2;</td>
+        <td data-zh="-2LL, Pseudo R&sup2;, Hosmer-Lemeshow" data-en="-2LL, Pseudo R&sup2;, Hosmer-Lemeshow">-2LL, Pseudo R&sup2;, Hosmer-Lemeshow</td>
+      </tr>
+      <tr>
+        <td data-zh="整體檢定" data-en="Overall Test">整體檢定</td>
+        <td data-zh="F 檢定" data-en="F-test">F 檢定</td>
+        <td data-zh="模型卡方檢定" data-en="Model chi-square test">模型卡方檢定</td>
+      </tr>
+      <tr>
+        <td data-zh="係數檢定" data-en="Coefficient Test">係數檢定</td>
+        <td data-zh="t 檢定" data-en="t-test">t 檢定</td>
+        <td data-zh="Wald 檢定 / 概似比檢定" data-en="Wald test / Likelihood Ratio test">Wald 檢定 / 概似比檢定</td>
+      </tr>
+      <tr>
+        <td data-zh="係數解釋" data-en="Coefficient Interpretation">係數解釋</td>
+        <td data-zh="X 增加 1，Y 平均增加 b 單位" data-en="1-unit increase in X → Y increases by b on average">X 增加 1，Y 平均增加 b 單位</td>
+        <td data-zh="X 增加 1，勝算變為 Exp(B) 倍" data-en="1-unit increase in X → odds multiply by Exp(B)">X 增加 1，勝算變為 Exp(B) 倍</td>
+      </tr>
+      <tr>
+        <td data-zh="假設要求" data-en="Assumptions">假設要求</td>
+        <td data-zh="常態殘差、等變異、線性關係" data-en="Normal residuals, homoscedasticity, linearity">常態殘差、等變異、線性關係</td>
+        <td data-zh="不需常態假設；需足夠樣本數" data-en="No normality required; adequate sample size needed">不需常態假設；需足夠樣本數</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 7: QUIZ                              -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="七、自我測驗" data-en="7. Self-Assessment Quiz">七、自我測驗</h2>
+
+<div class="quiz">
+  <h3 data-zh="測試你對羅吉斯迴歸的理解" data-en="Test Your Understanding of Logistic Regression">測試你對羅吉斯迴歸的理解</h3>
+
+  <div class="quiz-question">
+    <p data-zh="Q1: 為什麼不能直接用線性迴歸來分析二元依變數？" data-en="Q1: Why can't we directly use linear regression for a binary DV?">Q1: 為什麼不能直接用線性迴歸來分析二元依變數？</p>
+    <div class="quiz-option" data-correct="false" data-zh="因為線性迴歸無法處理自變數" data-en="Because linear regression cannot handle IVs">因為線性迴歸無法處理自變數</div>
+    <div class="quiz-option" data-correct="true" data-zh="因為預測值可能超出 0-1 範圍，且殘差違反常態與等變異假設" data-en="Predictions can fall outside 0-1 range, and residuals violate normality and homoscedasticity">因為預測值可能超出 0-1 範圍，且殘差違反常態與等變異假設</div>
+    <div class="quiz-option" data-correct="false" data-zh="因為線性迴歸只能分析類別自變數" data-en="Because linear regression can only analyze categorical IVs">因為線性迴歸只能分析類別自變數</div>
+    <div class="quiz-option" data-correct="false" data-zh="因為線性迴歸無法計算 R&sup2;" data-en="Because linear regression cannot calculate R&sup2;">因為線性迴歸無法計算 R&sup2;</div>
+    <div class="quiz-feedback" data-zh="正確！線性迴歸用於二元依變數時，預測值可能小於 0 或大於 1（不合理的機率值），且殘差呈離散分布、變異數不齊一，違反 OLS 的基本假設。" data-en="Correct! When applied to a binary DV, linear regression can produce predictions below 0 or above 1 (impossible probabilities), and residuals are discrete with unequal variance, violating OLS assumptions.">正確！預測值超出範圍且假設被違反。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q2: 若 Exp(B) = 2.5，應如何解釋？" data-en="Q2: If Exp(B) = 2.5, how should it be interpreted?">Q2: 若 Exp(B) = 2.5，應如何解釋？</p>
+    <div class="quiz-option" data-correct="false" data-zh="自變數每增加 1 單位，機率增加 2.5" data-en="Probability increases by 2.5 per 1-unit increase in IV">自變數每增加 1 單位，機率增加 2.5</div>
+    <div class="quiz-option" data-correct="false" data-zh="自變數每增加 1 單位，機率增加 250%" data-en="Probability increases by 250% per 1-unit increase in IV">自變數每增加 1 單位，機率增加 250%</div>
+    <div class="quiz-option" data-correct="true" data-zh="自變數每增加 1 單位，勝算變為原來的 2.5 倍" data-en="Odds become 2.5 times for each 1-unit increase in IV">自變數每增加 1 單位，勝算變為原來的 2.5 倍</div>
+    <div class="quiz-option" data-correct="false" data-zh="模型解釋了 2.5% 的變異量" data-en="Model explains 2.5% of variance">模型解釋了 2.5% 的變異量</div>
+    <div class="quiz-feedback" data-zh="正確！Exp(B) 是勝算比（odds ratio），不是機率變化。Exp(B) = 2.5 表示自變數增加 1 單位時，事件發生的勝算（odds, P/(1-P)）變為原來的 2.5 倍。注意：勝算 &#8800; 機率。" data-en="Correct! Exp(B) is the odds ratio, not a probability change. Exp(B) = 2.5 means the odds (P/(1-P)) become 2.5 times larger per 1-unit IV increase. Note: odds are not the same as probability.">正確！Exp(B) 是勝算比，不是機率的變化。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q3: Hosmer-Lemeshow 檢定的 p 值為 0.35，這代表什麼？" data-en="Q3: The Hosmer-Lemeshow test yields p = 0.35. What does this mean?">Q3: Hosmer-Lemeshow 檢定的 p 值為 0.35，這代表什麼？</p>
+    <div class="quiz-option" data-correct="true" data-zh="模型適配良好（預測值與觀察值無顯著差異）" data-en="Good model fit (no significant difference between predicted and observed)">模型適配良好（預測值與觀察值無顯著差異）</div>
+    <div class="quiz-option" data-correct="false" data-zh="模型適配不佳，需要改善" data-en="Poor model fit, needs improvement">模型適配不佳，需要改善</div>
+    <div class="quiz-option" data-correct="false" data-zh="模型解釋了 35% 的變異量" data-en="Model explains 35% of variance">模型解釋了 35% 的變異量</div>
+    <div class="quiz-option" data-correct="false" data-zh="有 35% 的觀察值被正確分類" data-en="35% of observations are correctly classified">有 35% 的觀察值被正確分類</div>
+    <div class="quiz-feedback" data-zh="正確！Hosmer-Lemeshow 的虛無假設是「模型預測值與觀察值無差異」。p > .05 表示無法拒絕虛無假設，即模型的預測與實際觀察資料吻合，適配良好。這是少數我們「希望不顯著」的檢定之一。" data-en="Correct! The Hosmer-Lemeshow null hypothesis is 'no difference between predicted and observed values.' p > .05 means we cannot reject it, indicating good fit. This is one of the rare tests where we want non-significance.">正確！p > .05 表示適配良好。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q4: 多元羅吉斯迴歸中的 IIA 假設是什麼？" data-en="Q4: What is the IIA assumption in multinomial logistic regression?">Q4: 多元羅吉斯迴歸中的 IIA 假設是什麼？</p>
+    <div class="quiz-option" data-correct="false" data-zh="所有自變數之間必須獨立" data-en="All IVs must be independent of each other">所有自變數之間必須獨立</div>
+    <div class="quiz-option" data-correct="false" data-zh="各類別的樣本數必須相等" data-en="Sample sizes must be equal across categories">各類別的樣本數必須相等</div>
+    <div class="quiz-option" data-correct="true" data-zh="移除一個選項不應改變其他選項之間的相對機率比" data-en="Removing one option should not change the relative probability ratios among remaining options">移除一個選項不應改變其他選項之間的相對機率比</div>
+    <div class="quiz-option" data-correct="false" data-zh="參照類別的選擇會影響模型結果" data-en="The choice of reference category affects model results">參照類別的選擇會影響模型結果</div>
+    <div class="quiz-feedback" data-zh="正確！IIA（Independence of Irrelevant Alternatives）假設移除某個替代方案後，其他方案之間的勝算比維持不變。典型的反例就是「紅色公車 / 藍色公車」悖論。當 IIA 被違反時，應考慮巢狀羅吉斯或混合羅吉斯模型。" data-en="Correct! IIA (Independence of Irrelevant Alternatives) assumes that removing one alternative does not change the odds ratios among the remaining alternatives. The classic counter-example is the 'red bus / blue bus' paradox. When IIA is violated, consider nested or mixed logit models.">正確！移除一個選項不應改變其他選項的相對比例。</div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- KEY TERMS ACCORDION                          -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="八、關鍵名詞解釋" data-en="8. Key Terms Glossary">八、關鍵名詞解釋</h2>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="Logit 轉換（Logit Transformation）" data-en="Logit Transformation">Logit 轉換（Logit Transformation）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>將機率 P 轉換為 ln(P/(1-P)) 的對數勝算。這個轉換將 0-1 範圍的機率值映射到負無窮到正無窮的實數線上，使得可以用線性方程式進行建模。logit 函數是 sigmoid 函數的反函數。</p></div>
+      <div class="en"><p>Transforms probability P into the log-odds ln(P/(1-P)). This maps the 0-1 probability range to the entire real number line, enabling linear equation modeling. The logit function is the inverse of the sigmoid function.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="勝算比（Odds Ratio）" data-en="Odds Ratio">勝算比（Odds Ratio）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>以 Exp(B) 表示，代表自變數每增加一個單位時，事件發生之勝算的<strong>倍數變化</strong>。Exp(B) > 1 表示正向影響（增加勝算），Exp(B) < 1 表示負向影響（減少勝算），Exp(B) = 1 表示無影響。勝算比是羅吉斯迴歸中最直觀、最常報告的效果量指標。</p></div>
+      <div class="en"><p>Expressed as Exp(B), it represents the <strong>multiplicative change</strong> in the odds of the event for each one-unit increase in the IV. Exp(B) > 1 = positive effect, Exp(B) < 1 = negative effect, Exp(B) = 1 = no effect. It is the most intuitive and commonly reported effect size in logistic regression.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="最大概似估計法（Maximum Likelihood Estimation, MLE）" data-en="Maximum Likelihood Estimation (MLE)">最大概似估計法（Maximum Likelihood Estimation, MLE）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>一種參數估計方法，尋找使觀察到的資料出現機率最大化的參數值。與 OLS 不同，MLE 不最小化殘差，而是最大化概似函數。採用迭代程序，在大樣本下具有良好的統計性質（一致性、漸近常態性、漸近效率性）。</p></div>
+      <div class="en"><p>A parameter estimation method that finds values maximizing the probability of observing the actual data. Unlike OLS, MLE maximizes the likelihood function rather than minimizing residuals. Uses an iterative procedure and has desirable large-sample properties (consistency, asymptotic normality, asymptotic efficiency).</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="Hosmer-Lemeshow 適配度檢定" data-en="Hosmer-Lemeshow Goodness-of-Fit Test">Hosmer-Lemeshow 適配度檢定</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>將預測機率由低到高排列並分成十等分，比較每組的預測事件數與實際觀察事件數之差異。虛無假設為「預測值與觀察值無差異」。p > .05 表示模型適配良好。這是羅吉斯迴歸中少數「希望不顯著」的檢定。</p></div>
+      <div class="en"><p>Ranks predicted probabilities and divides them into ten equal groups, comparing predicted versus observed event counts in each. The null hypothesis is "no difference between predicted and observed." p > .05 indicates good fit. This is one of the few tests where non-significance is desired.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="IIA 假設（Independence of Irrelevant Alternatives）" data-en="IIA (Independence of Irrelevant Alternatives)">IIA 假設（Independence of Irrelevant Alternatives）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>多元羅吉斯迴歸的關鍵假設：移除或新增一個替代方案，不會改變其餘方案之間的相對勝算比。違反此假設時（如紅色公車/藍色公車悖論），模型的預測會有偏誤，應考慮使用巢狀羅吉斯（nested logit）或混合羅吉斯（mixed logit）等進階模型。</p></div>
+      <div class="en"><p>A key assumption of multinomial logistic regression: adding or removing an alternative does not change the odds ratios among the remaining alternatives. When violated (e.g., red bus/blue bus paradox), predictions are biased. Consider nested logit or mixed logit models as alternatives.</p></div>
+    </div>
+  </div>
+</div>
+
+
+</div><!-- container -->
+</main>
+
+<!-- Navigation -->
+<div style="padding:2rem 0;background:#f0f3f5">
+  <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+    <a href="ch7-discriminant-analysis.html" style="font-weight:600" data-zh="&#8592; 上一章：判別分析" data-en="&#8592; Previous: Discriminant Analysis">&#8592; 上一章：判別分析</a>
+    <a href="../index.html" style="font-weight:600;background:var(--accent);color:#fff;padding:.5rem 1rem;border-radius:4px" data-zh="回到首頁 &#8594;" data-en="Back to Home &#8594;">回到首頁 &#8594;</a>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>Hair, J.F., Black, W.C., Babin, B.J., & Anderson, R.E. (2019). <em>Multivariate Data Analysis</em> (8th ed.).</p>
+    <p style="margin-top:.5rem;font-size:.8rem;opacity:.8">&copy; 版權所有 葉欲禾 (Gary Yu-Ho Yeh)</p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

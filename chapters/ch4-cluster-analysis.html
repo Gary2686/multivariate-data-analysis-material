@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>集群分析 | Cluster Analysis</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="lang-zh">
+<div class="progress-bar"><div class="fill"></div></div>
+
+<nav class="top-nav">
+  <div class="container">
+    <a href="../index.html" class="brand" data-zh="多變量資料分析" data-en="Multivariate Data Analysis">多變量資料分析</a>
+    <div class="nav-links">
+      <a href="../index.html" data-zh="首頁" data-en="Home">首頁</a>
+      <a href="ch3-efa.html" data-zh="EFA" data-en="EFA">EFA</a>
+      <a href="ch4-cluster-analysis.html" class="active" data-zh="集群分析" data-en="Cluster">集群分析</a>
+      <button class="lang-toggle">EN</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1 data-zh="Ch.4 集群分析" data-en="Ch.4 Cluster Analysis">Ch.4 集群分析</h1>
+    <p data-zh="依相似性將觀察值分組的多變量技術" data-en="A Multivariate Technique for Grouping Observations by Similarity">依相似性將觀察值分組的多變量技術</p>
+  </div>
+</header>
+
+<main class="section">
+<div class="container">
+
+<!-- ============================================ -->
+<!-- SECTION 1: OVERVIEW                          -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="一、集群分析概述" data-en="1. Overview of Cluster Analysis">一、集群分析概述</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p><strong>集群分析（Cluster Analysis）</strong>是一種<strong>相依技術</strong>，目的是根據物件（觀察值）之間的<strong>相似性</strong>，將它們分成幾個同質的群組。同一群內的物件彼此相似，不同群的物件彼此相異。</p>
+    <p style="margin-top:.75rem"><strong>常見應用：</strong></p>
+    <ul style="margin-top:.5rem;padding-left:1.5rem">
+      <li><strong>市場區隔（Market Segmentation）：</strong>將消費者依購買行為或態度分群</li>
+      <li><strong>分類學（Taxonomy）：</strong>建立事物的自然分類體系</li>
+      <li><strong>資料簡化：</strong>將大量觀察值濃縮為少數群組以利後續分析</li>
+      <li><strong>異常偵測：</strong>辨識不屬於任何群組的離群觀察值</li>
+    </ul>
+  </div>
+  <div class="en">
+    <p><strong>Cluster Analysis</strong> is an <strong>interdependence technique</strong> that groups objects (observations) based on their <strong>similarity</strong>. Objects within the same cluster are similar, while objects in different clusters are dissimilar.</p>
+    <p style="margin-top:.75rem"><strong>Common applications:</strong></p>
+    <ul style="margin-top:.5rem;padding-left:1.5rem">
+      <li><strong>Market Segmentation:</strong> Group consumers by purchase behavior or attitudes</li>
+      <li><strong>Taxonomy:</strong> Establish natural classification systems</li>
+      <li><strong>Data Simplification:</strong> Condense many observations into a few groups for subsequent analysis</li>
+      <li><strong>Outlier Detection:</strong> Identify observations that do not belong to any cluster</li>
+    </ul>
+  </div>
+</div>
+
+<div class="concept-block success">
+  <h4 data-zh="白話解釋：集群分析就像把學生分組" data-en="Plain Language: Cluster Analysis Is Like Grouping Students">白話解釋：集群分析就像把學生分組</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <p>想像老師要把全班同學分成幾個讀書小組。老師會觀察每個學生的<strong>成績、學習風格、興趣</strong>等特徵，把相似的同學放在一起。</p>
+      <p style="margin-top:.5rem"><strong>階層式集群法</strong>就像老師一步步地先把最相似的兩人配對，再把小對合成小組，小組再合成大組。<strong>K-means</strong>則像老師先決定「我要分 K 組」，然後反覆調整，直到每個同學都在最適合的組裡。</p>
+    </div>
+    <div class="en">
+      <p>Imagine a teacher grouping students into study teams. The teacher observes each student's <strong>grades, learning style, interests</strong>, and groups similar students together.</p>
+      <p style="margin-top:.5rem"><strong>Hierarchical clustering</strong> is like the teacher first pairing the two most similar students, then merging pairs into small groups, and small groups into larger ones. <strong>K-means</strong> is like the teacher deciding "I want K groups" upfront, then iteratively reassigning students until everyone is in their best-fitting group.</p>
+    </div>
+  </div>
+</div>
+
+<div class="concept-block danger">
+  <h4 data-zh="重要注意事項" data-en="Important Considerations">重要注意事項</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li>集群分析是<strong>描述性</strong>而非推論性技術——沒有統計檢定來判斷「正確」的群數</li>
+        <li>結果高度依賴所選的<strong>變數、距離量數和演算法</strong></li>
+        <li>必須<strong>標準化變數</strong>（z-score），否則量尺大的變數會主導結果</li>
+        <li><strong>離群值（outliers）</strong>會嚴重扭曲集群結果，須事前檢查並處理</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li>Cluster analysis is <strong>descriptive</strong>, not inferential -- no statistical test determines the "correct" number of clusters</li>
+        <li>Results are highly dependent on the choice of <strong>variables, distance measure, and algorithm</strong></li>
+        <li>Variables must be <strong>standardized</strong> (z-scores); otherwise, variables with larger scales dominate</li>
+        <li><strong>Outliers</strong> can severely distort cluster solutions and must be examined beforehand</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 2: SIMILARITY MEASURES               -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="二、相似性測量" data-en="2. Similarity Measures">二、相似性測量</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>集群分析的基礎是衡量觀察值之間的<strong>相似性或相異性</strong>。不同的距離量數會產生不同的集群結果。</p>
+  </div>
+  <div class="en">
+    <p>Cluster analysis is built on measuring <strong>similarity or dissimilarity</strong> between observations. Different distance measures can produce different clustering results.</p>
+  </div>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="歐幾里德距離公式" data-en="Euclidean Distance Formula">歐幾里德距離公式</h4>
+  <div class="formula-box">
+    d(x, y) = &radic;[ &Sigma; (x<sub>i</sub> - y<sub>i</sub>)&sup2; ]
+    <span class="label" data-zh="兩點在多維空間中的直線距離（最常用的距離量數）" data-en="Straight-line distance between two points in multidimensional space (most commonly used)">兩點在多維空間中的直線距離（最常用的距離量數）</span>
+  </div>
+</div>
+
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="距離量數" data-en="Distance Measure">距離量數</th>
+        <th data-zh="公式概念" data-en="Formula Concept">公式概念</th>
+        <th data-zh="特性" data-en="Characteristics">特性</th>
+        <th data-zh="適用情境" data-en="When to Use">適用情境</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong data-zh="歐幾里德距離" data-en="Euclidean">歐幾里德距離</strong></td>
+        <td>&radic;&Sigma;(x<sub>i</sub>-y<sub>i</sub>)&sup2;</td>
+        <td data-zh="直線距離，受量尺影響" data-en="Straight-line, scale-sensitive">直線距離，受量尺影響</td>
+        <td data-zh="連續變數，已標準化" data-en="Continuous variables, standardized">連續變數，已標準化</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="平方歐幾里德" data-en="Squared Euclidean">平方歐幾里德</strong></td>
+        <td>&Sigma;(x<sub>i</sub>-y<sub>i</sub>)&sup2;</td>
+        <td data-zh="強調較大差異，Ward's linkage 使用" data-en="Emphasizes large differences; used by Ward's linkage">強調較大差異，Ward's linkage 使用</td>
+        <td data-zh="Ward's 法的推薦搭配" data-en="Recommended with Ward's method">Ward's 法的推薦搭配</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="曼哈頓距離" data-en="Manhattan (City Block)">曼哈頓距離</strong></td>
+        <td>&Sigma;|x<sub>i</sub>-y<sub>i</sub>|</td>
+        <td data-zh="各維度差異的絕對值總和，對離群值較穩健" data-en="Sum of absolute differences; more robust to outliers">各維度差異的絕對值總和，對離群值較穩健</td>
+        <td data-zh="有離群值疑慮時" data-en="When outliers are a concern">有離群值疑慮時</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="相關性距離" data-en="Correlation-based">相關性距離</strong></td>
+        <td>1 - r<sub>xy</sub></td>
+        <td data-zh="衡量變數模式的相似性而非大小" data-en="Measures similarity of variable patterns, not magnitudes">衡量變數模式的相似性而非大小</td>
+        <td data-zh="關注變數模式而非絕對值" data-en="When variable patterns matter more than absolute values">關注變數模式而非絕對值</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 3: HIERARCHICAL METHODS              -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="三、階層式集群法" data-en="3. Hierarchical Clustering Methods">三、階層式集群法</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>階層式集群法透過逐步<strong>合併（agglomerative）</strong>或<strong>分裂（divisive）</strong>的方式建立集群層次結構。最常用的是凝聚法（agglomerative），從每個觀察值各自為一群開始，逐步合併最相似的群組。</p>
+  </div>
+  <div class="en">
+    <p>Hierarchical methods build a cluster hierarchy through iterative <strong>merging (agglomerative)</strong> or <strong>splitting (divisive)</strong>. The most common is agglomerative, starting with each observation as its own cluster and progressively merging the most similar ones.</p>
+  </div>
+</div>
+
+<!-- SVG Dendrogram -->
+<div class="diagram">
+  <svg viewBox="0 0 700 360" xmlns="http://www.w3.org/2000/svg" style="max-width:650px">
+    <!-- Title -->
+    <text x="350" y="22" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">Dendrogram</text>
+    <!-- Axis labels -->
+    <text x="18" y="190" text-anchor="middle" font-size="11" fill="#6c757d" transform="rotate(-90,18,190)">Distance</text>
+    <text x="350" y="350" text-anchor="middle" font-size="11" fill="#6c757d">Observations</text>
+    <!-- Y axis -->
+    <line x1="60" y1="40" x2="60" y2="310" stroke="#6c757d" stroke-width="1.5"/>
+    <line x1="55" y1="310" x2="60" y2="310" stroke="#6c757d" stroke-width="1"/>
+    <text x="48" y="314" text-anchor="end" font-size="10" fill="#6c757d">0</text>
+    <line x1="55" y1="240" x2="60" y2="240" stroke="#6c757d" stroke-width="1"/>
+    <text x="48" y="244" text-anchor="end" font-size="10" fill="#6c757d">2</text>
+    <line x1="55" y1="170" x2="60" y2="170" stroke="#6c757d" stroke-width="1"/>
+    <text x="48" y="174" text-anchor="end" font-size="10" fill="#6c757d">4</text>
+    <line x1="55" y1="100" x2="60" y2="100" stroke="#6c757d" stroke-width="1"/>
+    <text x="48" y="104" text-anchor="end" font-size="10" fill="#6c757d">6</text>
+    <line x1="55" y1="60" x2="60" y2="60" stroke="#6c757d" stroke-width="1"/>
+    <text x="48" y="64" text-anchor="end" font-size="10" fill="#6c757d">8</text>
+    <!-- Observation labels -->
+    <text x="130" y="328" text-anchor="middle" font-size="11" fill="#2c3e50">A</text>
+    <text x="220" y="328" text-anchor="middle" font-size="11" fill="#2c3e50">B</text>
+    <text x="310" y="328" text-anchor="middle" font-size="11" fill="#2c3e50">C</text>
+    <text x="440" y="328" text-anchor="middle" font-size="11" fill="#2c3e50">D</text>
+    <text x="560" y="328" text-anchor="middle" font-size="11" fill="#2c3e50">E</text>
+    <!-- Vertical stems -->
+    <line x1="130" y1="310" x2="130" y2="260" stroke="#3498db" stroke-width="2"/>
+    <line x1="220" y1="310" x2="220" y2="260" stroke="#3498db" stroke-width="2"/>
+    <line x1="310" y1="310" x2="310" y2="170" stroke="#27ae60" stroke-width="2"/>
+    <line x1="440" y1="310" x2="440" y2="200" stroke="#e74c3c" stroke-width="2"/>
+    <line x1="560" y1="310" x2="560" y2="200" stroke="#e74c3c" stroke-width="2"/>
+    <!-- Merge A-B at distance 2 -->
+    <line x1="130" y1="260" x2="220" y2="260" stroke="#3498db" stroke-width="2"/>
+    <text x="175" y="252" text-anchor="middle" font-size="9" fill="#3498db">d=2</text>
+    <!-- Merge D-E at distance 3 -->
+    <line x1="440" y1="200" x2="560" y2="200" stroke="#e74c3c" stroke-width="2"/>
+    <text x="500" y="192" text-anchor="middle" font-size="9" fill="#e74c3c">d=3</text>
+    <!-- Vertical from AB merge to next level -->
+    <line x1="175" y1="260" x2="175" y2="170" stroke="#27ae60" stroke-width="2"/>
+    <!-- Merge (AB)-C at distance 4 -->
+    <line x1="175" y1="170" x2="310" y2="170" stroke="#27ae60" stroke-width="2"/>
+    <text x="242" y="162" text-anchor="middle" font-size="9" fill="#27ae60">d=4</text>
+    <!-- Vertical from DE merge to final -->
+    <line x1="500" y1="200" x2="500" y2="80" stroke="#6c757d" stroke-width="2"/>
+    <!-- Vertical from ABC merge to final -->
+    <line x1="242" y1="170" x2="242" y2="80" stroke="#6c757d" stroke-width="2"/>
+    <!-- Final merge at distance 7 -->
+    <line x1="242" y1="80" x2="500" y2="80" stroke="#6c757d" stroke-width="2"/>
+    <text x="371" y="72" text-anchor="middle" font-size="9" fill="#6c757d">d=7</text>
+    <!-- Cut line -->
+    <line x1="60" y1="150" x2="650" y2="150" stroke="#e74c3c" stroke-width="1.5" stroke-dasharray="8,4"/>
+    <text x="640" y="143" text-anchor="end" font-size="10" font-weight="bold" fill="#e74c3c">Cut → 2 clusters</text>
+  </svg>
+  <p class="caption" data-zh="圖：樹狀圖（Dendrogram）— 在適當距離處切割以決定集群數" data-en="Figure: Dendrogram -- cut at an appropriate distance to determine the number of clusters">圖：樹狀圖（Dendrogram）— 在適當距離處切割以決定集群數</p>
+</div>
+
+<!-- Linkage Methods Table -->
+<div class="table-wrap" style="margin-top:1rem">
+  <table>
+    <thead>
+      <tr>
+        <th data-zh="連結法" data-en="Linkage Method">連結法</th>
+        <th data-zh="距離定義" data-en="Distance Definition">距離定義</th>
+        <th data-zh="優點" data-en="Pros">優點</th>
+        <th data-zh="缺點" data-en="Cons">缺點</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong data-zh="單一連結法" data-en="Single Linkage">單一連結法</strong></td>
+        <td data-zh="兩群中最近一對的距離" data-en="Minimum distance between any pair from two clusters">兩群中最近一對的距離</td>
+        <td data-zh="能發現非球形的集群形狀" data-en="Can detect non-spherical cluster shapes">能發現非球形的集群形狀</td>
+        <td data-zh="易產生鏈鎖效應（chaining）" data-en="Prone to chaining effect">易產生鏈鎖效應（chaining）</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="完全連結法" data-en="Complete Linkage">完全連結法</strong></td>
+        <td data-zh="兩群中最遠一對的距離" data-en="Maximum distance between any pair from two clusters">兩群中最遠一對的距離</td>
+        <td data-zh="產生緊密、大小相近的集群" data-en="Produces compact, similar-sized clusters">產生緊密、大小相近的集群</td>
+        <td data-zh="對離群值敏感" data-en="Sensitive to outliers">對離群值敏感</td>
+      </tr>
+      <tr>
+        <td><strong data-zh="平均連結法" data-en="Average Linkage">平均連結法</strong></td>
+        <td data-zh="兩群所有配對距離的平均" data-en="Average distance of all pairs from two clusters">兩群所有配對距離的平均</td>
+        <td data-zh="單一與完全連結法的折衷" data-en="Compromise between single and complete linkage">單一與完全連結法的折衷</td>
+        <td data-zh="可能偏向產生球形集群" data-en="May favor spherical clusters">可能偏向產生球形集群</td>
+      </tr>
+      <tr>
+        <td class="highlight-cell"><strong data-zh="Ward's 法" data-en="Ward's Method">Ward's 法</strong></td>
+        <td data-zh="合併後群內變異的增加量" data-en="Increase in within-cluster variance after merging">合併後群內變異的增加量</td>
+        <td data-zh="產生大小相近的集群，最常用" data-en="Produces equal-sized clusters; most commonly used">產生大小相近的集群，最常用</td>
+        <td data-zh="偏向球形集群，對離群值敏感" data-en="Biased toward spherical clusters; sensitive to outliers">偏向球形集群，對離群值敏感</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="concept-block warn">
+  <h4 data-zh="Ward's 連結法公式" data-en="Ward's Linkage Formula">Ward's 連結法公式</h4>
+  <div class="formula-box">
+    &Delta;E = (n<sub>1</sub> &times; n<sub>2</sub>) / (n<sub>1</sub> + n<sub>2</sub>) &times; d&sup2;
+    <span class="label" data-zh="n₁, n₂ = 兩群的觀察值數, d² = 兩群重心間的平方歐幾里德距離" data-en="n₁, n₂ = cluster sizes, d² = squared Euclidean distance between cluster centroids">n₁, n₂ = 兩群的觀察值數, d² = 兩群重心間的平方歐幾里德距離</span>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 4: K-MEANS                           -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="四、非階層式集群法（K-Means）" data-en="4. Non-Hierarchical Clustering (K-Means)">四、非階層式集群法（K-Means）</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p><strong>K-Means 演算法</strong>是最常用的非階層式集群法。與階層式方法不同，它需要事先指定集群數 K，然後透過迭代優化來將觀察值分配到最近的集群中心。</p>
+  </div>
+  <div class="en">
+    <p><strong>K-Means</strong> is the most common non-hierarchical method. Unlike hierarchical approaches, it requires the number of clusters K to be specified in advance, then iteratively assigns observations to the nearest cluster centroid.</p>
+  </div>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="K-Means 演算法步驟" data-en="K-Means Algorithm Steps">K-Means 演算法步驟</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ol style="padding-left:1.5rem">
+        <li><strong>選擇 K 個初始種子點：</strong>隨機選取或由研究者指定 K 個初始集群中心</li>
+        <li><strong>分配觀察值：</strong>將每個觀察值分配到距離最近的集群中心</li>
+        <li><strong>更新中心：</strong>重新計算每個集群的重心（各變數的平均值）</li>
+        <li><strong>重複步驟 2-3：</strong>直到沒有觀察值需要重新分配（收斂），或達到最大迭代次數</li>
+      </ol>
+    </div>
+    <div class="en">
+      <ol style="padding-left:1.5rem">
+        <li><strong>Select K initial seeds:</strong> Randomly choose or specify K initial cluster centers</li>
+        <li><strong>Assign observations:</strong> Assign each observation to the nearest cluster center</li>
+        <li><strong>Update centers:</strong> Recalculate each cluster centroid (mean of all variables)</li>
+        <li><strong>Repeat steps 2-3:</strong> Until no observations need reassignment (convergence) or maximum iterations reached</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- Hierarchical vs K-Means Comparison -->
+<div class="tab-container" style="margin-top:1.5rem">
+  <div class="tab-header">
+    <button class="tab-btn active" data-tab="tab-hier" data-zh="階層式" data-en="Hierarchical">階層式</button>
+    <button class="tab-btn" data-tab="tab-kmeans" data-zh="K-Means" data-en="K-Means">K-Means</button>
+  </div>
+
+  <div class="tab-panel active" id="tab-hier">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>階層式集群法的特點</h4>
+        <ul style="padding-left:1.2rem">
+          <li><strong>不需事先指定集群數：</strong>可透過樹狀圖事後決定</li>
+          <li><strong>產生樹狀圖：</strong>提供完整的合併/分裂歷程</li>
+          <li><strong>不可逆：</strong>一旦合併或分裂，無法再調整</li>
+          <li><strong>適用小樣本：</strong>計算量大，通常用於 n &lt; 500 的資料</li>
+          <li><strong>對離群值敏感：</strong>特別是 Ward's 法和完全連結法</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>Characteristics of Hierarchical Methods</h4>
+        <ul style="padding-left:1.2rem">
+          <li><strong>No need to pre-specify K:</strong> Determined post-hoc from the dendrogram</li>
+          <li><strong>Produces a dendrogram:</strong> Full merge/split history is visible</li>
+          <li><strong>Irreversible:</strong> Once merged or split, cannot be undone</li>
+          <li><strong>Suitable for small samples:</strong> Computationally intensive; typically used when n &lt; 500</li>
+          <li><strong>Sensitive to outliers:</strong> Especially Ward's and complete linkage</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-kmeans">
+    <div class="bilingual">
+      <div class="zh">
+        <h4>K-Means 的特點</h4>
+        <ul style="padding-left:1.2rem">
+          <li><strong>需事先指定集群數 K：</strong>結果取決於 K 的選擇</li>
+          <li><strong>可處理大樣本：</strong>計算效率高，適合 n &gt; 500</li>
+          <li><strong>可修正分配：</strong>觀察值在迭代過程中可被重新分配</li>
+          <li><strong>受初始種子影響：</strong>不同的起始點可能產生不同結果</li>
+          <li><strong>傾向球形集群：</strong>不擅長偵測不規則形狀的集群</li>
+        </ul>
+      </div>
+      <div class="en">
+        <h4>Characteristics of K-Means</h4>
+        <ul style="padding-left:1.2rem">
+          <li><strong>Must pre-specify K:</strong> Results depend on the choice of K</li>
+          <li><strong>Handles large samples:</strong> Computationally efficient; suitable for n &gt; 500</li>
+          <li><strong>Allows reassignment:</strong> Observations can be reassigned during iterations</li>
+          <li><strong>Sensitive to initial seeds:</strong> Different starting points may yield different results</li>
+          <li><strong>Favors spherical clusters:</strong> Not suited for irregularly shaped clusters</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="concept-block">
+  <h4 data-zh="選擇 K 值的方法" data-en="Methods for Choosing K">選擇 K 值的方法</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li><strong>手肘法（Elbow Method）：</strong>繪製不同 K 值對應的群內變異（WSS），在曲線出現明顯彎折處選擇 K</li>
+        <li><strong>輪廓係數（Silhouette Coefficient）：</strong>衡量每個觀察值在自身集群的緊密度與和其他集群的分離度。值介於 -1 到 1，越大越好（> .50 為良好結構）</li>
+        <li><strong>理論依據：</strong>根據研究問題和先驗知識來決定合理的群數範圍</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li><strong>Elbow Method:</strong> Plot within-cluster sum of squares (WSS) for different K values; choose K at the clear bend</li>
+        <li><strong>Silhouette Coefficient:</strong> Measures how similar each observation is to its own cluster vs. others. Ranges from -1 to 1; higher is better (&gt; .50 indicates good structure)</li>
+        <li><strong>Theoretical basis:</strong> Use the research question and prior knowledge to determine a reasonable range of clusters</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 5: TWO-STEP APPROACH                 -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="五、兩階段法" data-en="5. Two-Step Approach">五、兩階段法</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>Hair et al. 推薦使用<strong>兩階段方法</strong>來結合階層式和非階層式集群法的優勢：</p>
+    <ol style="padding-left:1.5rem;margin-top:.5rem">
+      <li><strong>第一階段——階層式集群：</strong>使用 Ward's 法建立樹狀圖，從中決定可能的集群數量（如 2, 3, 4 群）。同時利用各群的重心作為後續 K-means 的初始種子點</li>
+      <li><strong>第二階段——K-Means 精煉：</strong>以第一階段決定的 K 值和種子點為起點，運行 K-Means 進行精確分群。K-Means 允許觀察值在迭代中被重新分配，修正階層式方法不可逆的限制</li>
+    </ol>
+  </div>
+  <div class="en">
+    <p>Hair et al. recommend a <strong>two-step approach</strong> combining the strengths of both methods:</p>
+    <ol style="padding-left:1.5rem;margin-top:.5rem">
+      <li><strong>Stage 1 -- Hierarchical Clustering:</strong> Use Ward's method to build a dendrogram and determine potential cluster numbers (e.g., 2, 3, 4). Also obtain cluster centroids to use as initial seeds for K-means</li>
+      <li><strong>Stage 2 -- K-Means Refinement:</strong> Run K-Means using the K and seed points from Stage 1. K-Means allows reassignment during iteration, correcting the irreversibility of hierarchical methods</li>
+    </ol>
+  </div>
+</div>
+
+<div class="concept-block success">
+  <h4 data-zh="為什麼推薦兩階段法？" data-en="Why Is the Two-Step Approach Recommended?">為什麼推薦兩階段法？</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li>解決階層式方法「不可逆」的缺點</li>
+        <li>解決 K-Means「需先知道 K」的難題</li>
+        <li>解決 K-Means 對初始種子敏感的問題——用階層式的結果提供好的起始點</li>
+        <li>結合兩種方法的優勢，產生更穩健的結果</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li>Addresses the irreversibility limitation of hierarchical methods</li>
+        <li>Solves the "must specify K" challenge of K-Means</li>
+        <li>Reduces K-Means sensitivity to initial seeds by providing good starting points</li>
+        <li>Combines the strengths of both methods for more robust results</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 6: VALIDATION                        -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="六、集群驗證" data-en="6. Cluster Validation">六、集群驗證</h2>
+
+<div class="bilingual">
+  <div class="zh">
+    <p>由於集群分析缺乏統計推論基礎，驗證集群結果的合理性格外重要。Hair et al. 建議以下策略：</p>
+  </div>
+  <div class="en">
+    <p>Because cluster analysis lacks an inferential statistical foundation, validating the reasonableness of results is especially important. Hair et al. recommend the following strategies:</p>
+  </div>
+</div>
+
+<div class="card-grid" style="margin-top:1rem">
+  <div class="card">
+    <h3 data-zh="集群描述（Profile Analysis）" data-en="Profile Analysis">集群描述（Profile Analysis）</h3>
+    <div class="zh-only">
+      <p>比較各集群在<strong>集群變數</strong>和<strong>外部變數</strong>上的平均值和分布。</p>
+      <ul style="padding-left:1.2rem;margin-top:.5rem">
+        <li>各集群在集群變數上是否有<strong>顯著差異</strong>（ANOVA / chi-square）</li>
+        <li>各集群在<strong>未參與集群分析</strong>的外部變數上是否也有合理差異</li>
+        <li>每個集群是否可以被<strong>合理命名</strong>和解釋</li>
+      </ul>
+    </div>
+    <div class="en-only">
+      <p>Compare cluster means and distributions on <strong>clustering variables</strong> and <strong>external variables</strong>.</p>
+      <ul style="padding-left:1.2rem;margin-top:.5rem">
+        <li>Do clusters differ <strong>significantly</strong> on clustering variables (ANOVA / chi-square)?</li>
+        <li>Do clusters also differ meaningfully on <strong>variables not used</strong> in the clustering?</li>
+        <li>Can each cluster be <strong>meaningfully named</strong> and interpreted?</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card">
+    <h3 data-zh="交叉驗證" data-en="Cross-Validation">交叉驗證</h3>
+    <div class="zh-only">
+      <ul style="padding-left:1.2rem">
+        <li><strong>分半驗證：</strong>將樣本隨機分成兩半，分別進行集群分析，比較結果</li>
+        <li><strong>不同方法比較：</strong>使用不同的連結法或距離量數，看結果是否一致</li>
+        <li><strong>不同起始值：</strong>以多組不同的隨機種子跑 K-Means，比較穩定性</li>
+        <li><strong>ANOVA 檢定：</strong>對集群變數進行變異數分析，確認各集群間有顯著差異</li>
+      </ul>
+    </div>
+    <div class="en-only">
+      <ul style="padding-left:1.2rem">
+        <li><strong>Split-sample:</strong> Randomly split, cluster each half, compare results</li>
+        <li><strong>Different methods:</strong> Use alternative linkage methods or distance measures for comparison</li>
+        <li><strong>Different starting values:</strong> Run K-Means with multiple random seeds to assess stability</li>
+        <li><strong>ANOVA tests:</strong> Test for significant differences across clusters on clustering variables</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="concept-block danger">
+  <h4 data-zh="常見陷阱" data-en="Common Pitfalls">常見陷阱</h4>
+  <div class="bilingual">
+    <div class="zh">
+      <ul style="padding-left:1.2rem">
+        <li>集群分析<strong>永遠會產生群組</strong>——即使資料中不存在真正的群組結構</li>
+        <li>不要將集群分析的 ANOVA F 值當作推論性檢定——它是用來<strong>極大化差異</strong>的變數所產生的，因此 p 值被誇大</li>
+        <li>變數的選擇比演算法的選擇更重要——與理論無關的變數會產生無意義的集群</li>
+        <li>樣本量不足時，集群結果不穩定——建議至少 n ≥ 100 或 2<sup>m</sup>（m = 變數數）</li>
+      </ul>
+    </div>
+    <div class="en">
+      <ul style="padding-left:1.2rem">
+        <li>Cluster analysis <strong>always produces groups</strong> -- even when no real structure exists</li>
+        <li>Do not treat the ANOVA F-test from clustering as an inferential test -- it is computed on variables <strong>optimized to maximize differences</strong>, inflating p-values</li>
+        <li>Variable selection matters more than algorithm choice -- theoretically irrelevant variables produce meaningless clusters</li>
+        <li>Insufficient sample size leads to unstable solutions -- recommend at least n ≥ 100 or 2<sup>m</sup> (m = number of variables)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- SECTION 7: QUIZ                              -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="七、自我測驗" data-en="7. Self-Assessment Quiz">七、自我測驗</h2>
+
+<div class="quiz">
+  <h3 data-zh="測試你對集群分析的理解" data-en="Test Your Understanding of Cluster Analysis">測試你對集群分析的理解</h3>
+
+  <div class="quiz-question">
+    <p data-zh="Q1: 在進行集群分析之前，為什麼必須將變數標準化？" data-en="Q1: Why must variables be standardized before cluster analysis?">Q1: 在進行集群分析之前，為什麼必須將變數標準化？</p>
+    <div class="quiz-option" data-correct="false" data-zh="為了讓資料符合常態分布" data-en="To make data follow a normal distribution">為了讓資料符合常態分布</div>
+    <div class="quiz-option" data-correct="true" data-zh="避免量尺較大的變數主導距離計算和集群結果" data-en="To prevent variables with larger scales from dominating distance calculations and cluster results">避免量尺較大的變數主導距離計算和集群結果</div>
+    <div class="quiz-option" data-correct="false" data-zh="為了減少離群值的影響" data-en="To reduce the influence of outliers">為了減少離群值的影響</div>
+    <div class="quiz-option" data-correct="false" data-zh="因為 K-Means 只能處理標準化資料" data-en="Because K-Means can only handle standardized data">因為 K-Means 只能處理標準化資料</div>
+    <div class="quiz-feedback" data-zh="正確！如果不標準化，量尺較大的變數（例如收入以萬元計 vs. 年齡以歲計）會對距離計算產生不成比例的影響，導致集群結果主要受該變數驅動。" data-en="Correct! Without standardization, variables with larger scales (e.g., income in thousands vs. age in years) disproportionately influence distance calculations, causing cluster results to be driven by that variable.">正確！量尺差異會使距離計算被大量尺變數主導。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q2: Ward's 連結法的核心目標是什麼？" data-en="Q2: What is the core objective of Ward's linkage method?">Q2: Ward's 連結法的核心目標是什麼？</p>
+    <div class="quiz-option" data-correct="false" data-zh="最小化兩群之間最遠觀察值的距離" data-en="Minimize the maximum distance between clusters">最小化兩群之間最遠觀察值的距離</div>
+    <div class="quiz-option" data-correct="true" data-zh="最小化合併後群內變異的增加量" data-en="Minimize the increase in within-cluster variance after merging">最小化合併後群內變異的增加量</div>
+    <div class="quiz-option" data-correct="false" data-zh="最大化各群之間的平均距離" data-en="Maximize the average distance between clusters">最大化各群之間的平均距離</div>
+    <div class="quiz-option" data-correct="false" data-zh="最小化所有觀察值到總平均的距離" data-en="Minimize the distance from all observations to the grand mean">最小化所有觀察值到總平均的距離</div>
+    <div class="quiz-feedback" data-zh="正確！Ward's 法在每一步選擇合併後使群內變異增加最少的兩群進行合併。這使得它傾向產生大小相近、緊密的球形集群。" data-en="Correct! Ward's method at each step merges the two clusters that result in the smallest increase in within-cluster variance. This tends to produce compact, similarly-sized spherical clusters.">正確！Ward's 法最小化合併帶來的群內變異增加量。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q3: 兩階段集群法的第一階段使用階層式方法的主要目的為何？" data-en="Q3: What is the primary purpose of using hierarchical methods in Stage 1 of the two-step approach?">Q3: 兩階段集群法的第一階段使用階層式方法的主要目的為何？</p>
+    <div class="quiz-option" data-correct="false" data-zh="產生最終的集群結果" data-en="To produce the final cluster solution">產生最終的集群結果</div>
+    <div class="quiz-option" data-correct="true" data-zh="決定合適的集群數 K，並提供 K-Means 的初始種子點" data-en="To determine an appropriate K and provide initial seeds for K-Means">決定合適的集群數 K，並提供 K-Means 的初始種子點</div>
+    <div class="quiz-option" data-correct="false" data-zh="檢驗資料是否適合進行集群分析" data-en="To test whether data is suitable for cluster analysis">檢驗資料是否適合進行集群分析</div>
+    <div class="quiz-option" data-correct="false" data-zh="刪除離群值" data-en="To remove outliers">刪除離群值</div>
+    <div class="quiz-feedback" data-zh="正確！第一階段的階層式方法透過樹狀圖幫助決定集群數，並提供各群重心作為 K-Means 的初始種子，解決了 K-Means 需事先指定 K 和對初始值敏感的問題。" data-en="Correct! Stage 1's hierarchical method uses the dendrogram to determine K and provides cluster centroids as initial seeds for K-Means, solving both the need to pre-specify K and sensitivity to initial values.">正確！階層式方法幫助決定 K 並提供好的種子點。</div>
+  </div>
+
+  <div class="quiz-question">
+    <p data-zh="Q4: 為什麼集群分析的 ANOVA F 值不能用於推論性檢定？" data-en="Q4: Why can't the ANOVA F-value from cluster analysis be used for inferential testing?">Q4: 為什麼集群分析的 ANOVA F 值不能用於推論性檢定？</p>
+    <div class="quiz-option" data-correct="false" data-zh="因為集群分析的資料不符合常態分布" data-en="Because cluster analysis data does not follow a normal distribution">因為集群分析的資料不符合常態分布</div>
+    <div class="quiz-option" data-correct="false" data-zh="因為樣本量通常太小" data-en="Because the sample size is usually too small">因為樣本量通常太小</div>
+    <div class="quiz-option" data-correct="true" data-zh="因為分群變數本身就是被用來極大化群間差異的，F 值和 p 值因此被誇大" data-en="Because the clustering variables were used to maximize between-group differences, inflating F-values and p-values">因為分群變數本身就是被用來極大化群間差異的，F 值和 p 值因此被誇大</div>
+    <div class="quiz-option" data-correct="false" data-zh="因為 ANOVA 只適用於兩組比較" data-en="Because ANOVA is only valid for two-group comparisons">因為 ANOVA 只適用於兩組比較</div>
+    <div class="quiz-feedback" data-zh="正確！集群分析的演算法就是設計來極大化群間差異的，所以用分群變數來做 ANOVA 檢定等於是用「已知答案」來驗證結果，F 值和 p 值不具推論意義。驗證應使用外部變數。" data-en="Correct! Clustering algorithms are designed to maximize between-group differences, so running ANOVA on clustering variables is like 'verifying' with the known answer. F-values and p-values are inflated. Validation should use external variables.">正確！分群變數本身就被用來極大化差異，F 值被誇大。</div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- KEY TERMS ACCORDION                          -->
+<!-- ============================================ -->
+<h2 class="section-title" data-zh="八、關鍵名詞解釋" data-en="8. Key Terms Glossary">八、關鍵名詞解釋</h2>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="凝聚法（Agglomerative）" data-en="Agglomerative Method">凝聚法（Agglomerative）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>階層式集群法的一種策略。從每個觀察值各自成一群開始，逐步合併最相似的群組，直到所有觀察值合為一群。過程記錄在樹狀圖中。是最常用的階層式方法。</p></div>
+      <div class="en"><p>A hierarchical clustering strategy that starts with each observation as its own cluster and progressively merges the most similar ones until all are in one cluster. The process is recorded in a dendrogram. The most commonly used hierarchical approach.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="樹狀圖（Dendrogram）" data-en="Dendrogram">樹狀圖（Dendrogram）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>階層式集群法的視覺化工具，以樹狀結構呈現逐步合併（或分裂）的過程。橫軸為觀察值，縱軸為合併時的距離。在適當距離處水平切割，即可決定集群數。距離跳躍最大之處通常是最佳切割點。</p></div>
+      <div class="en"><p>A visual tool for hierarchical clustering that shows the merging (or splitting) process as a tree structure. Horizontal axis represents observations; vertical axis represents merge distance. Cutting horizontally at an appropriate distance determines the number of clusters. The largest distance jump usually indicates the best cut point.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="重心（Centroid）" data-en="Centroid">重心（Centroid）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>一個集群中所有觀察值在各變數上的<strong>平均值向量</strong>。在 K-Means 中，重心代表集群的「中心點」，每次迭代後會重新計算。觀察值被分配到距離最近的重心所屬的集群。</p></div>
+      <div class="en"><p>The <strong>mean vector</strong> of all observations in a cluster across all variables. In K-Means, the centroid represents the cluster's "center point," recalculated after each iteration. Observations are assigned to the cluster whose centroid is nearest.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="輪廓係數（Silhouette Coefficient）" data-en="Silhouette Coefficient">輪廓係數（Silhouette Coefficient）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh">
+        <p>衡量集群品質的指標。對每個觀察值 i，計算：</p>
+        <p style="margin-top:.5rem"><strong>s(i) = (b(i) - a(i)) / max(a(i), b(i))</strong></p>
+        <p style="margin-top:.5rem">其中 a(i) = 觀察值與同群其他觀察值的平均距離，b(i) = 觀察值與最近鄰群觀察值的平均距離。s(i) 介於 -1 到 1，越接近 1 代表分群品質越好。平均 > .50 為良好結構。</p>
+      </div>
+      <div class="en">
+        <p>A measure of clustering quality. For each observation i:</p>
+        <p style="margin-top:.5rem"><strong>s(i) = (b(i) - a(i)) / max(a(i), b(i))</strong></p>
+        <p style="margin-top:.5rem">Where a(i) = mean distance to same-cluster observations, b(i) = mean distance to nearest-cluster observations. s(i) ranges from -1 to 1; closer to 1 is better. Average &gt; .50 indicates good structure.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <div class="accordion-header" data-zh="鏈鎖效應（Chaining）" data-en="Chaining Effect">鏈鎖效應（Chaining）</div>
+  <div class="accordion-body">
+    <div class="bilingual">
+      <div class="zh"><p>單一連結法的常見問題。因為只考慮兩群之間最近的一對觀察值，所以可能透過一系列中間觀察值將兩個本應分開的集群連接在一起，形成長鏈狀而非緊密的集群。這使得單一連結法在實務上較少使用。</p></div>
+      <div class="en"><p>A common problem with single linkage. Because only the nearest pair between two clusters is considered, distant clusters can be linked through a chain of intermediate observations, forming elongated chains rather than compact clusters. This makes single linkage less used in practice.</p></div>
+    </div>
+  </div>
+</div>
+
+
+</div><!-- container -->
+</main>
+
+<!-- Navigation -->
+<div style="padding:2rem 0;background:#f0f3f5">
+  <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+    <a href="ch3-efa.html" style="font-weight:600" data-zh="← EFA 探索性因素分析" data-en="← Exploratory Factor Analysis">← EFA 探索性因素分析</a>
+    <a href="../index.html" style="font-weight:600;background:var(--accent);color:#fff;padding:.5rem 1rem;border-radius:4px" data-zh="回到首頁 →" data-en="Back to Home →">回到首頁 →</a>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>Hair, J.F., Black, W.C., Babin, B.J., & Anderson, R.E. (2019). <em>Multivariate Data Analysis</em> (8th ed.).</p>
+    <p style="margin-top:.5rem;font-size:.8rem;opacity:.8">&copy; 版權所有 葉欲禾 (Gary Yu-Ho Yeh)</p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+</body>
+</html>
